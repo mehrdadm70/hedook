@@ -1,0 +1,40 @@
+<mat-toolbar color="primary" class="header-toolbar">
+  <div class="header-content">
+    <!-- لوگو و نام سایت -->
+    <div class="logo-section">
+      <a (click)="goToHome()" class="logo-link">
+        <mat-icon class="logo-icon">toys</mat-icon>
+        <span class="logo-text">هدوک</span>
+      </a>
+    </div>
+
+    <!-- جستجو -->
+    <div class="search-section">
+      <mat-form-field appearance="outline" class="search-field">
+        <mat-label>جستجوی اسباب بازی...</mat-label>
+        <input matInput [(ngModel)]="searchQuery" (keyup.enter)="onSearch()" placeholder="نام اسباب بازی، مهارت یا برند">
+        <mat-icon matSuffix>search</mat-icon>
+      </mat-form-field>
+    </div>
+
+    <!-- منوی ناوبری -->
+    <nav class="nav-section">
+      <a mat-button routerLink="/" routerLinkActive="active">خانه</a>
+      <a mat-button routerLink="/products" routerLinkActive="active">محصولات</a>
+      <a mat-button routerLink="/about" routerLinkActive="active">درباره ما</a>
+      <a mat-button routerLink="/contact" routerLinkActive="active">تماس</a>
+    </nav>
+
+    <!-- سبد خرید و ورود -->
+    <div class="actions-section">
+      <button mat-icon-button (click)="goToCart()" class="cart-button">
+        <mat-icon [matBadge]="cartItemCount" matBadgeColor="accent">shopping_cart</mat-icon>
+      </button>
+      
+      <button mat-button routerLink="/login" class="login-button">
+        <mat-icon>person</mat-icon>
+        ورود
+      </button>
+    </div>
+  </div>
+</mat-toolbar> 

@@ -1,0 +1,110 @@
+.header-toolbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.header-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 16px;
+}
+
+.logo-section {
+  display: flex;
+  align-items: center;
+}
+
+.logo-link {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: white;
+  cursor: pointer;
+}
+
+.logo-icon {
+  font-size: 32px;
+  margin-left: 8px;
+}
+
+.logo-text {
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.search-section {
+  flex: 1;
+  max-width: 400px;
+  margin: 0 32px;
+}
+
+.search-field {
+  width: 100%;
+}
+
+.search-field ::ng-deep .mat-mdc-form-field-subscript-wrapper {
+  display: none;
+}
+
+.nav-section {
+  display: flex;
+  gap: 16px;
+}
+
+.nav-section a {
+  color: white;
+  text-decoration: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  transition: background-color 0.3s;
+}
+
+.nav-section a:hover,
+.nav-section a.active {
+  background-color: rgba(255,255,255,0.1);
+}
+
+.actions-section {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.cart-button {
+  color: white;
+}
+
+.login-button {
+  color: white;
+  border: 1px solid rgba(255,255,255,0.3);
+}
+
+.login-button:hover {
+  background-color: rgba(255,255,255,0.1);
+}
+
+@media (max-width: 768px) {
+  .header-content {
+    flex-direction: column;
+    gap: 16px;
+    padding: 16px;
+  }
+
+  .search-section {
+    margin: 0;
+    max-width: 100%;
+  }
+
+  .nav-section {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+} 

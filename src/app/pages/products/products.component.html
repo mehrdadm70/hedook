@@ -1,0 +1,176 @@
+<div class="products-container">
+  <!-- Header Section -->
+  <div class="products-header">
+    <div class="header-content">
+      <h1>جستجوی هوشمند اسباب بازی</h1>
+      <p>بر اساس ویژگی‌های فرزندتان، بهترین اسباب بازی‌ها را پیدا کنید</p>
+      
+      <div class="header-actions">
+        <button mat-raised-button 
+                color="primary" 
+                (click)="toggleSmartSearch()"
+                class="smart-search-btn">
+          <mat-icon>psychology</mat-icon>
+          {{ showSmartSearch ? 'بستن جستجوی هوشمند' : 'شروع جستجوی هوشمند' }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Smart Search Section -->
+  <div *ngIf="showSmartSearch" class="smart-search-section">
+    <mat-card class="search-card">
+      <mat-card-header>
+        <mat-card-title>جستجوی هوشمند</mat-card-title>
+        <mat-card-subtitle>اطلاعات فرزندتان را وارد کنید تا بهترین پیشنهادات را دریافت کنید</mat-card-subtitle>
+      </mat-card-header>
+
+      <mat-card-content>
+        <mat-stepper #stepper [linear]="false" (selectionChange)="onStepChange($event.selectedIndex)">
+          
+          <!-- Step 1: Basic Information -->
+          <mat-step label="اطلاعات پایه">
+            <form [formGroup]="basicInfoForm">
+              <div class="step-content">
+                <h3>اطلاعات فرزندتان</h3>
+                
+                <div class="form-row">
+                  <mat-form-field appearance="outline">
+                    <mat-label>سن فرزند</mat-label>
+                    <input matInput type="number" formControlName="childAge" min="0" max="18">
+                    <mat-icon matSuffix>child_care</mat-icon>
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline">
+                    <mat-label>جنسیت</mat-label>
+                    <mat-select formControlName="childGender">
+                      <mat-option value="male">پسر</mat-option>
+                      <mat-option value="female">دختر</mat-option>
+                      <mat-option value="unisex">هر دو</mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                </div>
+
+                <div class="budget-section">
+                  <h4>محدوده قیمت (تومان)</h4>
+                  <div class="budget-sliders">
+                    <mat-form-field appearance="outline">
+                      <mat-label>حداقل قیمت</mat-label>
+                      <input matInput type="number" formControlName="budgetMin">
+                    </mat-form-field>
+                    
+                    <mat-form-field appearance="outline">
+                      <mat-label>حداکثر قیمت</mat-label>
+                      <input matInput type="number" formControlName="budgetMax">
+                    </mat-form-field>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </mat-step>
+
+          <!-- Step 2: Parenting Style Analysis -->
+          <mat-step label="تحلیل سبک فرزندپروری">
+            <div class="step-content">
+              <h3>تحلیل سبک فرزندپروری</h3>
+              <p>به سوالات زیر پاسخ دهید تا سبک فرزندپروری شما تحلیل شود</p>
+              
+              <app-parenting-style-analyzer></app-parenting-style-analyzer>
+            </div>
+          </mat-step>
+
+          <!-- Step 3: Interests and Goals -->
+          <mat-step label="علایق و اهداف">
+            <div class="step-content">
+              <h3>علایق و اهداف رشد</h3>
+              
+              <!-- علایق -->
+              <div class="interests-section">
+                <h4>علایق فرزندتان</h4>
+                <p>علایق فرزندتان را انتخاب کنید تا اسباب بازی‌های مناسب پیشنهاد شود</p>
+                
+                <form [formGroup]="interestsForm">
+                  <mat-chip-listbox formControlName="selectedInterests" multiple>
+                    <mat-chip-option *ngFor="let interest of interests" 
+                                   [value]="interest"
+                                   class="interest-chip">
+                      {{ getInterestLabel(interest) }}
+                    </mat-chip-option>
+                  </mat-chip-listbox>
+                </form>
+              </div>
+
+              <!-- اهداف رشد -->
+              <div class="goals-section">
+                <h4>اهداف رشد</h4>
+                <p>چه مهارت‌هایی را می‌خواهید در فرزندتان تقویت کنید؟</p>
+                
+                <form [formGroup]="goalsForm">
+                  <mat-chip-listbox formControlName="selectedGoals" multiple>
+                    <mat-chip-option *ngFor="let goal of growthGoals" 
+                                   [value]="goal"
+                                   class="goal-chip">
+                      {{ getGoalLabel(goal) }}
+                    </mat-chip-option>
+                  </mat-chip-listbox>
+                </form>
+              </div>
+            </div>
+          </mat-step>
+
+        </mat-stepper>
+
+        <!-- Search Button -->
+        <div class="search-actions">
+          <button mat-raised-button 
+                  color="primary" 
+                  (click)="performSmartSearch()"
+                  [disabled]="!allFormsValid()"
+                  class="search-btn">
+            <mat-icon>search</mat-icon>
+            جستجوی هوشمند
+          </button>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Products Section -->
+  <div class="products-section">
+    <div class="section-header">
+      <h2>نتایج جستجو</h2>
+      <p *ngIf="filteredProducts.length > 0">
+        {{ filteredProducts.length }} محصول یافت شد
+      </p>
+      <p *ngIf="filteredProducts.length === 0 && !loading">
+        محصولی یافت نشد. لطفاً معیارهای جستجو را تغییر دهید.
+      </p>
+    </div>
+
+    <!-- Loading -->
+    <div *ngIf="loading" class="loading-container">
+      <mat-spinner></mat-spinner>
+      <p>در حال بارگذاری محصولات...</p>
+    </div>
+
+    <!-- Products Grid -->
+    <div *ngIf="!loading" class="products-grid">
+      <app-product-card 
+        *ngFor="let product of filteredProducts"
+        [product]="product"
+        (addToCartClick)="onAddToCart($event)">
+      </app-product-card>
+    </div>
+
+    <!-- No Results -->
+    <div *ngIf="!loading && filteredProducts.length === 0" class="no-results">
+      <mat-icon class="no-results-icon">search_off</mat-icon>
+      <h3>محصولی یافت نشد</h3>
+      <p>لطفاً معیارهای جستجو را تغییر دهید یا از جستجوی هوشمند استفاده کنید</p>
+      <button mat-raised-button color="primary" (click)="toggleSmartSearch()">
+        <mat-icon>psychology</mat-icon>
+        جستجوی هوشمند
+      </button>
+    </div>
+  </div>
+</div>
