@@ -49,9 +49,40 @@
                       <mat-option value="unisex">هر دو</mat-option>
                     </mat-select>
                   </mat-form-field>
+                </div>              
+                <!-- علایق -->
+                <div class="interests-section">
+                  <h4>علایق فرزندتان</h4>
+                  <p>علایق فرزندتان را انتخاب کنید تا اسباب بازی‌های مناسب پیشنهاد شود</p>
+                  
+                  <form [formGroup]="interestsForm">
+                    <mat-chip-listbox formControlName="selectedInterests" multiple>
+                      <mat-chip-option *ngFor="let interest of interests" 
+                                     [value]="interest"
+                                     class="interest-chip">
+                        {{ interestLabels[interest] }}
+                      </mat-chip-option>
+                    </mat-chip-listbox>
+                  </form>
+                </div>
+  
+                <!-- اهداف رشد -->
+                <div class="goals-section">
+                  <h4>اهداف رشد</h4>
+                  <p>چه مهارت‌هایی را می‌خواهید در فرزندتان تقویت کنید؟</p>
+                  
+                  <form [formGroup]="goalsForm">
+                    <mat-chip-listbox formControlName="selectedGoals" multiple>
+                      <mat-chip-option *ngFor="let goal of growthGoals" 
+                                     [value]="goal"
+                                     class="goal-chip">
+                        {{ goalLabels[goal] }}
+                      </mat-chip-option>
+                    </mat-chip-listbox>
+                  </form>
                 </div>
 
-                <div class="budget-section">
+                <!-- <div class="budget-section">
                   <h4>محدوده قیمت (تومان)</h4>
                   <div class="budget-sliders">
                     <mat-form-field appearance="outline">
@@ -64,7 +95,18 @@
                       <input matInput type="number" formControlName="budgetMax">
                     </mat-form-field>
                   </div>
-                </div>
+                </div> -->
+              </div>
+
+              <!-- Step Navigation -->
+              <div class="step-actions">
+                <button mat-raised-button 
+                        color="primary" 
+                        (click)="nextStep()"
+                        class="next-btn">
+                  <mat-icon>arrow_back</mat-icon>
+                  بعدی
+                </button>
               </div>
             </form>
           </mat-step>
@@ -75,62 +117,32 @@
               <h3>تحلیل سبک فرزندپروری</h3>
               <p>به سوالات زیر پاسخ دهید تا سبک فرزندپروری شما تحلیل شود</p>
               
-              <app-parenting-style-analyzer></app-parenting-style-analyzer>
+              <app-parenting-style-analyzer (analysisResult)="onAnalysisResult($event)"></app-parenting-style-analyzer>
             </div>
-          </mat-step>
 
-          <!-- Step 3: Interests and Goals -->
-          <mat-step label="علایق و اهداف">
-            <div class="step-content">
-              <h3>علایق و اهداف رشد</h3>
+            <!-- Step Navigation -->
+            <div class="step-actions">
+              <button mat-stroked-button 
+                      (click)="previousStep()"
+                      class="previous-btn">
+                قبلی
+                <mat-icon>arrow_forward</mat-icon>
+
+              </button>
               
-              <!-- علایق -->
-              <div class="interests-section">
-                <h4>علایق فرزندتان</h4>
-                <p>علایق فرزندتان را انتخاب کنید تا اسباب بازی‌های مناسب پیشنهاد شود</p>
-                
-                <form [formGroup]="interestsForm">
-                  <mat-chip-listbox formControlName="selectedInterests" multiple>
-                    <mat-chip-option *ngFor="let interest of interests" 
-                                   [value]="interest"
-                                   class="interest-chip">
-                      {{ interestLabels[interest] }}
-                    </mat-chip-option>
-                  </mat-chip-listbox>
-                </form>
-              </div>
-
-              <!-- اهداف رشد -->
-              <div class="goals-section">
-                <h4>اهداف رشد</h4>
-                <p>چه مهارت‌هایی را می‌خواهید در فرزندتان تقویت کنید؟</p>
-                
-                <form [formGroup]="goalsForm">
-                  <mat-chip-listbox formControlName="selectedGoals" multiple>
-                    <mat-chip-option *ngFor="let goal of growthGoals" 
-                                   [value]="goal"
-                                   class="goal-chip">
-                      {{ goalLabels[goal] }}
-                    </mat-chip-option>
-                  </mat-chip-listbox>
-                </form>
-              </div>
+              <button mat-raised-button 
+                      color="primary" 
+                      (click)="performSmartSearch()"
+                      [disabled]="!isFormsValid()"
+                      class="search-btn">
+                <mat-icon>search</mat-icon>
+                جستجوی هوشمند
+              </button>
             </div>
           </mat-step>
+
 
         </mat-stepper>
-
-        <!-- Search Button -->
-        <div class="search-actions">
-          <button mat-raised-button 
-                  color="primary" 
-                  (click)="performSmartSearch()"
-                  [disabled]="!isFormsValid()"
-                  class="search-btn">
-            <mat-icon>search</mat-icon>
-            جستجوی هوشمند
-          </button>
-        </div>
       </mat-card-content>
     </mat-card>
   </div>

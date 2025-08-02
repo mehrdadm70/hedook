@@ -1,4 +1,4 @@
-import { AfterViewInit, Component } from '@angular/core';
+import { AfterViewInit, Component, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
@@ -30,6 +30,8 @@ export class ParentingStyleAnalyzerComponent implements AfterViewInit {
   result: ParentingScoreResult | null = null;
   submitted = false;
   analyzeParentingStylesName :any = analyzeParentingStylesNames;
+
+  @Output() analysisResult = new EventEmitter<ParentingScoreResult>();
   questions = [
     { key: 'Q1', label: 'وقتی فرزندتون قانونی را نقض میکند اولویتتون چیه؟' ,minLabel:'اجرای قانون' ,maxLabel:'حفظ رابطه' },
     { key: 'Q2', label: 'موقع خستگی ، واکنشتون به رفتار کودک بیشتر ناخودآگاه هست یا فکر شده؟' ,minLabel:'ناخوداگاه' ,maxLabel:'فکر شده' },
@@ -59,7 +61,20 @@ export class ParentingStyleAnalyzerComponent implements AfterViewInit {
     this.submitted = true;
     if (this.form.valid) {
       this.result = analyzeParentingStyles(this.form.value);
+      if (this.result) {
+        this.analysisResult.emit(this.result);
+      }
     }
+  }
+
+  // Public method to perform analysis from parent component
+  performAnalysis(): ParentingScoreResult | null {
+    this.submitted = true;
+    if (this.form.valid) {
+      this.result = analyzeParentingStyles(this.form.value);
+      return this.result;
+    }
+    return null;
   }
 
   reset(): void {

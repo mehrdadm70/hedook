@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal, computed } from '@angular/core';
+import { Component, OnInit, inject, signal, computed, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -13,7 +13,7 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatSliderModule } from '@angular/material/slider';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatStepperModule } from '@angular/material/stepper';
+import { MatStepperModule, MatStepper } from '@angular/material/stepper';
 import { MatRadioModule } from '@angular/material/radio';
 
 import { Product, ProductFilter } from '../../models/product.model';
@@ -29,6 +29,7 @@ import {
   ChildInterest, 
   GrowthGoal
 } from '../../models/parenting-style.model';
+import { ParentingScoreResult } from '../../services/smart-search.service';
 import { 
   CHILD_INTEREST_LABELS, 
   GROWTH_GOAL_LABELS 
@@ -74,6 +75,12 @@ export class ProductsComponent implements OnInit {
   private readonly formBuilder = inject(FormBuilder);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
+
+  @ViewChild('stepper') stepper!: MatStepper;
+  @ViewChild(ParentingStyleAnalyzerComponent) parentingAnalyzer!: ParentingStyleAnalyzerComponent;
+
+  // Store parenting analysis result
+  private parentingAnalysisResult: ParentingScoreResult | null = null;
 
   private readonly state = signal<ProductsState>({
     filteredProducts: [],
@@ -224,10 +231,45 @@ export class ProductsComponent implements OnInit {
     this.updateState({ currentStep: step });
   }
 
+  nextStep(): void {
+    if (this.stepper) {
+      this.stepper.next();
+    }
+  }
+
+  previousStep(): void {
+    if (this.stepper) {
+      this.stepper.previous();
+    }
+  }
+
+  onAnalysisResult(result: ParentingScoreResult): void {
+    this.parentingAnalysisResult = result;
+  }
+
   performSmartSearch(): void {
     if (!this.allFormsValid()) {
       return;
     }
+
+    // Perform parenting style analysis automatically
+    let analysisResult: ParentingScoreResult | null = null;
+    if (this.parentingAnalyzer) {
+      analysisResult = this.parentingAnalyzer.performAnalysis();
+      this.parentingAnalysisResult = analysisResult;
+    }
+
+    // Prepare the output object in the requested format
+    const outputData = {
+      age: this.basicInfoForm.value.childAge,
+      sex: this.basicInfoForm.value.childGender,
+      interests: this.interestsForm.value.selectedInterests,
+      goals: this.goalsForm.value.selectedGoals,
+      analyzeParentingStyles: analysisResult?.dominantStyles || []
+    };
+
+    // Print to console as requested
+    console.log('نتایج جستجوی هوشمند:', outputData);
 
     const criteria: SmartSearchCriteria = {
       childAge: this.basicInfoForm.value.childAge,

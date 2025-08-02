@@ -5,7 +5,7 @@
   </mat-card-header>
 
   <mat-card-content>
-    <form [formGroup]="form" (ngSubmit)="submit()" >
+    <form [formGroup]="form">
       <div class="questions-list" >
         <div  *ngFor="let q of questions" class="question-row">
           <label>{{q.label}}</label>
@@ -30,10 +30,6 @@
             مقدار باید بین ۱ تا ۱۰ باشد
           </div> -->
         </div>
-      </div>
-      <div class="actions">
-        <button mat-raised-button color="primary" type="submit">تحلیل سبک تربیتی</button>
-        <button mat-stroked-button type="button" (click)="reset()">ریست</button>
       </div>
     </form>
 

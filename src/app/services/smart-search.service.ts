@@ -30,12 +30,12 @@ export function analyzeParentingStyles(answers: { [key: string]: number }): Pare
   const Q6 = answers['Q6'] ?? 0;
 
   const scores: { [key: string]: number } = {
-    [analyzeParentingStylesEnum.Authoritative]: (Q2 + Q3 + Q5 + Q6) / 4,
-    [analyzeParentingStylesEnum.Mindful]: (Q1 + Q2 + Q4 + Q5) / 4,
-    [analyzeParentingStylesEnum.AttachmentBased]: (Q1 + Q4) / 2,
-    [analyzeParentingStylesEnum.Montessori]: (Q3 + Q6) / 2,
-    [analyzeParentingStylesEnum.Authoritarian]: (10 - Q1 + 10 - Q2 + 10 - Q3 + 10 - Q5) / 4,
-    [analyzeParentingStylesEnum.Permissive]: (10 - Q2 + 10 - Q4 + 10 - Q6) / 3
+    [analyzeParentingStylesNames[analyzeParentingStylesEnum.Authoritative]]: (Q2 + Q3 + Q5 + Q6) / 4,
+    [analyzeParentingStylesNames[analyzeParentingStylesEnum.Mindful]]: (Q1 + Q2 + Q4 + Q5) / 4,
+    [analyzeParentingStylesNames[analyzeParentingStylesEnum.AttachmentBased]]: (Q1 + Q4) / 2,
+    [analyzeParentingStylesNames[analyzeParentingStylesEnum.Montessori]]: (Q3 + Q6) / 2,
+    [analyzeParentingStylesNames[analyzeParentingStylesEnum.Authoritarian]]: (10 - Q1 + 10 - Q2 + 10 - Q3 + 10 - Q5) / 4,
+    [analyzeParentingStylesNames[analyzeParentingStylesEnum.Permissive]]: (10 - Q2 + 10 - Q4 + 10 - Q6) / 3
   };
 
   // مرتب‌سازی بر اساس امتیاز
