@@ -29,7 +29,7 @@
       <p>اسباب بازی‌ها را بر اساس نوع و کاربرد انتخاب کنید</p>
     </div>
     <div class="categories-grid">
-      <mat-card *ngFor="let category of categories" 
+      <mat-card *ngFor="let category of categories()" 
                 class="category-card" 
                 (click)="goToProducts(category)">
         <mat-card-content>
@@ -54,7 +54,7 @@
 
     <div *ngIf="!loading" class="products-grid">
       <app-product-card 
-        *ngFor="let product of featuredProducts"
+        *ngFor="let product of featuredProducts()"
         [product]="product"
         (addToCartClick)="onAddToCart($event)">
       </app-product-card>

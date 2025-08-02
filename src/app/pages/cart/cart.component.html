@@ -2,17 +2,27 @@
   <mat-card class="cart-card">
     <mat-card-header>
       <mat-card-title>سبد خرید شما</mat-card-title>
-      <mat-card-subtitle *ngIf="cartItems.length > 0">
-        {{ cartItems.length }} محصول در سبد خرید
+      <mat-card-subtitle *ngIf="!isEmpty()">
+        {{ totalItems() }} محصول در سبد خرید
       </mat-card-subtitle>
-      <mat-card-subtitle *ngIf="cartItems.length === 0">
+      <mat-card-subtitle *ngIf="isEmpty()">
         سبد خرید شما خالی است
       </mat-card-subtitle>
     </mat-card-header>
 
     <mat-card-content>
-      <div *ngIf="cartItems.length > 0; else emptyCart">
-        <table mat-table [dataSource]="cartItems" class="cart-table">
+      <!-- Error Message -->
+      <div *ngIf="cartError()" class="error-container">
+        <mat-icon class="error-icon">error</mat-icon>
+        <p class="error-message">{{ cartError() }}</p>
+        <button mat-button color="primary" (click)="clearError()">
+          <mat-icon>close</mat-icon>
+          بستن
+        </button>
+      </div>
+
+      <div *ngIf="!isEmpty(); else emptyCart">
+        <table mat-table [dataSource]="cartItems()" class="cart-table">
           <!-- تصویر -->
           <ng-container matColumnDef="image">
             <th mat-header-cell *matHeaderCellDef></th>
@@ -79,11 +89,11 @@
         <div class="cart-summary">
           <div class="summary-row">
             <span>جمع کل:</span>
-            <span class="total-price">{{ formatPrice(total) }}</span>
+            <span class="total-price">{{ formatPrice(totalPrice()) }}</span>
           </div>
           <div class="summary-actions">
             <button mat-stroked-button color="warn" (click)="clearCart()">خالی کردن سبد خرید</button>
-            <button mat-raised-button color="primary" (click)="goToCheckout()" [disabled]="cartItems.length === 0">تکمیل خرید</button>
+            <button mat-raised-button color="primary" (click)="goToCheckout()" [disabled]="isEmpty()">تکمیل خرید</button>
           </div>
         </div>
       </div>

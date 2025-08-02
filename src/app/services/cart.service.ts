@@ -1,98 +1,203 @@
-import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { Injectable, signal, computed, effect, inject } from '@angular/core';
 import { Product } from '../models/product.model';
 
 export interface CartItem {
-  product: Product;
-  quantity: number;
+  readonly product: Product;
+  readonly quantity: number;
+}
+
+interface CartState {
+  readonly items: ReadonlyArray<CartItem>;
+  readonly loading: boolean;
+  readonly error: string | null;
 }
 
 @Injectable({
   providedIn: 'root'
 })
 export class CartService {
-  private cartItems = new BehaviorSubject<CartItem[]>([]);
+  private readonly STORAGE_KEY = 'hedook_cart';
+
+  private readonly state = signal<CartState>({
+    items: [],
+    loading: false,
+    error: null
+  });
+
+  readonly items = computed(() => this.state().items);
+  readonly loading = computed(() => this.state().loading);
+  readonly error = computed(() => this.state().error);
+  
+  readonly totalPrice = computed(() => 
+    this.items().reduce((sum, item) => sum + (item.product.price * item.quantity), 0)
+  );
+  
+  readonly totalItems = computed(() => 
+    this.items().reduce((sum, item) => sum + item.quantity, 0)
+  );
+  
+  readonly isEmpty = computed(() => this.items().length === 0);
+
+  readonly itemsWithSubtotal = computed(() => 
+    this.items().map(item => ({
+      ...item,
+      subtotal: item.product.price * item.quantity
+    }))
+  );
 
   constructor() {
-    // بارگذاری سبد خرید از localStorage
     this.loadCartFromStorage();
-  }
-
-  getCartItems(): Observable<CartItem[]> {
-    return this.cartItems.asObservable();
-  }
-
-  getCartTotal(): Observable<number> {
-    return new Observable(observer => {
-      this.cartItems.subscribe(items => {
-        const total = items.reduce((sum, item) => 
-          sum + (item.product.price * item.quantity), 0);
-        observer.next(total);
-      });
-    });
-  }
-
-  getCartItemCount(): Observable<number> {
-    return new Observable(observer => {
-      this.cartItems.subscribe(items => {
-        const count = items.reduce((sum, item) => sum + item.quantity, 0);
-        observer.next(count);
-      });
+    
+    // Auto-save to localStorage when cart changes
+    effect(() => {
+      const items = this.items();
+      this.saveCartToStorage(items);
     });
   }
 
   addToCart(product: Product, quantity: number = 1): void {
-    const currentItems = this.cartItems.value;
-    const existingItem = currentItems.find(item => item.product.id === product.id);
-
-    if (existingItem) {
-      existingItem.quantity += quantity;
-      this.updateCart([...currentItems]);
-    } else {
-      this.updateCart([...currentItems, { product, quantity }]);
+    if (quantity <= 0) {
+      this.updateState({ error: 'تعداد باید بیشتر از صفر باشد' });
+      return;
     }
+
+    if (product.stock < quantity) {
+      this.updateState({ error: 'موجودی کافی نیست' });
+      return;
+    }
+
+    const currentItems = this.items();
+    const existingItemIndex = currentItems.findIndex(item => item.product.id === product.id);
+
+    let updatedItems: ReadonlyArray<CartItem>;
+
+    if (existingItemIndex >= 0) {
+      const existingItem = currentItems[existingItemIndex];
+      const newQuantity = existingItem.quantity + quantity;
+      
+      if (newQuantity > product.stock) {
+        this.updateState({ error: 'تعداد درخواستی بیش از موجودی است' });
+        return;
+      }
+
+      updatedItems = currentItems.map((item, index) => 
+        index === existingItemIndex 
+          ? { ...item, quantity: newQuantity }
+          : item
+      );
+    } else {
+      updatedItems = [...currentItems, { product, quantity }];
+    }
+
+    this.updateState({ 
+      items: updatedItems, 
+      error: null 
+    });
   }
 
   removeFromCart(productId: string): void {
-    const currentItems = this.cartItems.value;
-    const updatedItems = currentItems.filter(item => item.product.id !== productId);
-    this.updateCart(updatedItems);
+    const updatedItems = this.items().filter(item => item.product.id !== productId);
+    this.updateState({ 
+      items: updatedItems, 
+      error: null 
+    });
   }
 
   updateQuantity(productId: string, quantity: number): void {
-    const currentItems = this.cartItems.value;
-    const updatedItems = currentItems.map(item => 
-      item.product.id === productId 
-        ? { ...item, quantity: Math.max(0, quantity) }
-        : item
-    ).filter(item => item.quantity > 0);
+    if (quantity < 0) {
+      this.updateState({ error: 'تعداد نمی‌تواند منفی باشد' });
+      return;
+    }
+
+    if (quantity === 0) {
+      this.removeFromCart(productId);
+      return;
+    }
+
+    const currentItems = this.items();
+    const item = currentItems.find(item => item.product.id === productId);
     
-    this.updateCart(updatedItems);
+    if (!item) {
+      this.updateState({ error: 'محصول در سبد خرید یافت نشد' });
+      return;
+    }
+
+    if (quantity > item.product.stock) {
+      this.updateState({ error: 'تعداد درخواستی بیش از موجودی است' });
+      return;
+    }
+
+    const updatedItems = currentItems.map(cartItem => 
+      cartItem.product.id === productId 
+        ? { ...cartItem, quantity }
+        : cartItem
+    );
+    
+    this.updateState({ 
+      items: updatedItems, 
+      error: null 
+    });
   }
 
   clearCart(): void {
-    this.updateCart([]);
+    this.updateState({ 
+      items: [], 
+      error: null 
+    });
   }
 
-  private updateCart(items: CartItem[]): void {
-    this.cartItems.next(items);
-    this.saveCartToStorage(items);
+  getItemQuantity(productId: string): number {
+    const item = this.items().find(item => item.product.id === productId);
+    return item?.quantity ?? 0;
   }
 
-  private saveCartToStorage(items: CartItem[]): void {
-    localStorage.setItem('cart', JSON.stringify(items));
+  isInCart(productId: string): boolean {
+    return this.items().some(item => item.product.id === productId);
+  }
+
+  clearError(): void {
+    this.updateState({ error: null });
+  }
+
+  private updateState(partial: Partial<CartState>): void {
+    this.state.update(current => ({ ...current, ...partial }));
+  }
+
+  private saveCartToStorage(items: ReadonlyArray<CartItem>): void {
+    try {
+      localStorage.setItem(this.STORAGE_KEY, JSON.stringify(items));
+    } catch (error) {
+      console.error('خطا در ذخیره سبد خرید:', error);
+      this.updateState({ error: 'خطا در ذخیره سبد خرید' });
+    }
   }
 
   private loadCartFromStorage(): void {
-    const savedCart = localStorage.getItem('cart');
-    if (savedCart) {
-      try {
-        const items = JSON.parse(savedCart);
-        this.cartItems.next(items);
-      } catch (error) {
-        console.error('خطا در بارگذاری سبد خرید:', error);
-        this.cartItems.next([]);
+    try {
+      const savedCart = localStorage.getItem(this.STORAGE_KEY);
+      if (savedCart) {
+        const items = JSON.parse(savedCart) as CartItem[];
+        // Validate the loaded data
+        const validItems = items.filter(item => 
+          item.product && 
+          item.product.id && 
+          typeof item.quantity === 'number' && 
+          item.quantity > 0
+        );
+        
+        this.updateState({ 
+          items: validItems, 
+          loading: false, 
+          error: null 
+        });
       }
+    } catch (error) {
+      console.error('خطا در بارگذاری سبد خرید:', error);
+      this.updateState({ 
+        items: [], 
+        loading: false, 
+        error: 'خطا در بارگذاری سبد خرید' 
+      });
     }
   }
 } 

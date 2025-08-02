@@ -1,13 +1,13 @@
 <mat-card class="product-card" (click)="onProductClick()">
   <!-- تصویر محصول -->
   <div class="product-image-container">
-    <img [src]="product.images[0] || 'assets/images/placeholder.jpg'" 
-         [alt]="product.name" 
+    <img [src]="product().images[0] || 'assets/images/placeholder.jpg'" 
+         [alt]="product().name" 
          class="product-image">
     
     <!-- نشان تخفیف -->
-    <div *ngIf="getDiscountPercentage() > 0" class="discount-badge">
-      {{ getDiscountPercentage() }}% تخفیف
+    <div *ngIf="discountPercentage() > 0" class="discount-badge">
+      {{ discountPercentage() }}% تخفیف
     </div>
     
     <!-- دکمه افزودن به سبد خرید -->
@@ -15,7 +15,7 @@
             color="primary" 
             class="add-to-cart-btn"
             (click)="onAddToCart($event)"
-            [disabled]="product.stock === 0">
+            [disabled]="product().stock === 0">
       <mat-icon>add_shopping_cart</mat-icon>
     </button>
   </div>
@@ -23,14 +23,14 @@
   <!-- محتوای کارت -->
   <mat-card-content class="product-content">
     <!-- نام محصول -->
-    <h3 class="product-name">{{ product.name }}</h3>
+    <h3 class="product-name">{{ product().name }}</h3>
     
     <!-- برند -->
-    <p class="product-brand">{{ product.brand }}</p>
+    <p class="product-brand">{{ product().brand }}</p>
     
     <!-- مهارت‌ها -->
     <div class="skills-container">
-      <mat-chip *ngFor="let skill of product.skills.slice(0, 3)" 
+      <mat-chip *ngFor="let skill of product().skills.slice(0, 3)" 
                 class="skill-chip">
         {{ skill }}
       </mat-chip>
@@ -39,36 +39,35 @@
     <!-- محدوده سنی -->
     <p class="age-range">
       <mat-icon class="age-icon">child_care</mat-icon>
-      {{ product.ageRange.min }}-{{ product.ageRange.max }} سال
+      {{ product().ageRange.min }}-{{ product().ageRange.max }} سال
     </p>
     
     <!-- امتیاز -->
     <div class="rating-container">
       <div class="stars">
-        <mat-icon *ngFor="let star of getRatingStars()" 
-                  [class.filled]="isStarFilled(star)"
+        <mat-icon *ngFor="let star of ratingStars()" 
+                  [class.filled]="star.filled"
                   class="star-icon">
-          {{ isStarFilled(star) ? 'star' : 'star_border' }}
+          {{ star.filled ? 'star' : 'star_border' }}
         </mat-icon>
       </div>
-      <span class="rating-text">{{ product.rating }}/5</span>
+      <span class="rating-text">{{ product().rating }}/5</span>
     </div>
     
     <!-- قیمت -->
     <div class="price-container">
-      <span class="current-price">{{ formatPrice(product.price) }}</span>
-      <span *ngIf="product.originalPrice && product.originalPrice > product.price" 
-            class="original-price">
-        {{ formatPrice(product.originalPrice) }}
+      <span class="current-price">{{ formattedPrice() }}</span>
+      <span *ngIf="hasDiscount()" class="original-price">
+        {{ formattedOriginalPrice() }}
       </span>
     </div>
     
     <!-- موجودی -->
-    <p class="stock-info" [class.out-of-stock]="product.stock === 0">
+    <p class="stock-info" [class.out-of-stock]="product().stock === 0">
       <mat-icon class="stock-icon">
-        {{ product.stock > 0 ? 'inventory' : 'inventory_2' }}
+        {{ product().stock > 0 ? 'inventory' : 'inventory_2' }}
       </mat-icon>
-      {{ product.stock > 0 ? 'موجود در انبار' : 'ناموجود' }}
+      {{ product().stock > 0 ? 'موجود در انبار' : 'ناموجود' }}
     </p>
   </mat-card-content>
 </mat-card>

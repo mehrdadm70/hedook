@@ -11,14 +11,14 @@
                 (click)="toggleSmartSearch()"
                 class="smart-search-btn">
           <mat-icon>psychology</mat-icon>
-          {{ showSmartSearch ? 'بستن جستجوی هوشمند' : 'شروع جستجوی هوشمند' }}
+          {{ showSmartSearch() ? 'بستن جستجوی هوشمند' : 'شروع جستجوی هوشمند' }}
         </button>
       </div>
     </div>
   </div>
 
   <!-- Smart Search Section -->
-  <div *ngIf="showSmartSearch" class="smart-search-section">
+  <div *ngIf="showSmartSearch()" class="smart-search-section">
     <mat-card class="search-card">
       <mat-card-header>
         <mat-card-title>جستجوی هوشمند</mat-card-title>
@@ -94,7 +94,7 @@
                     <mat-chip-option *ngFor="let interest of interests" 
                                    [value]="interest"
                                    class="interest-chip">
-                      {{ getInterestLabel(interest) }}
+                      {{ interestLabels[interest] }}
                     </mat-chip-option>
                   </mat-chip-listbox>
                 </form>
@@ -110,7 +110,7 @@
                     <mat-chip-option *ngFor="let goal of growthGoals" 
                                    [value]="goal"
                                    class="goal-chip">
-                      {{ getGoalLabel(goal) }}
+                      {{ goalLabels[goal] }}
                     </mat-chip-option>
                   </mat-chip-listbox>
                 </form>
@@ -125,7 +125,7 @@
           <button mat-raised-button 
                   color="primary" 
                   (click)="performSmartSearch()"
-                  [disabled]="!allFormsValid()"
+                  [disabled]="!isFormsValid()"
                   class="search-btn">
             <mat-icon>search</mat-icon>
             جستجوی هوشمند
@@ -139,31 +139,31 @@
   <div class="products-section">
     <div class="section-header">
       <h2>نتایج جستجو</h2>
-      <p *ngIf="filteredProducts.length > 0">
-        {{ filteredProducts.length }} محصول یافت شد
+      <p *ngIf="filteredProducts().length > 0">
+        {{ filteredProducts().length }} محصول یافت شد
       </p>
-      <p *ngIf="filteredProducts.length === 0 && !loading">
+      <p *ngIf="filteredProducts().length === 0 && !loading()">
         محصولی یافت نشد. لطفاً معیارهای جستجو را تغییر دهید.
       </p>
     </div>
 
     <!-- Loading -->
-    <div *ngIf="loading" class="loading-container">
+    <div *ngIf="loading()" class="loading-container">
       <mat-spinner></mat-spinner>
       <p>در حال بارگذاری محصولات...</p>
     </div>
 
     <!-- Products Grid -->
-    <div *ngIf="!loading" class="products-grid">
+    <div *ngIf="!loading()" class="products-grid">
       <app-product-card 
-        *ngFor="let product of filteredProducts"
+        *ngFor="let product of filteredProducts()"
         [product]="product"
         (addToCartClick)="onAddToCart($event)">
       </app-product-card>
     </div>
 
     <!-- No Results -->
-    <div *ngIf="!loading && filteredProducts.length === 0" class="no-results">
+    <div *ngIf="!loading() && filteredProducts().length === 0" class="no-results">
       <mat-icon class="no-results-icon">search_off</mat-icon>
       <h3>محصولی یافت نشد</h3>
       <p>لطفاً معیارهای جستجو را تغییر دهید یا از جستجوی هوشمند استفاده کنید</p>

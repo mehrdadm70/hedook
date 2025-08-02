@@ -2,7 +2,7 @@
   <div class="header-content">
     <!-- لوگو و نام سایت -->
     <div class="logo-section">
-      <a (click)="goToHome()" class="logo-link">
+      <a (click)="goToHome()" class="logo-link" role="button" tabindex="0">
         <mat-icon class="logo-icon">toys</mat-icon>
         <span class="logo-text">هدوک</span>
       </a>
@@ -11,15 +11,27 @@
     <!-- جستجو -->
     <div class="search-section">
       <mat-form-field appearance="outline" class="search-field">
-        <mat-label>جستجوی اسباب بازی...</mat-label>
-        <input matInput [(ngModel)]="searchQuery" (keyup.enter)="onSearch()" placeholder="نام اسباب بازی، مهارت یا برند">
-        <mat-icon matSuffix>search</mat-icon>
+        <mat-label>{{ searchLabel }}</mat-label>
+        <input 
+          matInput 
+          [value]="searchQuery()" 
+          (input)="onSearchInput($any($event.target).value)"
+          (keyup)="onSearchKeyUp($event)" 
+          [placeholder]="searchPlaceholder"
+          aria-label="جستجوی محصولات">
+        <button 
+          matSuffix 
+          mat-icon-button 
+          (click)="onSearch()"
+          aria-label="جستجو">
+          <mat-icon>search</mat-icon>
+        </button>
       </mat-form-field>
     </div>
 
     <!-- منوی ناوبری -->
-    <nav class="nav-section">
-      <a mat-button routerLink="/" routerLinkActive="active">خانه</a>
+    <nav class="nav-section" role="navigation">
+      <a mat-button routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">خانه</a>
       <a mat-button routerLink="/products" routerLinkActive="active">محصولات</a>
       <a mat-button routerLink="/about" routerLinkActive="active">درباره ما</a>
       <a mat-button routerLink="/contact" routerLinkActive="active">تماس</a>
@@ -27,8 +39,17 @@
 
     <!-- سبد خرید و ورود -->
     <div class="actions-section">
-      <button mat-icon-button (click)="goToCart()" class="cart-button">
-        <mat-icon [matBadge]="cartItemCount" matBadgeColor="accent">shopping_cart</mat-icon>
+      <button 
+        mat-icon-button 
+        (click)="goToCart()" 
+        class="cart-button"
+        [attr.aria-label]="'سبد خرید - ' + cartItemCount() + ' محصول'">
+        <mat-icon 
+          [matBadge]="cartItemCount()" 
+          [matBadgeHidden]="!hasItemsInCart()"
+          matBadgeColor="accent">
+          shopping_cart
+        </mat-icon>
       </button>
       
       <button mat-button routerLink="/login" class="login-button">
