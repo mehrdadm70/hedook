@@ -6,7 +6,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-// import { MatSnackBar } from '@angular/material/snackbar';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 import { Product } from '../../models/product.model';
 import { ProductService } from '../../services/product.service';
@@ -38,6 +38,7 @@ export class HomeComponent implements OnInit {
   private readonly productService = inject(ProductService);
   private readonly cartService = inject(CartService);
   private readonly router = inject(Router);
+  private readonly snackBar = inject(MatSnackBar);
 
   private readonly state = signal<HomeState>({
     featuredProducts: [],
@@ -107,9 +108,18 @@ export class HomeComponent implements OnInit {
   onAddToCart(product: Product): void {
     try {
       this.cartService.addToCart(product, 1);
-      console.log(`${product.name} به سبد خرید اضافه شد`);
+      this.snackBar.open(`${product.name} به سبد خرید اضافه شد`, 'بستن', {
+        duration: 3000,
+        horizontalPosition: 'center',
+        verticalPosition: 'top'
+      });
     } catch (error: unknown) {
       console.error('خطا در اضافه کردن به سبد خرید:', error);
+      this.snackBar.open('خطا در اضافه کردن به سبد خرید', 'بستن', {
+        duration: 3000,
+        horizontalPosition: 'center',
+        verticalPosition: 'top'
+      });
     }
   }
 

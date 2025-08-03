@@ -15,6 +15,7 @@ import { MatExpansionModule } from '@angular/material/expansion';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatStepperModule, MatStepper } from '@angular/material/stepper';
 import { MatRadioModule } from '@angular/material/radio';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 import { Product, ProductFilter } from '../../models/product.model';
 import { ProductService } from '../../services/product.service';
@@ -75,6 +76,7 @@ export class ProductsComponent implements OnInit {
   private readonly formBuilder = inject(FormBuilder);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
+  private readonly snackBar = inject(MatSnackBar);
 
   @ViewChild('stepper') stepper!: MatStepper;
   @ViewChild(ParentingStyleAnalyzerComponent) parentingAnalyzer!: ParentingStyleAnalyzerComponent;
@@ -310,9 +312,18 @@ export class ProductsComponent implements OnInit {
   onAddToCart(product: Product): void {
     try {
       this.cartService.addToCart(product, 1);
-      console.log(`${product.name} به سبد خرید اضافه شد`);
+      this.snackBar.open(`${product.name} به سبد خرید اضافه شد`, 'بستن', {
+        duration: 3000,
+        horizontalPosition: 'center',
+        verticalPosition: 'top'
+      });
     } catch (error: unknown) {
       console.error('خطا در اضافه کردن به سبد خرید:', error);
+      this.snackBar.open('خطا در اضافه کردن به سبد خرید', 'بستن', {
+        duration: 3000,
+        horizontalPosition: 'center',
+        verticalPosition: 'top'
+      });
     }
   }
 

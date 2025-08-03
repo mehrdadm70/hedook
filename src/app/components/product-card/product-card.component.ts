@@ -95,12 +95,8 @@ export class ProductCardComponent {
       return;
     }
 
-    try {
-      this.cartService.addToCart(product, 1);
-      this.addToCartClick.emit(product);
-    } catch (error: unknown) {
-      console.error('خطا در اضافه کردن به سبد خرید:', error);
-    }
+    // فقط emit کنیم، parent component اضافه کردن به سبد خرید را انجام دهد
+    this.addToCartClick.emit(product);
   }
 
   onProductClick(event?: Event): void {
