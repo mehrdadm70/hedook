@@ -1,0 +1,251 @@
+<div class="products-container">
+  <!-- Header -->
+  <div class="products-header">
+    <div class="header-content">
+      <h1 class="page-title">مدیریت محصولات</h1>
+      <div class="header-actions">
+        <button mat-raised-button color="primary" (click)="createProduct()">
+          <mat-icon>add</mat-icon>
+          افزودن محصول
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <mat-card class="filters-card">
+    <mat-card-content>
+      <div class="filters-row">
+        <!-- Search -->
+        <mat-form-field appearance="outline" class="search-field">
+          <mat-label>جستجو</mat-label>
+          <input 
+            matInput 
+            [value]="searchQuery()" 
+            (input)="searchQuery.set($any($event.target).value); applyFilters()"
+            placeholder="نام، توضیحات یا برند محصول">
+          <mat-icon matSuffix>search</mat-icon>
+        </mat-form-field>
+
+        <!-- Category Filter -->
+        <mat-form-field appearance="outline" class="filter-field">
+          <mat-label>دسته‌بندی</mat-label>
+          <mat-select 
+            [value]="selectedCategory()" 
+            (selectionChange)="selectedCategory.set($event.value); applyFilters()">
+            <mat-option value="">همه دسته‌ها</mat-option>
+            @for (category of categories(); track category) {
+              <mat-option [value]="category">{{ category }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <!-- Status Filter -->
+        <mat-form-field appearance="outline" class="filter-field">
+          <mat-label>وضعیت</mat-label>
+          <mat-select 
+            [value]="selectedStatus()" 
+            (selectionChange)="selectedStatus.set($event.value); applyFilters()">
+            @for (status of statusOptions; track status.value) {
+              <mat-option [value]="status.value">{{ status.label }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <!-- Clear Filters -->
+        <button mat-stroked-button (click)="clearFilters()" class="clear-filters-btn">
+          <mat-icon>clear</mat-icon>
+          پاک کردن فیلترها
+        </button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Loading State -->
+  @if (loading()) {
+    <div class="loading-container">
+      <mat-spinner></mat-spinner>
+      <p>در حال بارگذاری محصولات...</p>
+    </div>
+  }
+
+  <!-- Error State -->
+  @else if (error()) {
+    <mat-card class="error-card">
+      <mat-card-content>
+        <div class="error-content">
+          <mat-icon class="error-icon">error</mat-icon>
+          <h3>خطا در بارگذاری محصولات</h3>
+          <p>{{ error() }}</p>
+          <button mat-raised-button color="primary" (click)="retryLoad()">
+            تلاش مجدد
+          </button>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  }
+
+  <!-- Products Table -->
+  @else if (hasFilteredProducts()) {
+    <mat-card class="table-card">
+      <mat-card-content>
+        <div class="table-header">
+          <h3>لیست محصولات</h3>
+          <span class="results-count">{{ formatNumber(filteredProducts().length) }} محصول</span>
+        </div>
+
+        <div class="table-container">
+          <mat-table [dataSource]="filteredProducts()" class="products-table">
+            <!-- Image Column -->
+            <ng-container matColumnDef="image">
+              <mat-header-cell *matHeaderCellDef>تصویر</mat-header-cell>
+              <mat-cell *matCellDef="let product">
+                <div class="product-image">
+                  @if (product.images.length > 0) {
+                    <img [src]="product.images[0]" [alt]="product.name" loading="lazy">
+                  } @else {
+                    <div class="no-image">
+                      <mat-icon>image</mat-icon>
+                    </div>
+                  }
+                </div>
+              </mat-cell>
+            </ng-container>
+
+            <!-- Name Column -->
+            <ng-container matColumnDef="name">
+              <mat-header-cell *matHeaderCellDef>نام محصول</mat-header-cell>
+              <mat-cell *matCellDef="let product">
+                <div class="product-name">
+                  <h4>{{ product.name }}</h4>
+                  <p class="product-brand">{{ product.brand }}</p>
+                </div>
+              </mat-cell>
+            </ng-container>
+
+            <!-- Category Column -->
+            <ng-container matColumnDef="category">
+              <mat-header-cell *matHeaderCellDef>دسته‌بندی</mat-header-cell>
+              <mat-cell *matCellDef="let product">
+                <mat-chip color="primary">{{ product.category }}</mat-chip>
+              </mat-cell>
+            </ng-container>
+
+            <!-- Price Column -->
+            <ng-container matColumnDef="price">
+              <mat-header-cell *matHeaderCellDef>قیمت</mat-header-cell>
+              <mat-cell *matCellDef="let product">
+                <div class="price-info">
+                  <span class="current-price">{{ formatCurrency(product.price) }}</span>
+                  @if (product.originalPrice && product.originalPrice > product.price) {
+                    <span class="original-price">{{ formatCurrency(product.originalPrice) }}</span>
+                  }
+                </div>
+              </mat-cell>
+            </ng-container>
+
+            <!-- Stock Column -->
+            <ng-container matColumnDef="stock">
+              <mat-header-cell *matHeaderCellDef>موجودی</mat-header-cell>
+              <mat-cell *matCellDef="let product">
+                <div class="stock-info">
+                  <span class="stock-number">{{ formatNumber(product.stock) }}</span>
+                  <mat-chip [color]="getStockStatus(product.stock).color" class="stock-status">
+                    {{ getStockStatus(product.stock).label }}
+                  </mat-chip>
+                </div>
+              </mat-cell>
+            </ng-container>
+
+            <!-- Rating Column -->
+            <ng-container matColumnDef="rating">
+              <mat-header-cell *matHeaderCellDef>امتیاز</mat-header-cell>
+              <mat-cell *matCellDef="let product">
+                <div class="rating-info">
+                  <mat-icon class="star-icon">star</mat-icon>
+                  <span>{{ product.rating.toFixed(1) }}</span>
+                </div>
+              </mat-cell>
+            </ng-container>
+
+            <!-- Status Column -->
+            <ng-container matColumnDef="status">
+              <mat-header-cell *matHeaderCellDef>وضعیت</mat-header-cell>
+              <mat-cell *matCellDef="let product">
+                <mat-chip [color]="product.isActive ? 'primary' : 'warn'">
+                  {{ product.isActive ? 'فعال' : 'غیرفعال' }}
+                </mat-chip>
+              </mat-cell>
+            </ng-container>
+
+            <!-- Actions Column -->
+            <ng-container matColumnDef="actions">
+              <mat-header-cell *matHeaderCellDef>عملیات</mat-header-cell>
+              <mat-cell *matCellDef="let product">
+                <div class="actions-buttons">
+                  <button 
+                    mat-icon-button 
+                    (click)="viewProduct(product)" 
+                    matTooltip="مشاهده"
+                    color="primary">
+                    <mat-icon>visibility</mat-icon>
+                  </button>
+                  
+                  <button 
+                    mat-icon-button 
+                    (click)="editProduct(product)" 
+                    matTooltip="ویرایش"
+                    color="accent">
+                    <mat-icon>edit</mat-icon>
+                  </button>
+                  
+                  <button 
+                    mat-icon-button 
+                    (click)="toggleProductStatus(product)" 
+                    matTooltip="وضعیت"
+                    [color]="product.isActive ? 'warn' : 'primary'">
+                    <mat-icon>{{ product.isActive ? 'visibility_off' : 'visibility' }}</mat-icon>
+                  </button>
+                  
+                  <button 
+                    mat-icon-button 
+                    (click)="deleteProduct(product)" 
+                    matTooltip="حذف"
+                    color="warn">
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                </div>
+              </mat-cell>
+            </ng-container>
+
+            <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+            <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+          </mat-table>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  }
+
+  <!-- No Results -->
+  @else {
+    <mat-card class="no-results-card">
+      <mat-card-content>
+        <div class="no-results-content">
+          <mat-icon class="no-results-icon">inventory_2</mat-icon>
+          <h3>محصولی یافت نشد</h3>
+          <p>با فیلترهای انتخابی هیچ محصولی یافت نشد.</p>
+          <div class="no-results-actions">
+            <button mat-raised-button color="primary" (click)="createProduct()">
+              <mat-icon>add</mat-icon>
+              افزودن محصول جدید
+            </button>
+            <button mat-stroked-button (click)="clearFilters()">
+              <mat-icon>clear</mat-icon>
+              پاک کردن فیلترها
+            </button>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  }
+</div>

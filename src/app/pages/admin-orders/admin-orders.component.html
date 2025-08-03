@@ -1,0 +1,192 @@
+<div class="orders-container">
+  <!-- Header -->
+  <div class="orders-header">
+    <div class="header-content">
+      <h1 class="page-title">مدیریت سفارشات</h1>
+      <div class="header-stats">
+        <span class="total-orders">{{ filteredOrders().length }} سفارش</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <mat-card class="filters-card">
+    <mat-card-content>
+      <div class="filters-row">
+        <!-- Status Filter -->
+        <mat-form-field appearance="outline" class="filter-field">
+          <mat-label>وضعیت سفارش</mat-label>
+          <mat-select 
+            [value]="selectedStatus()" 
+            (selectionChange)="selectedStatus.set($event.value); applyStatusFilter()">
+            @for (status of statusOptions; track status.value) {
+              <mat-option [value]="status.value">{{ status.label }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <!-- Clear Filters -->
+        <button mat-stroked-button (click)="clearFilters()" class="clear-filters-btn">
+          <mat-icon>clear</mat-icon>
+          پاک کردن فیلترها
+        </button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Loading State -->
+  @if (loading()) {
+    <div class="loading-container">
+      <mat-spinner></mat-spinner>
+      <p>در حال بارگذاری سفارشات...</p>
+    </div>
+  }
+
+  <!-- Error State -->
+  @else if (error()) {
+    <mat-card class="error-card">
+      <mat-card-content>
+        <div class="error-content">
+          <mat-icon class="error-icon">error</mat-icon>
+          <h3>خطا در بارگذاری سفارشات</h3>
+          <p>{{ error() }}</p>
+          <button mat-raised-button color="primary" (click)="retryLoad()">
+            تلاش مجدد
+          </button>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  }
+
+  <!-- Orders Table -->
+  @else if (hasFilteredOrders()) {
+    <mat-card class="table-card">
+      <mat-card-content>
+        <div class="table-header">
+          <h3>لیست سفارشات</h3>
+        </div>
+
+        <div class="table-container">
+          <mat-table [dataSource]="filteredOrders()" class="orders-table">
+            <!-- Order ID Column -->
+            <ng-container matColumnDef="orderId">
+              <mat-header-cell *matHeaderCellDef>شماره سفارش</mat-header-cell>
+              <mat-cell *matCellDef="let order">
+                <div class="order-id">
+                  <strong>{{ order.id }}</strong>
+                </div>
+              </mat-cell>
+            </ng-container>
+
+            <!-- User ID Column -->
+            <ng-container matColumnDef="userId">
+              <mat-header-cell *matHeaderCellDef>کاربر</mat-header-cell>
+              <mat-cell *matCellDef="let order">{{ order.userId }}</mat-cell>
+            </ng-container>
+
+            <!-- Total Amount Column -->
+            <ng-container matColumnDef="totalAmount">
+              <mat-header-cell *matHeaderCellDef>مبلغ کل</mat-header-cell>
+              <mat-cell *matCellDef="let order">
+                <span class="total-amount">{{ formatCurrency(order.totalAmount) }}</span>
+              </mat-cell>
+            </ng-container>
+
+            <!-- Status Column -->
+            <ng-container matColumnDef="status">
+              <mat-header-cell *matHeaderCellDef>وضعیت</mat-header-cell>
+              <mat-cell *matCellDef="let order">
+                <mat-chip [color]="getStatusColor(order.status)">
+                  {{ getStatusLabel(order.status) }}
+                </mat-chip>
+              </mat-cell>
+            </ng-container>
+
+            <!-- Created At Column -->
+            <ng-container matColumnDef="createdAt">
+              <mat-header-cell *matHeaderCellDef>تاریخ سفارش</mat-header-cell>
+              <mat-cell *matCellDef="let order">
+                {{ order.createdAt | date:'short':'fa-IR' }}
+              </mat-cell>
+            </ng-container>
+
+            <!-- Actions Column -->
+            <ng-container matColumnDef="actions">
+              <mat-header-cell *matHeaderCellDef>عملیات</mat-header-cell>
+              <mat-cell *matCellDef="let order">
+                <div class="actions-buttons">
+                  <!-- Status Update Buttons -->
+                  @if (order.status === 'pending') {
+                    <button 
+                      mat-icon-button 
+                      (click)="updateOrderStatus(order, 'confirmed')" 
+                      matTooltip="تایید سفارش"
+                      color="primary">
+                      <mat-icon>check_circle</mat-icon>
+                    </button>
+                    
+                    <button 
+                      mat-icon-button 
+                      (click)="updateOrderStatus(order, 'cancelled')" 
+                      matTooltip="لغو سفارش"
+                      color="warn">
+                      <mat-icon>cancel</mat-icon>
+                    </button>
+                  }
+                  
+                  @if (order.status === 'confirmed') {
+                    <button 
+                      mat-icon-button 
+                      (click)="updateOrderStatus(order, 'shipped')" 
+                      matTooltip="ارسال سفارش"
+                      color="accent">
+                      <mat-icon>local_shipping</mat-icon>
+                    </button>
+                  }
+                  
+                  @if (order.status === 'shipped') {
+                    <button 
+                      mat-icon-button 
+                      (click)="updateOrderStatus(order, 'delivered')" 
+                      matTooltip="تحویل سفارش"
+                      color="primary">
+                      <mat-icon>done_all</mat-icon>
+                    </button>
+                  }
+                  
+                  <!-- View Details Button -->
+                  <button 
+                    mat-icon-button 
+                    matTooltip="جزئیات سفارش"
+                    color="primary">
+                    <mat-icon>visibility</mat-icon>
+                  </button>
+                </div>
+              </mat-cell>
+            </ng-container>
+
+            <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+            <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+          </mat-table>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  }
+
+  <!-- No Results -->
+  @else {
+    <mat-card class="no-results-card">
+      <mat-card-content>
+        <div class="no-results-content">
+          <mat-icon class="no-results-icon">shopping_cart</mat-icon>
+          <h3>سفارشی یافت نشد</h3>
+          <p>با فیلترهای انتخابی هیچ سفارشی یافت نشد.</p>
+          <button mat-stroked-button (click)="clearFilters()">
+            <mat-icon>clear</mat-icon>
+            پاک کردن فیلترها
+          </button>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  }
+</div>

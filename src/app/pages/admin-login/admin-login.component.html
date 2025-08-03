@@ -1,0 +1,108 @@
+<div class="login-container">
+  <div class="login-background"></div>
+  
+  <div class="login-content">
+    <!-- Header -->
+    <div class="login-header">
+      <button mat-icon-button (click)="goToMainSite()" class="back-button" aria-label="بازگشت به سایت">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      <h1 class="login-title">پنل مدیریت هدوک</h1>
+    </div>
+
+    <!-- Login Card -->
+    <mat-card class="login-card">
+      <mat-card-header class="card-header">
+        <div class="logo-section">
+          <mat-icon class="logo-icon">admin_panel_settings</mat-icon>
+          <h2>ورود مدیر</h2>
+        </div>
+      </mat-card-header>
+
+      <mat-card-content>
+        <!-- Error Display -->
+        @if (error()) {
+          <div class="error-message">
+            <mat-icon class="error-icon">error</mat-icon>
+            <span>{{ error() }}</span>
+            <button mat-icon-button (click)="clearError()" aria-label="بستن خطا">
+              <mat-icon>close</mat-icon>
+            </button>
+          </div>
+        }
+
+        <!-- Login Form -->
+        <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
+          <!-- Email Field -->
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>ایمیل</mat-label>
+            <input 
+              matInput 
+              type="email" 
+              formControlName="email" 
+              placeholder="admin@hedook.com"
+              autocomplete="username">
+            <mat-icon matSuffix>email</mat-icon>
+            @if (isFieldInvalid('email')) {
+              <mat-error>{{ getFieldError('email') }}</mat-error>
+            }
+          </mat-form-field>
+
+          <!-- Password Field -->
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>رمز عبور</mat-label>
+            <input 
+              matInput 
+              [type]="hidePassword() ? 'password' : 'text'" 
+              formControlName="password"
+              autocomplete="current-password">
+            <button 
+              mat-icon-button 
+              matSuffix 
+              type="button"
+              (click)="togglePasswordVisibility()"
+              [attr.aria-label]="hidePassword() ? 'نمایش رمز عبور' : 'مخفی کردن رمز عبور'">
+              <mat-icon>{{ hidePassword() ? 'visibility' : 'visibility_off' }}</mat-icon>
+            </button>
+            @if (isFieldInvalid('password')) {
+              <mat-error>{{ getFieldError('password') }}</mat-error>
+            }
+          </mat-form-field>
+
+          <!-- Submit Button -->
+          <button 
+            mat-raised-button 
+            color="primary" 
+            type="submit" 
+            class="login-button"
+            [disabled]="!isFormValid || loading()">
+            @if (loading()) {
+              <mat-spinner diameter="20" class="button-spinner"></mat-spinner>
+              در حال ورود...
+            } @else {
+              <ng-container>
+                <mat-icon>login</mat-icon>
+                ورود به پنل
+              </ng-container>
+            }
+          </button>
+        </form>
+
+        <!-- Demo Credentials -->
+        <div class="demo-info">
+          <mat-icon class="info-icon">info</mat-icon>
+          <div class="demo-text">
+            <p><strong>اطلاعات دمو:</strong></p>
+            <p>ایمیل: admin&#64;hedook.com</p>
+            <p>رمز عبور: admin123</p>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Footer -->
+    <div class="login-footer">
+      <p>&copy; ۱۴۰۳ هدوک - تمامی حقوق محفوظ است</p>
+    </div>
+  </div>
+</div>
