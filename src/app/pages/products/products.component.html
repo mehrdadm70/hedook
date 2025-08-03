@@ -1,188 +1,239 @@
-<div class="products-container">
+<!-- Products Container -->
+<div class="min-h-screen bg-gradient-to-br from-blue-50 via-white to-cyan-50">
+  
   <!-- Header Section -->
-  <div class="products-header">
-    <div class="header-content">
-      <h1>جستجوی هوشمند اسباب بازی</h1>
-      <p>بر اساس ویژگی‌های فرزندتان، بهترین اسباب بازی‌ها را پیدا کنید</p>
+  <section class="relative overflow-hidden bg-gradient-to-br from-cyan-400 via-blue-500 to-purple-600 py-16 lg:py-20">
+    <!-- Background Decorative Elements -->
+    <div class="absolute inset-0 overflow-hidden">
+      <div class="absolute -top-40 -right-40 w-80 h-80 bg-white/10 rounded-full blur-3xl"></div>
+      <div class="absolute -bottom-40 -left-40 w-80 h-80 bg-white/10 rounded-full blur-3xl"></div>
+      <div class="absolute top-20 left-1/4 w-16 h-16 bg-yellow-300/20 rounded-full animate-bounce"></div>
+      <div class="absolute bottom-20 right-1/4 w-12 h-12 bg-pink-300/20 rounded-full animate-pulse"></div>
+    </div>
+    
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <h1 class="text-3xl lg:text-5xl font-bold text-white mb-6 leading-tight">
+        جستجوی هوشمند 
+        <span class="bg-gradient-to-r from-yellow-300 to-orange-400 bg-clip-text text-transparent">
+          اسباب بازی
+        </span>
+      </h1>
+      <p class="text-lg lg:text-xl text-blue-100 mb-8 max-w-3xl mx-auto leading-relaxed">
+        بر اساس ویژگی‌های فرزندتان، بهترین اسباب بازی‌ها را پیدا کنید
+      </p>
       
-      <div class="header-actions">
-        <button mat-raised-button 
-                color="primary" 
-                (click)="toggleSmartSearch()"
-                class="smart-search-btn">
-          <mat-icon>psychology</mat-icon>
-          {{ showSmartSearch() ? 'بستن جستجوی هوشمند' : 'شروع جستجوی هوشمند' }}
-        </button>
+      <button 
+        (click)="toggleSmartSearch()"
+        class="group px-8 py-4 bg-gradient-to-r from-orange-400 to-orange-600 text-white font-bold text-lg rounded-full shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 flex items-center justify-center space-x-2 rtl:space-x-reverse mx-auto">
+        <mat-icon class="text-2xl">psychology</mat-icon>
+        <span>{{ showSmartSearch() ? 'بستن جستجوی هوشمند' : 'شروع جستجوی هوشمند' }}</span>
+        <mat-icon class="text-xl group-hover:rotate-180 transition-transform">expand_more</mat-icon>
+      </button>
+    </div>
+  </section>
+
+  <!-- Smart Search Section -->
+  <div *ngIf="showSmartSearch()" class="py-12 bg-white">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="bg-gradient-to-br from-cyan-50 to-blue-50 rounded-3xl shadow-xl border border-cyan-200 overflow-hidden">
+        <div class="bg-gradient-to-r from-cyan-500 to-blue-600 px-8 py-6 text-white">
+          <h2 class="text-2xl font-bold mb-2">جستجوی هوشمند</h2>
+          <p class="text-cyan-100">اطلاعات فرزندتان را وارد کنید تا بهترین پیشنهادات را دریافت کنید</p>
+        </div>
+
+        <div class="p-8">
+          <mat-stepper #stepper [linear]="false" (selectionChange)="onStepChange($event.selectedIndex)" class="custom-stepper">
+            
+            <!-- Step 1: Basic Information -->
+            <mat-step label="اطلاعات پایه">
+              <form [formGroup]="basicInfoForm" class="space-y-8">
+                <div class="text-center mb-8">
+                  <h3 class="text-2xl font-bold text-gray-800 mb-4">اطلاعات فرزندتان</h3>
+                  <p class="text-gray-600">لطفاً اطلاعات اولیه فرزندتان را وارد کنید</p>
+                </div>
+                
+                <div class="grid md:grid-cols-2 gap-6">
+                  <div class="space-y-2">
+                    <label class="block text-sm font-medium text-gray-700">سن فرزند</label>
+                    <div class="relative">
+                      <input 
+                        type="number" 
+                        formControlName="childAge" 
+                        min="0" 
+                        max="18"
+                        class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-cyan-400 focus:ring-2 focus:ring-cyan-200 transition-all duration-200 text-lg">
+                      <mat-icon class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">child_care</mat-icon>
+                    </div>
+                  </div>
+
+                  <div class="space-y-2">
+                    <label class="block text-sm font-medium text-gray-700">جنسیت</label>
+                    <mat-select 
+                      formControlName="childGender"
+                      class="w-full border-2 border-gray-200 rounded-xl focus:border-cyan-400">
+                      <mat-option value="male" class="text-right">پسر</mat-option>
+                      <mat-option value="female" class="text-right">دختر</mat-option>
+                      <mat-option value="unisex" class="text-right">هر دو</mat-option>
+                    </mat-select>
+                  </div>
+                </div>
+                
+                <!-- علایق -->
+                <div class="space-y-4">
+                  <div class="text-center">
+                    <h4 class="text-xl font-bold text-gray-800 mb-2">علایق فرزندتان</h4>
+                    <p class="text-gray-600">علایق فرزندتان را انتخاب کنید تا اسباب بازی‌های مناسب پیشنهاد شود</p>
+                  </div>
+                  
+                  <form [formGroup]="interestsForm">
+                    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+                      <div 
+                        *ngFor="let interest of interests" 
+                        class="relative">
+                        <input 
+                          type="checkbox" 
+                          [value]="interest"
+                          formControlName="selectedInterests"
+                          class="peer hidden"
+                          [id]="'interest-' + interest">
+                        <label 
+                          [for]="'interest-' + interest"
+                          class="block p-4 text-center bg-gradient-to-br from-gray-50 to-gray-100 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-cyan-300 hover:from-cyan-50 hover:to-blue-50 transition-all duration-200 peer-checked:border-cyan-500 peer-checked:from-cyan-100 peer-checked:to-blue-100 peer-checked:shadow-md">
+                          <span class="text-sm font-medium text-gray-700 peer-checked:text-cyan-700">{{ interestLabels[interest] }}</span>
+                        </label>
+                      </div>
+                    </div>
+                  </form>
+                </div>
+
+                <!-- اهداف رشد -->
+                <div class="space-y-4">
+                  <div class="text-center">
+                    <h4 class="text-xl font-bold text-gray-800 mb-2">اهداف رشد</h4>
+                    <p class="text-gray-600">چه مهارت‌هایی را می‌خواهید در فرزندتان تقویت کنید؟</p>
+                  </div>
+                  
+                  <form [formGroup]="goalsForm">
+                    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+                      <div 
+                        *ngFor="let goal of growthGoals" 
+                        class="relative">
+                        <input 
+                          type="checkbox" 
+                          [value]="goal"
+                          formControlName="selectedGoals"
+                          class="peer hidden"
+                          [id]="'goal-' + goal">
+                        <label 
+                          [for]="'goal-' + goal"
+                          class="block p-4 text-center bg-gradient-to-br from-gray-50 to-gray-100 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-purple-300 hover:from-purple-50 hover:to-purple-100 transition-all duration-200 peer-checked:border-purple-500 peer-checked:from-purple-100 peer-checked:to-purple-200 peer-checked:shadow-md">
+                          <span class="text-sm font-medium text-gray-700 peer-checked:text-purple-700">{{ goalLabels[goal] }}</span>
+                        </label>
+                      </div>
+                    </div>
+                  </form>
+                </div>
+
+                <!-- Step Navigation -->
+                <div class="flex justify-center pt-8">
+                  <button 
+                    (click)="nextStep()"
+                    class="group px-8 py-4 bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-bold text-lg rounded-full shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 flex items-center justify-center space-x-2 rtl:space-x-reverse">
+                    <span>بعدی</span>
+                    <mat-icon class="text-xl group-hover:translate-x-1 transition-transform">arrow_forward</mat-icon>
+                  </button>
+                </div>
+              </form>
+            </mat-step>
+
+            <!-- Step 2: Parenting Style Analysis -->
+            <mat-step label="تحلیل سبک فرزندپروری">
+              <div class="space-y-8">
+                <div class="text-center">
+                  <h3 class="text-2xl font-bold text-gray-800 mb-4">تحلیل سبک فرزندپروری</h3>
+                  <p class="text-gray-600">به سوالات زیر پاسخ دهید تا سبک فرزندپروری شما تحلیل شود</p>
+                </div>
+                
+                <div class="bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl p-6 border border-purple-200">
+                  <app-parenting-style-analyzer (analysisResult)="onAnalysisResult($event)"></app-parenting-style-analyzer>
+                </div>
+
+                <!-- Step Navigation -->
+                <div class="flex justify-between items-center pt-8">
+                  <button 
+                    (click)="previousStep()"
+                    class="px-6 py-3 bg-gray-100 text-gray-700 font-medium rounded-full hover:bg-gray-200 transition-all duration-200 flex items-center space-x-2 rtl:space-x-reverse">
+                    <mat-icon class="text-lg">arrow_back</mat-icon>
+                    <span>قبلی</span>
+                  </button>
+                  
+                  <button 
+                    (click)="performSmartSearch()"
+                    [disabled]="!isFormsValid()"
+                    class="group px-8 py-4 bg-gradient-to-r from-orange-400 to-orange-600 text-white font-bold text-lg rounded-full shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 flex items-center justify-center space-x-2 rtl:space-x-reverse disabled:opacity-50 disabled:cursor-not-allowed">
+                    <mat-icon class="text-xl">search</mat-icon>
+                    <span>جستجوی هوشمند</span>
+                  </button>
+                </div>
+              </div>
+            </mat-step>
+          </mat-stepper>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- Smart Search Section -->
-  <div *ngIf="showSmartSearch()" class="smart-search-section">
-    <mat-card class="search-card">
-      <mat-card-header>
-        <mat-card-title>جستجوی هوشمند</mat-card-title>
-        <mat-card-subtitle>اطلاعات فرزندتان را وارد کنید تا بهترین پیشنهادات را دریافت کنید</mat-card-subtitle>
-      </mat-card-header>
-
-      <mat-card-content>
-        <mat-stepper #stepper [linear]="false" (selectionChange)="onStepChange($event.selectedIndex)">
-          
-          <!-- Step 1: Basic Information -->
-          <mat-step label="اطلاعات پایه">
-            <form [formGroup]="basicInfoForm">
-              <div class="step-content">
-                <h3>اطلاعات فرزندتان</h3>
-                
-                <div class="form-row">
-                  <mat-form-field appearance="outline">
-                    <mat-label>سن فرزند</mat-label>
-                    <input matInput type="number" formControlName="childAge" min="0" max="18">
-                    <mat-icon matSuffix>child_care</mat-icon>
-                  </mat-form-field>
-
-                  <mat-form-field appearance="outline">
-                    <mat-label>جنسیت</mat-label>
-                    <mat-select formControlName="childGender">
-                      <mat-option value="male">پسر</mat-option>
-                      <mat-option value="female">دختر</mat-option>
-                      <mat-option value="unisex">هر دو</mat-option>
-                    </mat-select>
-                  </mat-form-field>
-                </div>              
-                <!-- علایق -->
-                <div class="interests-section">
-                  <h4>علایق فرزندتان</h4>
-                  <p>علایق فرزندتان را انتخاب کنید تا اسباب بازی‌های مناسب پیشنهاد شود</p>
-                  
-                  <form [formGroup]="interestsForm">
-                    <mat-chip-listbox formControlName="selectedInterests" multiple>
-                      <mat-chip-option *ngFor="let interest of interests" 
-                                     [value]="interest"
-                                     class="interest-chip">
-                        {{ interestLabels[interest] }}
-                      </mat-chip-option>
-                    </mat-chip-listbox>
-                  </form>
-                </div>
-  
-                <!-- اهداف رشد -->
-                <div class="goals-section">
-                  <h4>اهداف رشد</h4>
-                  <p>چه مهارت‌هایی را می‌خواهید در فرزندتان تقویت کنید؟</p>
-                  
-                  <form [formGroup]="goalsForm">
-                    <mat-chip-listbox formControlName="selectedGoals" multiple>
-                      <mat-chip-option *ngFor="let goal of growthGoals" 
-                                     [value]="goal"
-                                     class="goal-chip">
-                        {{ goalLabels[goal] }}
-                      </mat-chip-option>
-                    </mat-chip-listbox>
-                  </form>
-                </div>
-
-                <!-- <div class="budget-section">
-                  <h4>محدوده قیمت (تومان)</h4>
-                  <div class="budget-sliders">
-                    <mat-form-field appearance="outline">
-                      <mat-label>حداقل قیمت</mat-label>
-                      <input matInput type="number" formControlName="budgetMin">
-                    </mat-form-field>
-                    
-                    <mat-form-field appearance="outline">
-                      <mat-label>حداکثر قیمت</mat-label>
-                      <input matInput type="number" formControlName="budgetMax">
-                    </mat-form-field>
-                  </div>
-                </div> -->
-              </div>
-
-              <!-- Step Navigation -->
-              <div class="step-actions">
-                <button mat-raised-button 
-                        color="primary" 
-                        (click)="nextStep()"
-                        class="next-btn">
-                  <mat-icon>arrow_back</mat-icon>
-                  بعدی
-                </button>
-              </div>
-            </form>
-          </mat-step>
-
-          <!-- Step 2: Parenting Style Analysis -->
-          <mat-step label="تحلیل سبک فرزندپروری">
-            <div class="step-content">
-              <h3>تحلیل سبک فرزندپروری</h3>
-              <p>به سوالات زیر پاسخ دهید تا سبک فرزندپروری شما تحلیل شود</p>
-              
-              <app-parenting-style-analyzer (analysisResult)="onAnalysisResult($event)"></app-parenting-style-analyzer>
-            </div>
-
-            <!-- Step Navigation -->
-            <div class="step-actions">
-              <button mat-stroked-button 
-                      (click)="previousStep()"
-                      class="previous-btn">
-                قبلی
-                <mat-icon>arrow_forward</mat-icon>
-
-              </button>
-              
-              <button mat-raised-button 
-                      color="primary" 
-                      (click)="performSmartSearch()"
-                      [disabled]="!isFormsValid()"
-                      class="search-btn">
-                <mat-icon>search</mat-icon>
-                جستجوی هوشمند
-              </button>
-            </div>
-          </mat-step>
-
-
-        </mat-stepper>
-      </mat-card-content>
-    </mat-card>
-  </div>
-
   <!-- Products Section -->
-  <div class="products-section">
-    <div class="section-header">
-      <h2>نتایج جستجو</h2>
-      <p *ngIf="filteredProducts().length > 0">
-        {{ filteredProducts().length }} محصول یافت شد
-      </p>
-      <p *ngIf="filteredProducts().length === 0 && !loading()">
-        محصولی یافت نشد. لطفاً معیارهای جستجو را تغییر دهید.
-      </p>
-    </div>
+  <section class="py-16 bg-gradient-to-br from-gray-50 to-blue-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-12">
+        <h2 class="text-3xl lg:text-4xl font-bold text-gray-800 mb-4">
+          نتایج جستجو
+        </h2>
+        <p *ngIf="filteredProducts().length > 0" class="text-xl text-gray-600">
+          {{ filteredProducts().length }} محصول یافت شد
+        </p>
+        <p *ngIf="filteredProducts().length === 0 && !loading()" class="text-xl text-gray-600">
+          محصولی یافت نشد. لطفاً معیارهای جستجو را تغییر دهید.
+        </p>
+      </div>
 
-    <!-- Loading -->
-    <div *ngIf="loading()" class="loading-container">
-      <mat-spinner></mat-spinner>
-      <p>در حال بارگذاری محصولات...</p>
-    </div>
+      <!-- Loading State -->
+      <div *ngIf="loading()" class="text-center py-20">
+        <div class="inline-flex items-center space-x-2 rtl:space-x-reverse">
+          <div class="w-8 h-8 border-4 border-cyan-400 border-t-transparent rounded-full animate-spin"></div>
+          <span class="text-lg text-gray-600">در حال بارگذاری محصولات...</span>
+        </div>
+      </div>
 
-    <!-- Products Grid -->
-    <div *ngIf="!loading()" class="products-grid">
-      <app-product-card 
-        *ngFor="let product of filteredProducts()"
-        [product]="product"
-        (addToCartClick)="onAddToCart($event)">
-      </app-product-card>
-    </div>
+      <!-- Products Grid -->
+      <div *ngIf="!loading()" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 mb-12">
+        <app-product-card 
+          *ngFor="let product of filteredProducts()"
+          [product]="product"
+          (addToCartClick)="onAddToCart($event)"
+          class="transform hover:scale-105 transition-transform duration-300">
+        </app-product-card>
+      </div>
 
-    <!-- No Results -->
-    <div *ngIf="!loading() && filteredProducts().length === 0" class="no-results">
-      <mat-icon class="no-results-icon">search_off</mat-icon>
-      <h3>محصولی یافت نشد</h3>
-      <p>لطفاً معیارهای جستجو را تغییر دهید یا از جستجوی هوشمند استفاده کنید</p>
-      <button mat-raised-button color="primary" (click)="toggleSmartSearch()">
-        <mat-icon>psychology</mat-icon>
-        جستجوی هوشمند
-      </button>
+      <!-- No Results -->
+      <div *ngIf="!loading() && filteredProducts().length === 0" class="text-center py-20">
+        <div class="bg-white rounded-3xl shadow-lg p-12 max-w-md mx-auto">
+          <div class="w-20 h-20 bg-gradient-to-br from-gray-300 to-gray-400 rounded-full flex items-center justify-center mx-auto mb-6">
+            <mat-icon class="text-white text-3xl">search_off</mat-icon>
+          </div>
+          <h3 class="text-2xl font-bold text-gray-800 mb-4">محصولی یافت نشد</h3>
+          <p class="text-gray-600 mb-8">
+            لطفاً معیارهای جستجو را تغییر دهید یا از جستجوی هوشمند استفاده کنید
+          </p>
+          <button 
+            (click)="toggleSmartSearch()"
+            class="group px-6 py-3 bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-bold rounded-full shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 flex items-center justify-center space-x-2 rtl:space-x-reverse mx-auto">
+            <mat-icon class="text-xl">psychology</mat-icon>
+            <span>جستجوی هوشمند</span>
+          </button>
+        </div>
+      </div>
     </div>
-  </div>
+  </section>
 </div>

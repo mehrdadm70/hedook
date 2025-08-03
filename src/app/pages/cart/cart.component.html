@@ -1,109 +1,156 @@
-<div class="cart-container">
-  <mat-card class="cart-card">
-    <mat-card-header>
-      <mat-card-title>سبد خرید شما</mat-card-title>
-      <mat-card-subtitle *ngIf="!isEmpty()">
+<!-- Cart Container -->
+<div class="min-h-screen bg-gradient-to-br from-blue-50 via-white to-cyan-50 py-8">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+    
+    <!-- Cart Header -->
+    <div class="text-center mb-8">
+      <h1 class="text-3xl lg:text-4xl font-bold text-gray-800 mb-4">
+        سبد خرید شما
+      </h1>
+      <p *ngIf="!isEmpty()" class="text-xl text-gray-600">
         {{ totalItems() }} محصول در سبد خرید
-      </mat-card-subtitle>
-      <mat-card-subtitle *ngIf="isEmpty()">
+      </p>
+      <p *ngIf="isEmpty()" class="text-xl text-gray-600">
         سبد خرید شما خالی است
-      </mat-card-subtitle>
-    </mat-card-header>
+      </p>
+    </div>
 
-    <mat-card-content>
-      <!-- Error Message -->
-      <div *ngIf="cartError()" class="error-container">
-        <mat-icon class="error-icon">error</mat-icon>
-        <p class="error-message">{{ cartError() }}</p>
-        <button mat-button color="primary" (click)="clearError()">
+    <!-- Error Message -->
+    <div *ngIf="cartError()" class="mb-6">
+      <div class="bg-red-50 border border-red-200 rounded-2xl p-6 flex items-center space-x-3 rtl:space-x-reverse">
+        <div class="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
+          <mat-icon class="text-red-600">error</mat-icon>
+        </div>
+        <div class="flex-1">
+          <p class="text-red-800 font-medium">{{ cartError() }}</p>
+        </div>
+        <button 
+          (click)="clearError()"
+          class="p-2 text-red-600 hover:bg-red-100 rounded-full transition-colors">
           <mat-icon>close</mat-icon>
-          بستن
         </button>
       </div>
+    </div>
 
-      <div *ngIf="!isEmpty(); else emptyCart">
-        <table mat-table [dataSource]="cartItems()" class="cart-table">
-          <!-- تصویر -->
-          <ng-container matColumnDef="image">
-            <th mat-header-cell *matHeaderCellDef></th>
-            <td mat-cell *matCellDef="let item">
-              <img [src]="item.product.images[0] || 'assets/images/placeholder.jpg'" 
-                   [alt]="item.product.name" class="cart-image">
-            </td>
-          </ng-container>
-
-          <!-- نام محصول -->
-          <ng-container matColumnDef="name">
-            <th mat-header-cell *matHeaderCellDef>نام محصول</th>
-            <td mat-cell *matCellDef="let item">{{ item.product.name }}</td>
-          </ng-container>
-
-          <!-- قیمت واحد -->
-          <ng-container matColumnDef="price">
-            <th mat-header-cell *matHeaderCellDef>قیمت</th>
-            <td mat-cell *matCellDef="let item">{{ formatPrice(item.product.price) }}</td>
-          </ng-container>
-
-          <!-- تعداد -->
-          <ng-container matColumnDef="quantity">
-            <th mat-header-cell *matHeaderCellDef>تعداد</th>
-            <td mat-cell *matCellDef="let item">
-              <button mat-icon-button (click)="updateQuantity(item.product.id, item.quantity - 1)">
-                <mat-icon>remove</mat-icon>
+    <!-- Cart Content -->
+    <div *ngIf="!isEmpty(); else emptyCart" class="bg-white rounded-3xl shadow-xl overflow-hidden">
+      
+      <!-- Cart Items -->
+      <div class="p-6 lg:p-8">
+        <div class="space-y-6">
+          <div *ngFor="let item of cartItems()" 
+               class="group bg-gradient-to-r from-gray-50 to-blue-50 rounded-2xl p-6 border border-gray-200 hover:border-cyan-300 transition-all duration-300">
+            
+            <div class="flex items-center space-x-4 rtl:space-x-reverse">
+              <!-- Product Image -->
+              <div class="w-20 h-20 lg:w-24 lg:h-24 rounded-xl overflow-hidden flex-shrink-0">
+                <img 
+                  [src]="item.product.images[0] || 'assets/images/placeholder.jpg'" 
+                  [alt]="item.product.name" 
+                  class="w-full h-full object-cover">
+              </div>
+              
+              <!-- Product Info -->
+              <div class="flex-1 min-w-0">
+                <h3 class="text-lg font-bold text-gray-800 mb-2 line-clamp-2">
+                  {{ item.product.name }}
+                </h3>
+                <p class="text-sm text-gray-600 mb-2">{{ item.product.brand }}</p>
+                <div class="flex items-center space-x-2 rtl:space-x-reverse">
+                  <span class="text-lg font-bold text-green-600">
+                    {{ formatPrice(item.product.price) }}
+                  </span>
+                  <span class="text-sm text-gray-500">× {{ item.quantity }}</span>
+                </div>
+              </div>
+              
+              <!-- Quantity Controls -->
+              <div class="flex items-center space-x-2 rtl:space-x-reverse">
+                <button 
+                  (click)="updateQuantity(item.product.id, item.quantity - 1)"
+                  class="w-8 h-8 bg-gray-100 hover:bg-gray-200 rounded-full flex items-center justify-center transition-colors">
+                  <mat-icon class="text-gray-600 text-sm">remove</mat-icon>
+                </button>
+                
+                <input
+                  type="number"
+                  min="1"
+                  [value]="item.quantity"
+                  (change)="updateQuantity(item.product.id, $any($event.target).value ? +$any($event.target).value : 1)"
+                  class="w-16 h-8 text-center border-2 border-gray-200 rounded-lg focus:border-cyan-400 focus:ring-2 focus:ring-cyan-200 transition-all"
+                >
+                
+                <button 
+                  (click)="updateQuantity(item.product.id, item.quantity + 1)"
+                  class="w-8 h-8 bg-gray-100 hover:bg-gray-200 rounded-full flex items-center justify-center transition-colors">
+                  <mat-icon class="text-gray-600 text-sm">add</mat-icon>
+                </button>
+              </div>
+              
+              <!-- Total Price -->
+              <div class="text-right min-w-0">
+                <div class="text-lg font-bold text-gray-800">
+                  {{ formatPrice(item.product.price * item.quantity) }}
+                </div>
+              </div>
+              
+              <!-- Remove Button -->
+              <button 
+                (click)="removeItem(item.product.id)"
+                class="w-8 h-8 bg-red-100 hover:bg-red-200 rounded-full flex items-center justify-center transition-colors group-hover:opacity-100 opacity-0">
+                <mat-icon class="text-red-600 text-sm">delete</mat-icon>
               </button>
-              <input
-                matInput
-                type="number"
-                min="1"
-                [value]="item.quantity"
-                (change)="updateQuantity(item.product.id, $any($event.target).value ? +$any($event.target).value : 1)"
-              >
-              <button mat-icon-button (click)="updateQuantity(item.product.id, item.quantity + 1)">
-                <mat-icon>add</mat-icon>
-              </button>
-            </td>
-          </ng-container>
-
-          <!-- جمع کل هر ردیف -->
-          <ng-container matColumnDef="total">
-            <th mat-header-cell *matHeaderCellDef>جمع</th>
-            <td mat-cell *matCellDef="let item">{{ formatPrice(item.product.price * item.quantity) }}</td>
-          </ng-container>
-
-          <!-- حذف -->
-          <ng-container matColumnDef="remove">
-            <th mat-header-cell *matHeaderCellDef></th>
-            <td mat-cell *matCellDef="let item">
-              <button mat-icon-button color="warn" (click)="removeItem(item.product.id)">
-                <mat-icon>delete</mat-icon>
-              </button>
-            </td>
-          </ng-container>
-
-          <tr mat-header-row *matHeaderRowDef="['image', 'name', 'price', 'quantity', 'total', 'remove']"></tr>
-          <tr mat-row *matRowDef="let row; columns: ['image', 'name', 'price', 'quantity', 'total', 'remove'];"></tr>
-        </table>
-
-        <mat-divider class="cart-divider"></mat-divider>
-
-        <div class="cart-summary">
-          <div class="summary-row">
-            <span>جمع کل:</span>
-            <span class="total-price">{{ formatPrice(totalPrice()) }}</span>
-          </div>
-          <div class="summary-actions">
-            <button mat-stroked-button color="warn" (click)="clearCart()">خالی کردن سبد خرید</button>
-            <button mat-raised-button color="primary" (click)="goToCheckout()" [disabled]="isEmpty()">تکمیل خرید</button>
+            </div>
           </div>
         </div>
       </div>
-      <ng-template #emptyCart>
-        <div class="empty-cart">
-          <mat-icon class="empty-icon">remove_shopping_cart</mat-icon>
-          <h3>سبد خرید شما خالی است</h3>
-          <button mat-raised-button color="primary" routerLink="/products">بازگشت به فروشگاه</button>
+      
+      <!-- Cart Summary -->
+      <div class="bg-gradient-to-r from-cyan-50 to-blue-50 p-6 lg:p-8 border-t border-gray-200">
+        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
+          <div class="text-center lg:text-right">
+            <div class="text-2xl lg:text-3xl font-bold text-gray-800">
+              جمع کل: {{ formatPrice(totalPrice()) }}
+            </div>
+            <p class="text-gray-600 mt-1">{{ totalItems() }} محصول</p>
+          </div>
+          
+          <div class="flex flex-col sm:flex-row gap-3 justify-center lg:justify-end">
+            <button 
+              (click)="clearCart()"
+              class="px-6 py-3 bg-red-100 text-red-600 font-bold rounded-full hover:bg-red-200 transition-colors flex items-center justify-center space-x-2 rtl:space-x-reverse">
+              <mat-icon class="text-lg">delete_sweep</mat-icon>
+              <span>خالی کردن سبد خرید</span>
+            </button>
+            
+            <button 
+              (click)="goToCheckout()"
+              [disabled]="isEmpty()"
+              class="px-8 py-3 bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-bold rounded-full shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 flex items-center justify-center space-x-2 rtl:space-x-reverse disabled:opacity-50 disabled:cursor-not-allowed">
+              <mat-icon class="text-lg">shopping_cart_checkout</mat-icon>
+              <span>تکمیل خرید</span>
+            </button>
+          </div>
         </div>
-      </ng-template>
-    </mat-card-content>
-  </mat-card>
+      </div>
+    </div>
+    
+    <!-- Empty Cart Template -->
+    <ng-template #emptyCart>
+      <div class="bg-white rounded-3xl shadow-xl p-12 text-center">
+        <div class="w-24 h-24 bg-gradient-to-br from-gray-300 to-gray-400 rounded-full flex items-center justify-center mx-auto mb-6">
+          <mat-icon class="text-white text-4xl">remove_shopping_cart</mat-icon>
+        </div>
+        <h3 class="text-2xl font-bold text-gray-800 mb-4">سبد خرید شما خالی است</h3>
+        <p class="text-gray-600 mb-8">برای شروع خرید، محصولات مورد نظرتان را انتخاب کنید</p>
+        <button 
+          routerLink="/products"
+          class="group px-8 py-4 bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-bold text-lg rounded-full shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 flex items-center justify-center space-x-2 rtl:space-x-reverse mx-auto">
+          <mat-icon class="text-xl">store</mat-icon>
+          <span>بازگشت به فروشگاه</span>
+          <mat-icon class="text-lg group-hover:translate-x-1 transition-transform">arrow_forward</mat-icon>
+        </button>
+      </div>
+    </ng-template>
+  </div>
 </div>

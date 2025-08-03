@@ -1,104 +1,222 @@
-<div class="home-container">
+<!-- Home Container -->
+<div class="min-h-screen bg-gradient-to-br from-blue-50 via-white to-cyan-50">
+  
   <!-- Hero Section -->
-  <section class="hero-section">
-    <div class="hero-content">
-      <h1 class="hero-title">بهترین اسباب بازی‌ها برای کودکان شما</h1>
-      <p class="hero-subtitle">
-        با جستجوی هوشمند، اسباب بازی مناسب سن و نیاز فرزندتان را پیدا کنید
-      </p>
-      <div class="hero-actions">
-        <button mat-raised-button color="primary" class="hero-btn" (click)="goToProducts()">
-          <mat-icon>shopping_bag</mat-icon>
-          شروع خرید
-        </button>
-        <button mat-outlined-button class="hero-btn" (click)="goToProducts()">
-          <mat-icon>search</mat-icon>
-          جستجوی هوشمند
-        </button>
-      </div>
+  <section class="relative overflow-hidden bg-gradient-to-br from-cyan-400 via-blue-500 to-purple-600 py-20 lg:py-32">
+    <!-- Background Decorative Elements -->
+    <div class="absolute inset-0 overflow-hidden">
+      <div class="absolute -top-40 -right-40 w-80 h-80 bg-white/10 rounded-full blur-3xl"></div>
+      <div class="absolute -bottom-40 -left-40 w-80 h-80 bg-white/10 rounded-full blur-3xl"></div>
+      <div class="absolute top-20 left-1/4 w-20 h-20 bg-yellow-300/20 rounded-full animate-bounce"></div>
+      <div class="absolute bottom-20 right-1/4 w-16 h-16 bg-pink-300/20 rounded-full animate-pulse"></div>
     </div>
-    <div class="hero-image">
-      <img src="assets/images/hero-toys.jpg" alt="اسباب بازی‌های متنوع">
+    
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid lg:grid-cols-2 gap-12 items-center">
+        <!-- Hero Content -->
+        <div class="text-center lg:text-right space-y-8">
+          <div class="space-y-4">
+            <h1 class="text-4xl lg:text-6xl font-bold text-white leading-tight">
+              بهترین اسباب بازی‌ها برای 
+              <span class="bg-gradient-to-r from-yellow-300 to-orange-400 bg-clip-text text-transparent">
+                کودکان شما
+              </span>
+            </h1>
+            <p class="text-xl lg:text-2xl text-blue-100 leading-relaxed">
+              با جستجوی هوشمند، اسباب بازی مناسب سن و نیاز فرزندتان را پیدا کنید
+            </p>
+          </div>
+          
+          <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+            <button 
+              (click)="goToProducts()"
+              class="group px-8 py-4 bg-gradient-to-r from-orange-400 to-orange-600 text-white font-bold text-lg rounded-full shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 flex items-center justify-center space-x-2 rtl:space-x-reverse">
+              <mat-icon class="text-2xl">shopping_bag</mat-icon>
+              <span>شروع خرید</span>
+              <mat-icon class="text-xl group-hover:translate-x-1 transition-transform">arrow_forward</mat-icon>
+            </button>
+            
+            <button 
+              (click)="goToProducts()"
+              class="px-8 py-4 bg-white/20 backdrop-blur-sm text-white font-bold text-lg rounded-full border-2 border-white/30 hover:bg-white/30 transition-all duration-300 flex items-center justify-center space-x-2 rtl:space-x-reverse">
+              <mat-icon class="text-2xl">search</mat-icon>
+              <span>جستجوی هوشمند</span>
+            </button>
+          </div>
+        </div>
+        
+        <!-- Hero Image -->
+        <div class="relative">
+          <div class="relative z-10">
+            <img 
+              src="assets/images/hero-toys.jpg" 
+              alt="اسباب بازی‌های متنوع"
+              class="w-full h-80 lg:h-96 object-cover rounded-3xl shadow-2xl transform rotate-3 hover:rotate-0 transition-transform duration-500">
+          </div>
+          <!-- Floating Elements -->
+          <div class="absolute -top-4 -right-4 w-16 h-16 bg-yellow-400 rounded-full shadow-lg animate-bounce"></div>
+          <div class="absolute -bottom-4 -left-4 w-12 h-12 bg-pink-400 rounded-full shadow-lg animate-pulse"></div>
+        </div>
+      </div>
     </div>
   </section>
 
   <!-- Categories Section -->
-  <section class="categories-section">
-    <div class="section-header">
-      <h2>دسته‌بندی محصولات</h2>
-      <p>اسباب بازی‌ها را بر اساس نوع و کاربرد انتخاب کنید</p>
-    </div>
-    <div class="categories-grid">
-      <mat-card *ngFor="let category of categories()" 
-                class="category-card" 
-                (click)="goToProducts(category)">
-        <mat-card-content>
-          <mat-icon class="category-icon">toys</mat-icon>
-          <h3>{{ category }}</h3>
-        </mat-card-content>
-      </mat-card>
+  <section class="py-20 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-16">
+        <h2 class="text-3xl lg:text-4xl font-bold text-gray-800 mb-4">
+          دسته‌بندی محصولات
+        </h2>
+        <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+          اسباب بازی‌ها را بر اساس نوع و کاربرد انتخاب کنید
+        </p>
+      </div>
+      
+      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        <div 
+          *ngFor="let category of categories()" 
+          (click)="goToProducts(category)"
+          class="group cursor-pointer">
+          <div class="bg-gradient-to-br from-cyan-50 to-blue-50 p-8 rounded-3xl text-center hover:shadow-xl transform hover:-translate-y-2 transition-all duration-300 border-2 border-transparent hover:border-cyan-200">
+            <div class="w-16 h-16 bg-gradient-to-br from-cyan-400 to-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
+              <mat-icon class="text-white text-3xl">toys</mat-icon>
+            </div>
+            <h3 class="text-lg font-bold text-gray-800 group-hover:text-cyan-600 transition-colors">
+              {{ category }}
+            </h3>
+          </div>
+        </div>
+      </div>
     </div>
   </section>
 
   <!-- Featured Products Section -->
-  <section class="featured-section">
-    <div class="section-header">
-      <h2>محصولات ویژه</h2>
-      <p>بهترین و محبوب‌ترین اسباب بازی‌های ما</p>
-    </div>
-    
-    <div *ngIf="loading" class="loading-container">
-      <mat-spinner></mat-spinner>
-      <p>در حال بارگذاری محصولات...</p>
-    </div>
+  <section class="py-20 bg-gradient-to-br from-gray-50 to-blue-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-16">
+        <h2 class="text-3xl lg:text-4xl font-bold text-gray-800 mb-4">
+          محصولات ویژه
+        </h2>
+        <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+          بهترین و محبوب‌ترین اسباب بازی‌های ما
+        </p>
+      </div>
+      
+      <!-- Loading State -->
+      <div *ngIf="loading" class="text-center py-20">
+        <div class="inline-flex items-center space-x-2 rtl:space-x-reverse">
+          <div class="w-8 h-8 border-4 border-cyan-400 border-t-transparent rounded-full animate-spin"></div>
+          <span class="text-lg text-gray-600">در حال بارگذاری محصولات...</span>
+        </div>
+      </div>
 
-    <div *ngIf="!loading" class="products-grid">
-      <app-product-card 
-        *ngFor="let product of featuredProducts()"
-        [product]="product"
-        (addToCartClick)="onAddToCart($event)">
-      </app-product-card>
-    </div>
+      <!-- Products Grid -->
+      <div *ngIf="!loading" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 mb-12">
+        <app-product-card 
+          *ngFor="let product of featuredProducts()"
+          [product]="product"
+          (addToCartClick)="onAddToCart($event)"
+          class="transform hover:scale-105 transition-transform duration-300">
+        </app-product-card>
+      </div>
 
-    <div class="view-all-container">
-      <button mat-raised-button color="primary" (click)="goToProducts()">
-        مشاهده همه محصولات
-        <mat-icon>arrow_forward</mat-icon>
-      </button>
+      <!-- View All Button -->
+      <div class="text-center">
+        <button 
+          (click)="goToProducts()"
+          class="group px-8 py-4 bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-bold text-lg rounded-full shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 flex items-center justify-center space-x-2 rtl:space-x-reverse mx-auto">
+          <span>مشاهده همه محصولات</span>
+          <mat-icon class="text-xl group-hover:translate-x-1 transition-transform">arrow_forward</mat-icon>
+        </button>
+      </div>
     </div>
   </section>
 
   <!-- Features Section -->
-  <section class="features-section">
-    <div class="section-header">
-      <h2>چرا هدوک؟</h2>
-      <p>مزایای خرید از فروشگاه اسباب بازی هدوک</p>
+  <section class="py-20 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-16">
+        <h2 class="text-3xl lg:text-4xl font-bold text-gray-800 mb-4">
+          چرا هدوک؟
+        </h2>
+        <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+          مزایای خرید از فروشگاه اسباب بازی هدوک
+        </p>
+      </div>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <!-- Feature 1 -->
+        <div class="text-center group">
+          <div class="w-20 h-20 bg-gradient-to-br from-purple-400 to-purple-600 rounded-3xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
+            <mat-icon class="text-white text-3xl">psychology</mat-icon>
+          </div>
+          <h3 class="text-xl font-bold text-gray-800 mb-4 group-hover:text-purple-600 transition-colors">
+            جستجوی هوشمند
+          </h3>
+          <p class="text-gray-600 leading-relaxed">
+            بر اساس سن، جنسیت و مهارت مورد نیاز، بهترین اسباب بازی را پیشنهاد می‌دهیم
+          </p>
+        </div>
+        
+        <!-- Feature 2 -->
+        <div class="text-center group">
+          <div class="w-20 h-20 bg-gradient-to-br from-green-400 to-green-600 rounded-3xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
+            <mat-icon class="text-white text-3xl">verified</mat-icon>
+          </div>
+          <h3 class="text-xl font-bold text-gray-800 mb-4 group-hover:text-green-600 transition-colors">
+            کیفیت تضمین شده
+          </h3>
+          <p class="text-gray-600 leading-relaxed">
+            تمام محصولات از برندهای معتبر و با کیفیت تضمین شده
+          </p>
+        </div>
+        
+        <!-- Feature 3 -->
+        <div class="text-center group">
+          <div class="w-20 h-20 bg-gradient-to-br from-orange-400 to-orange-600 rounded-3xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
+            <mat-icon class="text-white text-3xl">local_shipping</mat-icon>
+          </div>
+          <h3 class="text-xl font-bold text-gray-800 mb-4 group-hover:text-orange-600 transition-colors">
+            ارسال سریع
+          </h3>
+          <p class="text-gray-600 leading-relaxed">
+            ارسال رایگان برای خریدهای بالای 500 هزار تومان
+          </p>
+        </div>
+        
+        <!-- Feature 4 -->
+        <div class="text-center group">
+          <div class="w-20 h-20 bg-gradient-to-br from-cyan-400 to-cyan-600 rounded-3xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
+            <mat-icon class="text-white text-3xl">support_agent</mat-icon>
+          </div>
+          <h3 class="text-xl font-bold text-gray-800 mb-4 group-hover:text-cyan-600 transition-colors">
+            پشتیبانی 24/7
+          </h3>
+          <p class="text-gray-600 leading-relaxed">
+            پشتیبانی شبانه‌روزی برای پاسخگویی به سوالات شما
+          </p>
+        </div>
+      </div>
     </div>
-    
-    <div class="features-grid">
-      <div class="feature-item">
-        <mat-icon class="feature-icon">psychology</mat-icon>
-        <h3>جستجوی هوشمند</h3>
-        <p>بر اساس سن، جنسیت و مهارت مورد نیاز، بهترین اسباب بازی را پیشنهاد می‌دهیم</p>
-      </div>
-      
-      <div class="feature-item">
-        <mat-icon class="feature-icon">verified</mat-icon>
-        <h3>کیفیت تضمین شده</h3>
-        <p>تمام محصولات از برندهای معتبر و با کیفیت تضمین شده</p>
-      </div>
-      
-      <div class="feature-item">
-        <mat-icon class="feature-icon">local_shipping</mat-icon>
-        <h3>ارسال سریع</h3>
-        <p>ارسال رایگان برای خریدهای بالای 500 هزار تومان</p>
-      </div>
-      
-      <div class="feature-item">
-        <mat-icon class="feature-icon">support_agent</mat-icon>
-        <h3>پشتیبانی 24/7</h3>
-        <p>پشتیبانی شبانه‌روزی برای پاسخگویی به سوالات شما</p>
-      </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="py-20 bg-gradient-to-br from-cyan-500 to-blue-600">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <h2 class="text-3xl lg:text-4xl font-bold text-white mb-6">
+        آماده شروع خرید هستید؟
+      </h2>
+      <p class="text-xl text-blue-100 mb-8">
+        هزاران اسباب بازی متنوع و با کیفیت در انتظار شماست
+      </p>
+      <button 
+        (click)="goToProducts()"
+        class="group px-10 py-5 bg-white text-cyan-600 font-bold text-xl rounded-full shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 flex items-center justify-center space-x-3 rtl:space-x-reverse mx-auto">
+        <mat-icon class="text-2xl">shopping_cart</mat-icon>
+        <span>شروع خرید</span>
+        <mat-icon class="text-xl group-hover:translate-x-1 transition-transform">arrow_forward</mat-icon>
+      </button>
     </div>
   </section>
 </div>

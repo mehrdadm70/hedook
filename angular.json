@@ -30,7 +30,7 @@
             "styles": [
               "src/styles.scss",
               "./node_modules/@material-design-icons/font/index.css"
-          ],
+            ],
             "scripts": []
           },
           "configurations": {
@@ -48,7 +48,6 @@
                 }
               ],
               "outputHashing": "all",
-              "fontsOptimization": false,
               "fileReplacements": [
                 {
                   "replace": "src/environments/environment.ts",

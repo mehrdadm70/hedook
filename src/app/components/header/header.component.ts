@@ -72,4 +72,8 @@ export class HeaderComponent {
   goToProducts(): void {
     this.router.navigate(['/products']);
   }
+
+  goToSignup(): void {
+    this.router.navigate(['/signup']);
+  }
 }

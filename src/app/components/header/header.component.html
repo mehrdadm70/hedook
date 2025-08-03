@@ -1,61 +1,152 @@
-<mat-toolbar color="primary" class="header-toolbar">
-  <div class="header-content">
-    <!-- لوگو و نام سایت -->
-    <div class="logo-section">
-      <a (click)="goToHome()" class="logo-link" role="button" tabindex="0">
-        <mat-icon class="logo-icon">toys</mat-icon>
-        <span class="logo-text">هدوک</span>
-      </a>
+<!-- Header Container -->
+<header class="fixed top-0 left-0 right-0 z-50 bg-white shadow-lg border-b-2 border-cyan-200">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    
+    <!-- Top Navigation Bar -->
+    <div class="flex items-center justify-between h-16">
+      
+      <!-- Logo Section -->
+      <div class="flex items-center space-x-3 rtl:space-x-reverse">
+        <a (click)="goToHome()" class="flex items-center space-x-2 rtl:space-x-reverse cursor-pointer group" role="button" tabindex="0">
+          <div class="w-10 h-10 bg-gradient-to-br from-cyan-400 to-blue-600 rounded-full flex items-center justify-center shadow-md group-hover:shadow-lg transition-shadow duration-300">
+            <mat-icon class="text-white text-xl">toys</mat-icon>
+          </div>
+          <div class="flex flex-col">
+            <span class="text-2xl font-bold bg-gradient-to-r from-cyan-500 to-blue-600 bg-clip-text text-transparent">هدوک</span>
+            <span class="text-xs text-gray-500 -mt-1">فروشگاه اسباب بازی</span>
+          </div>
+        </a>
+      </div>
+
+      <!-- Navigation Buttons -->
+      <nav class="hidden md:flex items-center space-x-2 rtl:space-x-reverse">
+        <a routerLink="/" routerLinkActive="bg-cyan-100 text-cyan-700" 
+           class="px-4 py-2 rounded-full text-sm font-medium text-gray-700 hover:bg-cyan-50 hover:text-cyan-600 transition-all duration-200 flex items-center space-x-1 rtl:space-x-reverse">
+          <mat-icon class="text-lg">home</mat-icon>
+          <span>خانه</span>
+        </a>
+        <a routerLink="/products" routerLinkActive="bg-cyan-100 text-cyan-700"
+           class="px-4 py-2 rounded-full text-sm font-medium text-gray-700 hover:bg-cyan-50 hover:text-cyan-600 transition-all duration-200 flex items-center space-x-1 rtl:space-x-reverse">
+          <mat-icon class="text-lg">category</mat-icon>
+          <span>محصولات</span>
+        </a>
+        <a routerLink="/about" routerLinkActive="bg-cyan-100 text-cyan-700"
+           class="px-4 py-2 rounded-full text-sm font-medium text-gray-700 hover:bg-cyan-50 hover:text-cyan-600 transition-all duration-200 flex items-center space-x-1 rtl:space-x-reverse">
+          <mat-icon class="text-lg">info</mat-icon>
+          <span>درباره ما</span>
+        </a>
+        <a routerLink="/contact" routerLinkActive="bg-cyan-100 text-cyan-700"
+           class="px-4 py-2 rounded-full text-sm font-medium text-gray-700 hover:bg-cyan-50 hover:text-cyan-600 transition-all duration-200 flex items-center space-x-1 rtl:space-x-reverse">
+          <mat-icon class="text-lg">contact_support</mat-icon>
+          <span>تماس</span>
+        </a>
+      </nav>
+
+      <!-- Search Bar -->
+      <div class="flex-1 max-w-md mx-4 hidden sm:block">
+        <div class="relative">
+          <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+            <mat-icon class="text-gray-400 text-xl">search</mat-icon>
+          </div>
+          <input 
+            type="text" 
+            [value]="searchQuery()" 
+            (input)="onSearchInput($any($event.target).value)"
+            (keyup)="onSearchKeyUp($event)"
+            [placeholder]="searchPlaceholder"
+            class="w-full pl-10 pr-12 py-3 border-2 border-gray-200 rounded-full text-sm text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-transparent transition-all duration-200 bg-gray-50 hover:bg-white"
+            aria-label="جستجوی محصولات">
+          <button 
+            (click)="onSearch()"
+            class="absolute inset-y-0 left-0 pl-3 flex items-center text-cyan-500 hover:text-cyan-600 transition-colors duration-200"
+            aria-label="جستجو">
+            <mat-icon class="text-xl">search</mat-icon>
+          </button>
+        </div>
+      </div>
+
+      <!-- Actions Section -->
+      <div class="flex items-center space-x-6 rtl:space-x-reverse">
+        
+        <!-- Minimal Shopping Cart -->
+        <button 
+          (click)="goToCart()" 
+          class="group relative p-3 rounded-full bg-gradient-to-r from-orange-400 to-orange-500 text-white hover:from-orange-500 hover:to-orange-600 transition-all duration-300 shadow-md hover:shadow-lg flex items-center justify-center"
+          [attr.aria-label]="'سبد خرید - ' + cartItemCount() + ' محصول'">
+          
+          <!-- Cart Icon -->
+          <mat-icon class="text-xl group-hover:scale-105 transition-transform duration-300">shopping_cart</mat-icon>
+          
+          <!-- Cart Badge -->
+          <div *ngIf="hasItemsInCart()" 
+               class="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white text-xs rounded-full flex items-center justify-center font-bold shadow-lg animate-pulse border-2 border-white">
+            {{ cartItemCount() }}
+          </div>
+        </button>
+
+        <!-- Minimal User Account Dropdown -->
+        <div class="relative group">
+          <button 
+            class="px-4 py-2 rounded-full text-sm font-medium text-gray-700 hover:text-cyan-600 hover:bg-cyan-50 transition-all duration-300 flex items-center space-x-2 rtl:space-x-reverse">
+            <mat-icon class="text-lg">account_circle</mat-icon>
+            <span>حساب کاربری</span>
+            <mat-icon class="text-sm transition-transform duration-300 group-hover:rotate-180">expand_more</mat-icon>
+          </button>
+          
+          <!-- Dropdown Menu -->
+          <div class="absolute top-full right-0 mt-2 w-48 bg-white rounded-2xl shadow-xl border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform scale-95 group-hover:scale-100 z-50">
+            <div class="py-2">
+              <a routerLink="/login" 
+                 class="flex items-center space-x-3 rtl:space-x-reverse px-4 py-3 text-gray-700 hover:bg-cyan-50 hover:text-cyan-600 transition-colors duration-200">
+                <mat-icon class="text-lg">login</mat-icon>
+                <span>ورود</span>
+              </a>
+              <a routerLink="/signup" 
+                 class="flex items-center space-x-3 rtl:space-x-reverse px-4 py-3 text-gray-700 hover:bg-cyan-50 hover:text-cyan-600 transition-colors duration-200">
+                <mat-icon class="text-lg">person_add</mat-icon>
+                <span>ثبت نام</span>
+              </a>
+              <div class="border-t border-gray-200 my-1"></div>
+              <a routerLink="/profile" 
+                 class="flex items-center space-x-3 rtl:space-x-reverse px-4 py-3 text-gray-700 hover:bg-cyan-50 hover:text-cyan-600 transition-colors duration-200">
+                <mat-icon class="text-lg">person</mat-icon>
+                <span>پروفایل</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mobile Menu Button -->
+      <button class="md:hidden p-2 rounded-full text-gray-700 hover:bg-gray-100 transition-colors duration-200">
+        <mat-icon class="text-xl">menu</mat-icon>
+      </button>
     </div>
 
-    <!-- جستجو -->
-    <div class="search-section">
-      <mat-form-field appearance="outline" class="search-field">
-        <mat-label>{{ searchLabel }}</mat-label>
+    <!-- Mobile Search Bar -->
+    <div class="sm:hidden pb-4">
+      <div class="relative">
+        <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+          <mat-icon class="text-gray-400 text-xl">search</mat-icon>
+        </div>
         <input 
-          matInput 
+          type="text" 
           [value]="searchQuery()" 
           (input)="onSearchInput($any($event.target).value)"
-          (keyup)="onSearchKeyUp($event)" 
+          (keyup)="onSearchKeyUp($event)"
           [placeholder]="searchPlaceholder"
+          class="w-full pl-10 pr-12 py-3 border-2 border-gray-200 rounded-full text-sm text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-transparent transition-all duration-200 bg-gray-50 hover:bg-white"
           aria-label="جستجوی محصولات">
         <button 
-          matSuffix 
-          mat-icon-button 
           (click)="onSearch()"
+          class="absolute inset-y-0 left-0 pl-3 flex items-center text-cyan-500 hover:text-cyan-600 transition-colors duration-200"
           aria-label="جستجو">
-          <mat-icon>search</mat-icon>
+          <mat-icon class="text-xl">search</mat-icon>
         </button>
-      </mat-form-field>
-    </div>
-
-    <!-- منوی ناوبری -->
-    <nav class="nav-section" role="navigation">
-      <a mat-button routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">خانه</a>
-      <a mat-button routerLink="/products" routerLinkActive="active">محصولات</a>
-      <a mat-button routerLink="/about" routerLinkActive="active">درباره ما</a>
-      <a mat-button routerLink="/contact" routerLinkActive="active">تماس</a>
-    </nav>
-
-    <!-- سبد خرید و ورود -->
-    <div class="actions-section">
-      <button 
-        mat-icon-button 
-        (click)="goToCart()" 
-        class="cart-button"
-        [attr.aria-label]="'سبد خرید - ' + cartItemCount() + ' محصول'">
-        <mat-icon 
-          [matBadge]="cartItemCount()" 
-          [matBadgeHidden]="!hasItemsInCart()"
-          matBadgeColor="accent">
-          shopping_cart
-        </mat-icon>
-      </button>
-      
-      <button mat-button routerLink="/login" class="login-button">
-        <mat-icon>person</mat-icon>
-        ورود
-      </button>
+      </div>
     </div>
   </div>
-</mat-toolbar> 
+</header>
+
+<!-- Spacer for fixed header -->
+<div class="h-24 sm:h-16"></div> 
