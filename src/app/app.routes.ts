@@ -15,6 +15,7 @@ import { AdminAuthGuard } from './shared/guards/admin-auth.guard';
 import { AdminPermission } from './models/admin.model';
 import { LoginComponent } from './pages/login/login.component';
 import { RegisterComponent } from './pages/register/register.component';
+import { AdminAnalyticsComponent } from './pages/admin-analytics/admin-analytics.component';
 
 export const routes: Routes = [
   // Public routes
@@ -67,6 +68,11 @@ export const routes: Routes = [
         path: 'users', 
         component: AdminUsersComponent, 
         data: { permission: AdminPermission.MANAGE_USERS } 
+      },
+      { 
+        path: 'analytics', 
+        component: AdminAnalyticsComponent, 
+        data: { permission: AdminPermission.VIEW_ANALYTICS } 
       },
       // Future admin routes will be added here
       // { path: 'admins', component: AdminAdminsComponent, data: { permission: AdminPermission.MANAGE_ADMINS } },
