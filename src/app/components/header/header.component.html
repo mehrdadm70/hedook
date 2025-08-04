@@ -8,11 +8,9 @@
       <!-- Logo Section -->
       <div class="flex items-center space-x-3 rtl:space-x-reverse">
         <a (click)="goToHome()" class="flex items-center space-x-2 rtl:space-x-reverse cursor-pointer group" role="button" tabindex="0">
-          <div class="w-10 h-10 bg-gradient-to-br from-cyan-400 to-blue-600 rounded-full flex items-center justify-center shadow-md group-hover:shadow-lg transition-shadow duration-300">
-            <mat-icon class="text-white text-xl">toys</mat-icon>
-          </div>
+
           <div class="flex flex-col">
-            <span class="text-2xl font-bold bg-gradient-to-r from-cyan-500 to-blue-600 bg-clip-text text-transparent">هدوک</span>
+            <span class="text-2xl font-bold bg-gradient-to-r from-cyan-500 to-blue-600 bg-clip-text text-transparent">Hedook</span>
             <span class="text-xs text-gray-500 -mt-1">فروشگاه اسباب بازی</span>
           </div>
         </a>
@@ -84,37 +82,66 @@
           </div>
         </button>
 
-        <!-- Minimal User Account Dropdown -->
-        <div class="relative group">
-          <button 
-            class="px-4 py-2 rounded-full text-sm font-medium text-gray-700 hover:text-cyan-600 hover:bg-cyan-50 transition-all duration-300 flex items-center space-x-2 rtl:space-x-reverse">
-            <mat-icon class="text-lg">account_circle</mat-icon>
-            <span>حساب کاربری</span>
-            <mat-icon class="text-sm transition-transform duration-300 group-hover:rotate-180">expand_more</mat-icon>
-          </button>
-          
-          <!-- Dropdown Menu -->
-          <div class="absolute top-full right-0 mt-2 w-48 bg-white rounded-2xl shadow-xl border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform scale-95 group-hover:scale-100 z-50">
-            <div class="py-2">
-              <a routerLink="/login" 
-                 class="flex items-center space-x-3 rtl:space-x-reverse px-4 py-3 text-gray-700 hover:bg-cyan-50 hover:text-cyan-600 transition-colors duration-200">
-                <mat-icon class="text-lg">login</mat-icon>
-                <span>ورود</span>
-              </a>
-              <a routerLink="/signup" 
-                 class="flex items-center space-x-3 rtl:space-x-reverse px-4 py-3 text-gray-700 hover:bg-cyan-50 hover:text-cyan-600 transition-colors duration-200">
-                <mat-icon class="text-lg">person_add</mat-icon>
-                <span>ثبت نام</span>
-              </a>
-              <div class="border-t border-gray-200 my-1"></div>
-              <a routerLink="/profile" 
-                 class="flex items-center space-x-3 rtl:space-x-reverse px-4 py-3 text-gray-700 hover:bg-cyan-50 hover:text-cyan-600 transition-colors duration-200">
-                <mat-icon class="text-lg">person</mat-icon>
-                <span>پروفایل</span>
-              </a>
+        <!-- User Account Dropdown -->
+        @if (authService.isAuthenticated()) {
+          <div class="relative group">
+            <button 
+              class="px-4 py-2 rounded-full text-sm font-medium text-gray-700 hover:text-cyan-600 hover:bg-cyan-50 transition-all duration-300 flex items-center space-x-2 rtl:space-x-reverse">
+              <div class="w-8 h-8 rounded-full bg-gradient-to-r from-cyan-500 to-blue-600 flex items-center justify-center text-white text-sm font-bold">
+                {{ authService.getUserInitials(authService.currentUser()!) }}
+              </div>
+              <span>{{ authService.getUserFullName(authService.currentUser()!) }}</span>
+              <mat-icon class="text-sm transition-transform duration-300 group-hover:rotate-180">expand_more</mat-icon>
+            </button>
+            
+            <!-- Dropdown Menu -->
+            <div class="absolute top-full right-0 mt-2 w-48 bg-white rounded-2xl shadow-xl border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform scale-95 group-hover:scale-100 z-50">
+              <div class="py-2">
+                <a routerLink="/profile" 
+                   class="flex items-center space-x-3 rtl:space-x-reverse px-4 py-3 text-gray-700 hover:bg-cyan-50 hover:text-cyan-600 transition-colors duration-200">
+                  <mat-icon class="text-lg">person</mat-icon>
+                  <span>پروفایل</span>
+                </a>
+                <a routerLink="/orders" 
+                   class="flex items-center space-x-3 rtl:space-x-reverse px-4 py-3 text-gray-700 hover:bg-cyan-50 hover:text-cyan-600 transition-colors duration-200">
+                  <mat-icon class="text-lg">shopping_bag</mat-icon>
+                  <span>سفارشات</span>
+                </a>
+                <div class="border-t border-gray-200 my-1"></div>
+                <button (click)="logout()" 
+                       class="w-full flex items-center space-x-3 rtl:space-x-reverse px-4 py-3 text-gray-700 hover:bg-red-50 hover:text-red-600 transition-colors duration-200">
+                  <mat-icon class="text-lg">logout</mat-icon>
+                  <span>خروج</span>
+                </button>
+              </div>
             </div>
           </div>
-        </div>
+        } @else {
+          <div class="relative group">
+            <button 
+              class="px-4 py-2 rounded-full text-sm font-medium text-gray-700 hover:text-cyan-600 hover:bg-cyan-50 transition-all duration-300 flex items-center space-x-2 rtl:space-x-reverse">
+              <mat-icon class="text-lg">account_circle</mat-icon>
+              <span>حساب کاربری</span>
+              <mat-icon class="text-sm transition-transform duration-300 group-hover:rotate-180">expand_more</mat-icon>
+            </button>
+            
+            <!-- Dropdown Menu -->
+            <div class="absolute top-full right-0 mt-2 w-48 bg-white rounded-2xl shadow-xl border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform scale-95 group-hover:scale-100 z-50">
+              <div class="py-2">
+                <a routerLink="/login" 
+                   class="flex items-center space-x-3 rtl:space-x-reverse px-4 py-3 text-gray-700 hover:bg-cyan-50 hover:text-cyan-600 transition-colors duration-200">
+                  <mat-icon class="text-lg">login</mat-icon>
+                  <span>ورود</span>
+                </a>
+                <a routerLink="/register" 
+                   class="flex items-center space-x-3 rtl:space-x-reverse px-4 py-3 text-gray-700 hover:bg-cyan-50 hover:text-cyan-600 transition-colors duration-200">
+                  <mat-icon class="text-lg">person_add</mat-icon>
+                  <span>ثبت نام</span>
+                </a>
+              </div>
+            </div>
+          </div>
+        }
       </div>
 
       <!-- Mobile Menu Button -->
@@ -133,7 +160,7 @@
           type="text" 
           [value]="searchQuery()" 
           (input)="onSearchInput($any($event.target).value)"
-          (keyup)="onSearchKeyUp($event)"
+          (keyup)="onSearchKeyUp($event)" 
           [placeholder]="searchPlaceholder"
           class="w-full pl-10 pr-12 py-3 border-2 border-gray-200 rounded-full text-sm text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-transparent transition-all duration-200 bg-gray-50 hover:bg-white"
           aria-label="جستجوی محصولات">
@@ -143,7 +170,7 @@
           aria-label="جستجو">
           <mat-icon class="text-xl">search</mat-icon>
         </button>
-      </div>
+    </div>
     </div>
   </div>
 </header>

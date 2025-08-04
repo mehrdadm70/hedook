@@ -1,0 +1,89 @@
+<div class="order-detail-dialog">
+  <div mat-dialog-title class="dialog-title">
+    <h2>جزئیات سفارش {{ order.id }}</h2>
+    <button mat-icon-button (click)="close()" class="close-button">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <div mat-dialog-content class="dialog-content">
+    <!-- Order Status -->
+    <div class="status-section">
+      <h3>وضعیت سفارش</h3>
+      <mat-chip [color]="getStatusColor(order.status)" class="status-chip">
+        {{ getStatusLabel(order.status) }}
+      </mat-chip>
+    </div>
+
+    <!-- Order Information -->
+    <div class="info-section">
+      <h3>اطلاعات سفارش</h3>
+      <div class="info-grid">
+        <div class="info-item">
+          <span class="label">شماره سفارش:</span>
+          <span class="value">{{ order.id }}</span>
+        </div>
+        <div class="info-item">
+          <span class="label">کاربر:</span>
+          <span class="value">{{ order.userId }}</span>
+        </div>
+        <div class="info-item">
+          <span class="label">تاریخ سفارش:</span>
+          <span class="value">{{ formatDate(order.createdAt) }}</span>
+        </div>
+        <div class="info-item">
+          <span class="label">آخرین به‌روزرسانی:</span>
+          <span class="value">{{ formatDate(order.updatedAt) }}</span>
+        </div>
+        <div class="info-item">
+          <span class="label">روش پرداخت:</span>
+          <span class="value">{{ getPaymentMethodLabel(order.paymentMethod) }}</span>
+        </div>
+        <div class="info-item">
+          <span class="label">مبلغ کل:</span>
+          <span class="value total-amount">{{ formatCurrency(order.totalAmount) }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Shipping Address -->
+    <div class="address-section">
+      <h3>آدرس ارسال</h3>
+      <div class="address-content">
+        <p>{{ order.shippingAddress.street }}</p>
+        <p>{{ order.shippingAddress.city }}، {{ order.shippingAddress.state }}</p>
+        <p>کد پستی: {{ order.shippingAddress.zipCode }}</p>
+        <p>{{ order.shippingAddress.country }}</p>
+      </div>
+    </div>
+
+    <!-- Order Items -->
+    <div class="items-section">
+      <h3>آیتم‌های سفارش ({{ order.items.length }} آیتم)</h3>
+      <div class="items-list">
+        @for (item of order.items; track item.productId) {
+          <div class="item-card">
+            <div class="item-image">
+              <img [src]="item.productImage" [alt]="item.productName" loading="lazy">
+            </div>
+            <div class="item-details">
+              <h4 class="item-name">{{ item.productName }}</h4>
+              <div class="item-info">
+                <span class="quantity">تعداد: {{ item.quantity }}</span>
+                <span class="price">قیمت واحد: {{ formatCurrency(item.price) }}</span>
+                <span class="total">مجموع: {{ formatCurrency(item.totalPrice) }}</span>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+
+  <div mat-dialog-actions class="dialog-actions">
+    <button mat-stroked-button (click)="close()">
+      <mat-icon>close</mat-icon>
+      بستن
+    </button>
+  </div>
+</div> 

@@ -1,3 +1,9 @@
+import { 
+  ParentingStyle, 
+  ChildInterest, 
+  GrowthGoal 
+} from './parenting-style.model';
+
 export interface Product {
   readonly id: string;
   readonly name: string;
@@ -20,6 +26,12 @@ export interface Product {
   readonly isActive: boolean;
   readonly createdAt: Date;
   readonly updatedAt: Date;
+  // فیلدهای جدید برای جستجوی هوشمند
+  readonly interests?: ReadonlyArray<ChildInterest>;
+  readonly growthGoals?: ReadonlyArray<GrowthGoal>;
+  readonly parentingStyle?: ParentingStyle;
+  readonly childAge?: number;
+  readonly childGender?: 'male' | 'female' | 'unisex';
 }
 
 export interface Review {
@@ -69,6 +81,12 @@ export interface CreateProductDto {
   readonly brand: string;
   readonly stock: number;
   readonly tags: ReadonlyArray<string>;
+  // فیلدهای جدید برای جستجوی هوشمند
+  readonly interests?: ReadonlyArray<ChildInterest>;
+  readonly growthGoals?: ReadonlyArray<GrowthGoal>;
+  readonly parentingStyle?: ParentingStyle;
+  readonly childAge?: number;
+  readonly childGender?: 'male' | 'female' | 'unisex';
 }
 
 export interface UpdateProductDto extends Partial<CreateProductDto> {

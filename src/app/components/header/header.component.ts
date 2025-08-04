@@ -11,6 +11,7 @@ import { MatBadgeModule } from '@angular/material/badge';
 import { MatMenuModule } from '@angular/material/menu';
 
 import { CartService } from '../../services/cart.service';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-header',
@@ -32,6 +33,7 @@ import { CartService } from '../../services/cart.service';
 export class HeaderComponent {
   private readonly router = inject(Router);
   private readonly cartService = inject(CartService);
+  readonly authService = inject(AuthService);
 
   readonly searchQuery = signal<string>('');
   
@@ -75,5 +77,10 @@ export class HeaderComponent {
 
   goToSignup(): void {
     this.router.navigate(['/signup']);
+  }
+
+  logout(): void {
+    this.authService.logout();
+    this.router.navigate(['/']);
   }
 }

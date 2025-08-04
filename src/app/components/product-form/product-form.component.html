@@ -1,0 +1,418 @@
+<div class="product-form-container">
+  <mat-card class="form-card">
+    <mat-card-header>
+      <mat-card-title>
+        {{ isEdit() ? 'ویرایش محصول' : 'ایجاد محصول جدید' }}
+      </mat-card-title>
+      <mat-card-subtitle>
+        {{ isEdit() ? 'اطلاعات محصول را ویرایش کنید' : 'اطلاعات محصول جدید را وارد کنید' }}
+      </mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      <form [formGroup]="productForm" (ngSubmit)="onSubmit()" class="product-form">
+        
+        <!-- Basic Information Section -->
+        <div class="form-section">
+          <h3 class="section-title">اطلاعات پایه</h3>
+          
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>نام محصول</mat-label>
+              <input matInput formControlName="name" placeholder="نام محصول را وارد کنید">
+              <mat-error *ngIf="productForm.get('name')?.hasError('required')">
+                نام محصول ضروری است
+              </mat-error>
+              <mat-error *ngIf="productForm.get('name')?.hasError('minlength')">
+                نام محصول باید حداقل 3 کاراکتر باشد
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>برند</mat-label>
+              <input matInput formControlName="brand" placeholder="برند محصول">
+              <mat-error *ngIf="productForm.get('brand')?.hasError('required')">
+                برند محصول ضروری است
+              </mat-error>
+            </mat-form-field>
+          </div>
+
+          <mat-form-field appearance="outline" class="form-field full-width">
+            <mat-label>توضیحات</mat-label>
+            <textarea matInput formControlName="description" rows="4" 
+                      placeholder="توضیحات کامل محصول را وارد کنید"></textarea>
+            <mat-error *ngIf="productForm.get('description')?.hasError('required')">
+              توضیحات محصول ضروری است
+            </mat-error>
+            <mat-error *ngIf="productForm.get('description')?.hasError('minlength')">
+              توضیحات باید حداقل 10 کاراکتر باشد
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <!-- Category and Gender Section -->
+        <div class="form-section">
+          <h3 class="section-title">دسته‌بندی و جنسیت</h3>
+          
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>دسته‌بندی</mat-label>
+              <mat-select formControlName="category">
+                <mat-option value="">دسته‌بندی را انتخاب کنید</mat-option>
+                @for (category of categories(); track category) {
+                  <mat-option [value]="category">{{ category }}</mat-option>
+                }
+              </mat-select>
+              <mat-error *ngIf="productForm.get('category')?.hasError('required')">
+                دسته‌بندی ضروری است
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>جنسیت</mat-label>
+              <mat-select formControlName="gender">
+                @for (option of genderOptions; track option.value) {
+                  <mat-option [value]="option.value">{{ option.label }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+          </div>
+        </div>
+
+        <!-- Age Range Section -->
+        <div class="form-section">
+          <h3 class="section-title">محدوده سنی</h3>
+          
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>حداقل سن</mat-label>
+              <input matInput type="number" formControlName="ageRangeMin" min="0" max="18">
+              <mat-error *ngIf="productForm.get('ageRangeMin')?.hasError('required')">
+                حداقل سن ضروری است
+              </mat-error>
+              <mat-error *ngIf="productForm.get('ageRangeMin')?.hasError('min')">
+                حداقل سن نمی‌تواند کمتر از 0 باشد
+              </mat-error>
+              <mat-error *ngIf="productForm.get('ageRangeMin')?.hasError('max')">
+                حداقل سن نمی‌تواند بیشتر از 18 باشد
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>حداکثر سن</mat-label>
+              <input matInput type="number" formControlName="ageRangeMax" min="0" max="18">
+              <mat-error *ngIf="productForm.get('ageRangeMax')?.hasError('required')">
+                حداکثر سن ضروری است
+              </mat-error>
+              <mat-error *ngIf="productForm.get('ageRangeMax')?.hasError('min')">
+                حداکثر سن نمی‌تواند کمتر از 0 باشد
+              </mat-error>
+              <mat-error *ngIf="productForm.get('ageRangeMax')?.hasError('max')">
+                حداکثر سن نمی‌تواند بیشتر از 18 باشد
+              </mat-error>
+            </mat-form-field>
+          </div>
+        </div>
+
+        <!-- Pricing Section -->
+        <div class="form-section">
+          <h3 class="section-title">قیمت‌گذاری</h3>
+          
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>قیمت (تومان)</mat-label>
+              <input matInput type="number" formControlName="price" min="0">
+              <mat-error *ngIf="productForm.get('price')?.hasError('required')">
+                قیمت ضروری است
+              </mat-error>
+              <mat-error *ngIf="productForm.get('price')?.hasError('min')">
+                قیمت نمی‌تواند کمتر از 0 باشد
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>قیمت اصلی (تومان) - اختیاری</mat-label>
+              <input matInput type="number" formControlName="originalPrice" min="0">
+              <mat-error *ngIf="productForm.get('originalPrice')?.hasError('min')">
+                قیمت اصلی نمی‌تواند کمتر از 0 باشد
+              </mat-error>
+            </mat-form-field>
+          </div>
+        </div>
+
+        <!-- Stock Section -->
+        <div class="form-section">
+          <h3 class="section-title">موجودی</h3>
+          
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>تعداد موجودی</mat-label>
+            <input matInput type="number" formControlName="stock" min="0">
+            <mat-error *ngIf="productForm.get('stock')?.hasError('required')">
+              تعداد موجودی ضروری است
+            </mat-error>
+            <mat-error *ngIf="productForm.get('stock')?.hasError('min')">
+              تعداد موجودی نمی‌تواند کمتر از 0 باشد
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <!-- Images Section -->
+        <div class="form-section">
+          <h3 class="section-title">تصاویر محصول</h3>
+          
+          <div class="image-input-container">
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>URL تصویر</mat-label>
+              <input matInput [value]="newImageUrl()" 
+                     (input)="newImageUrl.set($any($event.target).value)"
+                     placeholder="آدرس تصویر را وارد کنید">
+              <mat-icon matSuffix>image</mat-icon>
+            </mat-form-field>
+            
+            <button type="button" mat-raised-button color="primary" 
+                    (click)="addImage()" class="add-image-btn">
+              <mat-icon>add</mat-icon>
+              افزودن تصویر
+            </button>
+          </div>
+
+          <!-- Images Preview -->
+          @if (images().length > 0) {
+            <div class="images-preview">
+              <h4>تصاویر محصول:</h4>
+              <div class="images-grid">
+                @for (image of images(); track $index) {
+                  <div class="image-item">
+                    <img [src]="image" [alt]="'تصویر ' + ($index + 1)" loading="lazy">
+                    <button type="button" mat-icon-button color="warn" 
+                            (click)="removeImage($index)" class="remove-image-btn">
+                      <mat-icon>close</mat-icon>
+                    </button>
+                  </div>
+                }
+              </div>
+            </div>
+          }
+        </div>
+
+        <!-- Skills Section -->
+        <div class="form-section">
+          <h3 class="section-title">مهارت‌های تقویت شده</h3>
+          
+          <div class="skills-container">
+            <div class="available-skills">
+              <h4>مهارت‌های موجود:</h4>
+              <div class="skills-grid">
+                @for (skill of skills(); track skill) {
+                  <mat-chip 
+                    [class.selected]="(productForm.get('skills')?.value || []).includes(skill)"
+                    (click)="addSkill(skill)"
+                    class="skill-chip">
+                    {{ skill }}
+                  </mat-chip>
+                }
+              </div>
+            </div>
+
+            @if ((productForm.get('skills')?.value || []).length > 0) {
+              <div class="selected-skills">
+                <h4>مهارت‌های انتخاب شده:</h4>
+                <div class="selected-skills-grid">
+                  @for (skill of productForm.get('skills')?.value || []; track skill) {
+                    <mat-chip 
+                      color="primary" 
+                      (removed)="removeSkill(skill)"
+                      class="selected-skill-chip">
+                      {{ skill }}
+                      <mat-icon matChipRemove>cancel</mat-icon>
+                    </mat-chip>
+                  }
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+
+        <!-- Tags Section -->
+        <div class="form-section">
+          <h3 class="section-title">برچسب‌ها</h3>
+          
+          <div class="tags-container">
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>برچسب جدید</mat-label>
+              <input matInput #tagInput placeholder="برچسب را وارد کنید و Enter بزنید"
+                     (keyup.enter)="addTag(tagInput.value); tagInput.value = ''">
+              <mat-icon matSuffix>label</mat-icon>
+            </mat-form-field>
+
+            @if ((productForm.get('tags')?.value || []).length > 0) {
+              <div class="selected-tags">
+                <h4>برچسب‌های انتخاب شده:</h4>
+                <div class="selected-tags-grid">
+                  @for (tag of productForm.get('tags')?.value || []; track tag) {
+                    <mat-chip 
+                      color="accent" 
+                      (removed)="removeTag(tag)"
+                      class="selected-tag-chip">
+                      {{ tag }}
+                      <mat-icon matChipRemove>cancel</mat-icon>
+                    </mat-chip>
+                  }
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+
+        <!-- Smart Search Fields Section -->
+        <div class="form-section">
+          <h3 class="section-title">فیلدهای جستجوی هوشمند</h3>
+          
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>سن کودک</mat-label>
+              <input matInput type="number" formControlName="childAge" min="0" max="18">
+              <mat-error *ngIf="productForm.get('childAge')?.hasError('min')">
+                سن نمی‌تواند کمتر از 0 باشد
+              </mat-error>
+              <mat-error *ngIf="productForm.get('childAge')?.hasError('max')">
+                سن نمی‌تواند بیشتر از 18 باشد
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>جنسیت کودک</mat-label>
+              <mat-select formControlName="childGender">
+                @for (option of childGenderOptions; track option.value) {
+                  <mat-option [value]="option.value">{{ option.label }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+          </div>
+
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>سبک فرزندپروری</mat-label>
+            <mat-select formControlName="parentingStyle">
+              <mat-option value="">انتخاب کنید</mat-option>
+              @for (option of parentingStyleOptions; track option.value) {
+                <mat-option [value]="option.value">{{ option.label }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <!-- Interests Section -->
+        <div class="form-section">
+          <h3 class="section-title">علایق کودک</h3>
+          
+          <div class="interests-container">
+            <div class="available-interests">
+              <h4>علایق موجود:</h4>
+              <div class="interests-grid">
+                @for (interest of interestOptions; track interest.value) {
+                  <mat-chip 
+                    [class.selected]="(productForm.get('interests')?.value || []).includes(interest.value)"
+                    (click)="addInterest(interest.value)"
+                    class="interest-chip">
+                    {{ interest.label }}
+                  </mat-chip>
+                }
+              </div>
+            </div>
+
+            @if ((productForm.get('interests')?.value || []).length > 0) {
+              <div class="selected-interests">
+                <h4>علایق انتخاب شده:</h4>
+                <div class="selected-interests-grid">
+                  @for (interest of productForm.get('interests')?.value || []; track interest) {
+                    <mat-chip 
+                      color="primary" 
+                      (removed)="removeInterest(interest)"
+                      class="selected-interest-chip">
+                      {{ getInterestLabel(interest) }}
+                      <mat-icon matChipRemove>cancel</mat-icon>
+                    </mat-chip>
+                  }
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+
+        <!-- Growth Goals Section -->
+        <div class="form-section">
+          <h3 class="section-title">اهداف رشد</h3>
+          
+          <div class="goals-container">
+            <div class="available-goals">
+              <h4>اهداف موجود:</h4>
+              <div class="goals-grid">
+                @for (goal of growthGoalOptions; track goal.value) {
+                  <mat-chip 
+                    [class.selected]="(productForm.get('growthGoals')?.value || []).includes(goal.value)"
+                    (click)="addGrowthGoal(goal.value)"
+                    class="goal-chip">
+                    {{ goal.label }}
+                  </mat-chip>
+                }
+              </div>
+            </div>
+
+            @if ((productForm.get('growthGoals')?.value || []).length > 0) {
+              <div class="selected-goals">
+                <h4>اهداف انتخاب شده:</h4>
+                <div class="selected-goals-grid">
+                  @for (goal of productForm.get('growthGoals')?.value || []; track goal) {
+                    <mat-chip 
+                      color="accent" 
+                      (removed)="removeGrowthGoal(goal)"
+                      class="selected-goal-chip">
+                      {{ getGrowthGoalLabel(goal) }}
+                      <mat-icon matChipRemove>cancel</mat-icon>
+                    </mat-chip>
+                  }
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+
+        <!-- Status Section -->
+        <div class="form-section">
+          <h3 class="section-title">وضعیت</h3>
+          
+          <mat-checkbox formControlName="isActive" color="primary">
+            محصول فعال باشد
+          </mat-checkbox>
+        </div>
+
+        <!-- Error Display -->
+        @if (error()) {
+          <div class="error-message">
+            <mat-icon>error</mat-icon>
+            <span>{{ error() }}</span>
+          </div>
+        }
+
+        <!-- Form Actions -->
+        <div class="form-actions">
+          <button type="button" mat-stroked-button (click)="onCancel()" 
+                  [disabled]="loading()">
+            <mat-icon>cancel</mat-icon>
+            انصراف
+          </button>
+          
+          <button type="submit" mat-raised-button color="primary" 
+                  [disabled]="!isFormValid() || loading()">
+            @if (loading()) {
+              <mat-spinner diameter="20" class="button-spinner"></mat-spinner>
+            } @else {
+              <mat-icon>save</mat-icon>
+            }
+            {{ submitButtonText() }}
+          </button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</div> 

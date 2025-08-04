@@ -6,9 +6,15 @@ import { AdminLayoutComponent } from './components/admin-layout/admin-layout.com
 import { AdminLoginComponent } from './pages/admin-login/admin-login.component';
 import { AdminDashboardComponent } from './pages/admin-dashboard/admin-dashboard.component';
 import { AdminProductsComponent } from './pages/admin-products/admin-products.component';
+import { AdminProductCreateComponent } from './pages/admin-product-create/admin-product-create.component';
+import { AdminProductEditComponent } from './pages/admin-product-edit/admin-product-edit.component';
+import { AdminCategoriesComponent } from './pages/admin-categories/admin-categories.component';
+import { AdminUsersComponent } from './pages/admin-users/admin-users.component';
 import { AdminOrdersComponent } from './pages/admin-orders/admin-orders.component';
 import { AdminAuthGuard } from './shared/guards/admin-auth.guard';
 import { AdminPermission } from './models/admin.model';
+import { LoginComponent } from './pages/login/login.component';
+import { RegisterComponent } from './pages/register/register.component';
 
 export const routes: Routes = [
   // Public routes
@@ -16,6 +22,8 @@ export const routes: Routes = [
   { path: 'home', component: HomeComponent },
   { path: 'products', component: ProductsComponent },
   { path: 'cart', component: CartComponent },
+  { path: 'login', component: LoginComponent },
+  { path: 'register', component: RegisterComponent },
   
   // Admin routes
   { path: 'admin/login', component: AdminLoginComponent },
@@ -36,12 +44,31 @@ export const routes: Routes = [
         data: { permission: AdminPermission.MANAGE_PRODUCTS }
       },
       { 
+        path: 'products/create', 
+        component: AdminProductCreateComponent,
+        data: { permission: AdminPermission.MANAGE_PRODUCTS }
+      },
+      { 
+        path: 'products/edit/:id', 
+        component: AdminProductEditComponent,
+        data: { permission: AdminPermission.MANAGE_PRODUCTS }
+      },
+      { 
+        path: 'categories', 
+        component: AdminCategoriesComponent,
+        data: { permission: AdminPermission.MANAGE_CATEGORIES }
+      },
+      { 
         path: 'orders', 
         component: AdminOrdersComponent, 
         data: { permission: AdminPermission.MANAGE_ORDERS } 
       },
+      { 
+        path: 'users', 
+        component: AdminUsersComponent, 
+        data: { permission: AdminPermission.MANAGE_USERS } 
+      },
       // Future admin routes will be added here
-      // { path: 'users', component: AdminUsersComponent, data: { permission: AdminPermission.MANAGE_USERS } },
       // { path: 'admins', component: AdminAdminsComponent, data: { permission: AdminPermission.MANAGE_ADMINS } },
     ]
   },

@@ -1,0 +1,52 @@
+<div class="edit-product-container">
+  <!-- Loading State -->
+  @if (loading()) {
+    <div class="loading-container">
+      <mat-spinner></mat-spinner>
+      <p>در حال بارگذاری محصول...</p>
+    </div>
+  }
+
+  <!-- Error State -->
+  @else if (error()) {
+    <div class="error-container">
+      <mat-card class="error-card">
+        <mat-card-content>
+          <div class="error-content">
+            <mat-icon class="error-icon">error</mat-icon>
+            <h3>خطا در بارگذاری محصول</h3>
+            <p>{{ error() }}</p>
+            <div class="error-actions">
+              <button mat-raised-button color="primary" (click)="retryLoad()">
+                <mat-icon>refresh</mat-icon>
+                تلاش مجدد
+              </button>
+              <button mat-stroked-button (click)="onCancelled()">
+                <mat-icon>arrow_back</mat-icon>
+                بازگشت
+              </button>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  }
+
+  <!-- Product Form -->
+  @else if (product()) {
+    <div class="page-header">
+      <div class="header-content">
+        <button mat-icon-button (click)="onCancelled()" class="back-button">
+          <mat-icon>arrow_back</mat-icon>
+        </button>
+        <h1 class="page-title">ویرایش محصول</h1>
+      </div>
+    </div>
+
+    <app-product-form 
+      [product]="product()!"
+      (saved)="onProductSaved($event)"
+      (cancelled)="onCancelled()">
+    </app-product-form>
+  }
+</div> 

@@ -1,10 +1,11 @@
 import { Injectable, inject, signal, computed } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, of, throwError, BehaviorSubject, combineLatest } from 'rxjs';
-import { map, catchError, shareReplay, startWith } from 'rxjs/operators';
+import { map, catchError, shareReplay, startWith, delay } from 'rxjs/operators';
 import { toSignal } from '@angular/core/rxjs-interop';
 
 import { Product, ProductFilter, CreateProductDto, UpdateProductDto, ProductGender } from '../models/product.model';
+import { ParentingStyle, ChildInterest, GrowthGoal } from '../models/parenting-style.model';
 
 interface ProductServiceState {
   readonly products: ReadonlyArray<Product>;
@@ -50,7 +51,13 @@ export class ProductService {
       tags: ['آموزشی', 'ریاضی', 'لگو'],
       isActive: true,
       createdAt: new Date('2024-01-01'),
-      updatedAt: new Date('2024-01-01')
+      updatedAt: new Date('2024-01-01'),
+      // فیلدهای جدید
+      interests: [ChildInterest.PUZZLES, ChildInterest.BUILDING, ChildInterest.SCIENCE],
+      growthGoals: [GrowthGoal.COGNITIVE_DEVELOPMENT, GrowthGoal.PROBLEM_SOLVING],
+      parentingStyle: ParentingStyle.AUTHORITATIVE,
+      childAge: 8,
+      childGender: 'unisex'
     },
     {
       id: '2',
@@ -224,15 +231,80 @@ export class ProductService {
   }
 
   createProduct(productDto: CreateProductDto): Observable<Product> {
-    return throwError(() => new Error('Not implemented - will be connected to backend'));
+    // Mock implementation - in real app, send to backend
+    const newProduct: Product = {
+      id: Date.now().toString(), // Generate unique ID
+      name: productDto.name,
+      description: productDto.description,
+      price: productDto.price,
+      ...(productDto.originalPrice && { originalPrice: productDto.originalPrice }),
+      images: productDto.images,
+      category: productDto.category,
+      ageRange: productDto.ageRange,
+      gender: productDto.gender,
+      skills: productDto.skills,
+      brand: productDto.brand,
+      stock: productDto.stock,
+      rating: 0, // New products start with 0 rating
+      reviews: [],
+      tags: productDto.tags,
+      isActive: true,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
+
+    // Add to mock products
+    const updatedProducts = [...this.mockProducts, newProduct];
+    this.updateState({ products: updatedProducts });
+
+    return of(newProduct).pipe(
+      delay(1000), // Simulate network delay
+      catchError(this.handleError<Product>('createProduct'))
+    );
   }
 
   updateProduct(productDto: UpdateProductDto): Observable<Product> {
-    return throwError(() => new Error('Not implemented - will be connected to backend'));
+    // Mock implementation - in real app, send to backend
+    const existingProduct = this.mockProducts.find(p => p.id === productDto.id);
+    
+    if (!existingProduct) {
+      return throwError(() => new Error('محصول مورد نظر یافت نشد'));
+    }
+
+    const updatedProduct: Product = {
+      ...existingProduct,
+      ...productDto,
+      updatedAt: new Date()
+    };
+
+    // Update in mock products
+    const updatedProducts = this.mockProducts.map(p =>
+      p.id === productDto.id ? updatedProduct : p
+    );
+    this.updateState({ products: updatedProducts });
+
+    return of(updatedProduct).pipe(
+      delay(1000), // Simulate network delay
+      catchError(this.handleError<Product>('updateProduct'))
+    );
   }
 
   deleteProduct(id: string): Observable<void> {
-    return throwError(() => new Error('Not implemented - will be connected to backend'));
+    // Mock implementation - in real app, send to backend
+    const productExists = this.mockProducts.some(p => p.id === id);
+    
+    if (!productExists) {
+      return throwError(() => new Error('محصول مورد نظر یافت نشد'));
+    }
+
+    // Remove from mock products
+    const updatedProducts = this.mockProducts.filter(p => p.id !== id);
+    this.updateState({ products: updatedProducts });
+
+    return of(void 0).pipe(
+      delay(1000), // Simulate network delay
+      catchError(this.handleError<void>('deleteProduct'))
+    );
   }
 
   private handleError<T>(operation = 'operation', result?: T) {

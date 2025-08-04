@@ -1,0 +1,107 @@
+.category-form-dialog {
+  direction: rtl;
+  max-width: 600px;
+  width: 100%;
+
+  .dialog-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #e0e0e0;
+
+    h2 {
+      margin: 0;
+      color: #333;
+      font-size: 1.5rem;
+      font-weight: 600;
+    }
+
+    .close-button {
+      margin-right: auto;
+    }
+  }
+
+  .dialog-content {
+    max-height: 70vh;
+    overflow-y: auto;
+
+    .form-sections {
+      display: flex;
+      flex-direction: column;
+      gap: 30px;
+
+      .form-section {
+        h3 {
+          margin: 0 0 20px 0;
+          color: #333;
+          font-size: 1.2rem;
+          font-weight: 600;
+          padding-bottom: 8px;
+          border-bottom: 2px solid #1976d2;
+        }
+
+        .form-row {
+          margin-bottom: 20px;
+
+          .form-field {
+            width: 100%;
+          }
+
+          mat-checkbox {
+            margin-top: 10px;
+          }
+        }
+      }
+    }
+  }
+
+  .dialog-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid #e0e0e0;
+
+    button {
+      border-radius: 8px;
+      font-weight: 500;
+      padding: 8px 16px;
+      min-width: 100px;
+    }
+  }
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .category-form-dialog {
+    .dialog-title {
+      h2 {
+        font-size: 1.3rem;
+      }
+    }
+
+    .dialog-content {
+      .form-sections {
+        gap: 20px;
+
+        .form-section {
+          h3 {
+            font-size: 1.1rem;
+          }
+        }
+      }
+    }
+
+    .dialog-actions {
+      flex-direction: column;
+      gap: 8px;
+
+      button {
+        width: 100%;
+      }
+    }
+  }
+} 

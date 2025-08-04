@@ -1,0 +1,15 @@
+<div class="create-product-container">
+  <div class="page-header">
+    <div class="header-content">
+      <button mat-icon-button (click)="onCancelled()" class="back-button">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      <h1 class="page-title">ایجاد محصول جدید</h1>
+    </div>
+  </div>
+
+  <app-product-form 
+    (saved)="onProductSaved($event)"
+    (cancelled)="onCancelled()">
+  </app-product-form>
+</div> 

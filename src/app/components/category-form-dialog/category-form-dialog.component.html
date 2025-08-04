@@ -1,0 +1,106 @@
+<div class="category-form-dialog">
+  <div mat-dialog-title class="dialog-title">
+    <h2>{{ isEditMode ? 'ویرایش دسته‌بندی' : 'افزودن دسته‌بندی جدید' }}</h2>
+    <button mat-icon-button (click)="onCancel()" class="close-button">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <form [formGroup]="categoryForm" (ngSubmit)="onSubmit()" class="dialog-content">
+    <div class="form-sections">
+      <!-- Basic Information -->
+      <div class="form-section">
+        <h3>اطلاعات پایه</h3>
+        
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>نام دسته‌بندی *</mat-label>
+            <input matInput formControlName="name" placeholder="نام دسته‌بندی را وارد کنید">
+            <mat-error *ngIf="categoryForm.get('name')?.hasError('required')">
+              نام دسته‌بندی الزامی است
+            </mat-error>
+            <mat-error *ngIf="categoryForm.get('name')?.hasError('minlength')">
+              نام دسته‌بندی باید حداقل 2 کاراکتر باشد
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>توضیحات</mat-label>
+            <textarea matInput formControlName="description" 
+                      placeholder="توضیحات دسته‌بندی را وارد کنید"
+                      rows="3"></textarea>
+          </mat-form-field>
+        </div>
+
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>Slug</mat-label>
+            <input matInput formControlName="slug" placeholder="slug دسته‌بندی">
+            <mat-hint>به صورت خودکار از نام تولید می‌شود</mat-hint>
+          </mat-form-field>
+        </div>
+      </div>
+
+      <!-- Category Settings -->
+      <div class="form-section">
+        <h3>تنظیمات دسته‌بندی</h3>
+        
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>دسته‌بندی والد</mat-label>
+            <mat-select formControlName="parentId">
+              <mat-option value="">بدون والد (سطح اصلی)</mat-option>
+              @for (parent of parentCategories; track parent.id) {
+                <mat-option [value]="parent.id">{{ parent.name }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>ترتیب نمایش *</mat-label>
+            <input matInput type="number" formControlName="sortOrder" min="1">
+            <mat-error *ngIf="categoryForm.get('sortOrder')?.hasError('required')">
+              ترتیب نمایش الزامی است
+            </mat-error>
+            <mat-error *ngIf="categoryForm.get('sortOrder')?.hasError('min')">
+              ترتیب نمایش باید حداقل 1 باشد
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>تصویر</mat-label>
+            <input matInput formControlName="image" placeholder="آدرس تصویر دسته‌بندی">
+            <mat-hint>آدرس تصویر دسته‌بندی (اختیاری)</mat-hint>
+          </mat-form-field>
+        </div>
+
+        <div class="form-row">
+          <mat-checkbox formControlName="isActive" color="primary">
+            دسته‌بندی فعال است
+          </mat-checkbox>
+        </div>
+      </div>
+    </div>
+  </form>
+
+  <div mat-dialog-actions class="dialog-actions">
+    <button mat-stroked-button (click)="onCancel()" type="button">
+      <mat-icon>close</mat-icon>
+      انصراف
+    </button>
+    <button mat-raised-button 
+            color="primary" 
+            (click)="onSubmit()" 
+            [disabled]="!isFormValid"
+            type="submit">
+      <mat-icon>{{ isEditMode ? 'update' : 'add' }}</mat-icon>
+      {{ submitButtonText }}
+    </button>
+  </div>
+</div> 

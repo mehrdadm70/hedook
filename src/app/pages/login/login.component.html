@@ -1,0 +1,124 @@
+<div class="login-container">
+  <div class="login-background"></div>
+  
+  <div class="login-content">
+    <!-- Header -->
+    <div class="login-header">
+      <button mat-icon-button (click)="goToHome()" class="back-button" aria-label="بازگشت به خانه">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      <h1 class="login-title">ورود به هدوک</h1>
+    </div>
+
+    <!-- Login Card -->
+    <mat-card class="login-card">
+      <mat-card-header class="card-header">
+        <div class="logo-section">
+          <mat-icon class="logo-icon">account_circle</mat-icon>
+          <h2>ورود کاربر</h2>
+        </div>
+      </mat-card-header>
+
+      <mat-card-content>
+        <!-- Error Display -->
+        @if (error()) {
+          <div class="error-message">
+            <mat-icon class="error-icon">error</mat-icon>
+            <span>{{ error() }}</span>
+            <button mat-icon-button (click)="clearError()" aria-label="بستن خطا">
+              <mat-icon>close</mat-icon>
+            </button>
+          </div>
+        }
+
+        <!-- Login Form -->
+        <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
+          <!-- Email Field -->
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>ایمیل</mat-label>
+            <input 
+              matInput 
+              type="email" 
+              formControlName="email" 
+              placeholder="example@email.com"
+              autocomplete="username">
+            <mat-icon matSuffix>email</mat-icon>
+            @if (isFieldInvalid('email')) {
+              <mat-error>{{ getFieldError('email') }}</mat-error>
+            }
+          </mat-form-field>
+
+          <!-- Password Field -->
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>رمز عبور</mat-label>
+            <input 
+              matInput 
+              [type]="hidePassword() ? 'password' : 'text'"
+              formControlName="password" 
+              placeholder="رمز عبور خود را وارد کنید"
+              autocomplete="current-password">
+            <mat-icon matSuffix>lock</mat-icon>
+            <button 
+              mat-icon-button 
+              matSuffix 
+              type="button"
+              (click)="togglePasswordVisibility()" 
+              [attr.aria-label]="hidePassword() ? 'نمایش رمز عبور' : 'مخفی کردن رمز عبور'">
+              <mat-icon>{{ hidePassword() ? 'visibility' : 'visibility_off' }}</mat-icon>
+            </button>
+            @if (isFieldInvalid('password')) {
+              <mat-error>{{ getFieldError('password') }}</mat-error>
+            }
+          </mat-form-field>
+
+          <!-- Submit Button -->
+          <button 
+            mat-raised-button 
+            color="primary" 
+            type="submit"
+            [disabled]="!isFormValid || loading()"
+            class="submit-button">
+            @if (loading()) {
+              <mat-spinner diameter="20" class="spinner"></mat-spinner>
+              <span>در حال ورود...</span>
+            } @else {
+              <mat-icon>login</mat-icon>
+              <span>ورود</span>
+            }
+          </button>
+        </form>
+
+        <!-- Divider -->
+        <mat-divider class="divider">
+          <span class="divider-text">یا</span>
+        </mat-divider>
+
+        <!-- Register Link -->
+        <div class="register-section">
+          <p class="register-text">حساب کاربری ندارید؟</p>
+          <button 
+            mat-button 
+            color="primary" 
+            (click)="goToRegister()"
+            class="register-button">
+            <mat-icon>person_add</mat-icon>
+            <span>ثبت نام کنید</span>
+          </button>
+        </div>
+
+        <!-- Demo Credentials -->
+        <div class="demo-section">
+          <h4>اطلاعات تست:</h4>
+          <div class="demo-credentials">
+            <div class="demo-item">
+              <strong>ایمیل:</strong> ali&#64;example.com
+            </div>
+            <div class="demo-item">
+              <strong>رمز عبور:</strong> password123
+            </div>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div> 

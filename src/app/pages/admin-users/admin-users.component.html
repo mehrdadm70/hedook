@@ -1,0 +1,292 @@
+<div class="users-container">
+  <!-- Header -->
+  <div class="users-header">
+    <div class="header-content">
+      <h1 class="page-title">مدیریت کاربران</h1>
+      <div class="header-stats">
+        <span class="total-users">{{ filteredUsers().length }} کاربر</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stats Cards -->
+  @if (stats()) {
+    <div class="stats-section">
+      <mat-card class="stat-card">
+        <mat-card-content>
+          <div class="stat-content">
+            <mat-icon class="stat-icon">people</mat-icon>
+            <div class="stat-info">
+              <h3>{{ stats()?.totalUsers }}</h3>
+              <p>کل کاربران</p>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="stat-card">
+        <mat-card-content>
+          <div class="stat-content">
+            <mat-icon class="stat-icon">check_circle</mat-icon>
+            <div class="stat-info">
+              <h3>{{ stats()?.activeUsers }}</h3>
+              <p>کاربران فعال</p>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="stat-card">
+        <mat-card-content>
+          <div class="stat-content">
+            <mat-icon class="stat-icon">star</mat-icon>
+            <div class="stat-info">
+              <h3>{{ stats()?.vipUsers }}</h3>
+              <p>کاربران VIP</p>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="stat-card">
+        <mat-card-content>
+          <div class="stat-content">
+            <mat-icon class="stat-icon">trending_up</mat-icon>
+            <div class="stat-info">
+              <h3>{{ stats()?.newUsersThisMonth }}</h3>
+              <p>کاربران جدید این ماه</p>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  }
+
+  <!-- Filters -->
+  <mat-card class="filters-card">
+    <mat-card-content>
+      <div class="filters-row">
+        <!-- Search Filter -->
+        <mat-form-field appearance="outline" class="filter-field">
+          <mat-label>جستجو</mat-label>
+          <input matInput 
+                 [value]="searchTerm()" 
+                 (input)="searchTerm.set($any($event.target).value); applyFilters()"
+                 placeholder="جستجو بر اساس نام، ایمیل یا شماره تلفن">
+          <mat-icon matSuffix>search</mat-icon>
+        </mat-form-field>
+
+        <!-- Role Filter -->
+        <mat-form-field appearance="outline" class="filter-field">
+          <mat-label>نقش</mat-label>
+          <mat-select 
+            [value]="selectedRole()" 
+            (selectionChange)="selectedRole.set($event.value); applyFilters()">
+            @for (role of roleOptions; track role.value) {
+              <mat-option [value]="role.value">{{ role.label }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <!-- Status Filter -->
+        <mat-form-field appearance="outline" class="filter-field">
+          <mat-label>وضعیت</mat-label>
+          <mat-select 
+            [value]="selectedStatus()" 
+            (selectionChange)="selectedStatus.set($event.value); applyFilters()">
+            @for (status of statusOptions; track status.value) {
+              <mat-option [value]="status.value">{{ status.label }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <!-- Clear Filters -->
+        <button mat-stroked-button (click)="clearFilters()" class="clear-filters-btn">
+          <mat-icon>clear</mat-icon>
+          پاک کردن فیلترها
+        </button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Add User Button -->
+  <div class="add-user-section">
+    <button mat-raised-button color="primary" (click)="createUser()" class="add-user-btn">
+      <mat-icon>person_add</mat-icon>
+      افزودن کاربر جدید
+    </button>
+  </div>
+
+  <!-- Loading State -->
+  @if (loading()) {
+    <div class="loading-container">
+      <mat-spinner></mat-spinner>
+      <p>در حال بارگذاری کاربران...</p>
+    </div>
+  }
+
+  <!-- Error State -->
+  @else if (error()) {
+    <mat-card class="error-card">
+      <mat-card-content>
+        <div class="error-content">
+          <mat-icon class="error-icon">error</mat-icon>
+          <h3>خطا در بارگذاری کاربران</h3>
+          <p>{{ error() }}</p>
+          <button mat-raised-button color="primary" (click)="retryLoad()">
+            تلاش مجدد
+          </button>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  }
+
+  <!-- Users Table -->
+  @else if (hasFilteredUsers()) {
+    <mat-card class="table-card">
+      <mat-card-content>
+        <div class="table-header">
+          <h3>لیست کاربران</h3>
+        </div>
+
+        <div class="table-container">
+          <mat-table [dataSource]="filteredUsers()" class="users-table">
+            <!-- Avatar Column -->
+            <ng-container matColumnDef="avatar">
+              <mat-header-cell *matHeaderCellDef>تصویر</mat-header-cell>
+              <mat-cell *matCellDef="let user">
+                <div class="user-avatar">
+                  <img [src]="getUserAvatar(user)" [alt]="getUserFullName(user)" class="avatar-img">
+                </div>
+              </mat-cell>
+            </ng-container>
+
+            <!-- Name Column -->
+            <ng-container matColumnDef="name">
+              <mat-header-cell *matHeaderCellDef>نام و نام خانوادگی</mat-header-cell>
+              <mat-cell *matCellDef="let user">
+                <div class="user-name">
+                  <strong>{{ getUserFullName(user) }}</strong>
+                  <span class="user-email">{{ user.email }}</span>
+                </div>
+              </mat-cell>
+            </ng-container>
+
+            <!-- Email Column -->
+            <ng-container matColumnDef="email">
+              <mat-header-cell *matHeaderCellDef>ایمیل</mat-header-cell>
+              <mat-cell *matCellDef="let user">
+                <span class="email">{{ user.email }}</span>
+                @if (user.emailVerified) {
+                  <mat-icon class="verified-icon" matTooltip="تأیید شده">verified</mat-icon>
+                }
+              </mat-cell>
+            </ng-container>
+
+            <!-- Role Column -->
+            <ng-container matColumnDef="role">
+              <mat-header-cell *matHeaderCellDef>نقش</mat-header-cell>
+              <mat-cell *matCellDef="let user">
+                <mat-chip [color]="getRoleColor(user.role)">
+                  {{ getRoleLabel(user.role) }}
+                </mat-chip>
+              </mat-cell>
+            </ng-container>
+
+            <!-- Status Column -->
+            <ng-container matColumnDef="status">
+              <mat-header-cell *matHeaderCellDef>وضعیت</mat-header-cell>
+              <mat-cell *matCellDef="let user">
+                <mat-chip [color]="getStatusColor(user.isActive)">
+                  {{ getStatusLabel(user.isActive) }}
+                </mat-chip>
+              </mat-cell>
+            </ng-container>
+
+            <!-- Orders Column -->
+            <ng-container matColumnDef="orders">
+              <mat-header-cell *matHeaderCellDef>تعداد سفارشات</mat-header-cell>
+              <mat-cell *matCellDef="let user">
+                <span class="orders-count">{{ user.totalOrders }} سفارش</span>
+              </mat-cell>
+            </ng-container>
+
+            <!-- Total Spent Column -->
+            <ng-container matColumnDef="totalSpent">
+              <mat-header-cell *matHeaderCellDef>مجموع خرید</mat-header-cell>
+              <mat-cell *matCellDef="let user">
+                <span class="total-spent">{{ formatCurrency(user.totalSpent) }}</span>
+              </mat-cell>
+            </ng-container>
+
+            <!-- Last Login Column -->
+            <ng-container matColumnDef="lastLogin">
+              <mat-header-cell *matHeaderCellDef>آخرین ورود</mat-header-cell>
+              <mat-cell *matCellDef="let user">
+                @if (user.lastLogin) {
+                  {{ formatDate(user.lastLogin) }}
+                } @else {
+                  <span class="no-login">هیچ‌وقت</span>
+                }
+              </mat-cell>
+            </ng-container>
+
+            <!-- Created At Column -->
+            <ng-container matColumnDef="createdAt">
+              <mat-header-cell *matHeaderCellDef>تاریخ عضویت</mat-header-cell>
+              <mat-cell *matCellDef="let user">
+                {{ formatDate(user.createdAt) }}
+              </mat-cell>
+            </ng-container>
+
+            <!-- Actions Column -->
+            <ng-container matColumnDef="actions">
+              <mat-header-cell *matHeaderCellDef>عملیات</mat-header-cell>
+              <mat-cell *matCellDef="let user">
+                <div class="actions-buttons">
+                  <!-- Edit Button -->
+                  <button 
+                    mat-icon-button 
+                    (click)="editUser(user)"
+                    matTooltip="ویرایش کاربر"
+                    color="primary">
+                    <mat-icon>edit</mat-icon>
+                  </button>
+                  
+                  <!-- Delete Button -->
+                  <button 
+                    mat-icon-button 
+                    (click)="deleteUser(user)"
+                    matTooltip="حذف کاربر"
+                    color="warn">
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                </div>
+              </mat-cell>
+            </ng-container>
+
+            <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+            <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+          </mat-table>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  }
+
+  <!-- No Results -->
+  @else {
+    <mat-card class="no-results-card">
+      <mat-card-content>
+        <div class="no-results-content">
+          <mat-icon class="no-results-icon">people</mat-icon>
+          <h3>کاربری یافت نشد</h3>
+          <p>با فیلترهای انتخابی هیچ کاربری یافت نشد.</p>
+          <button mat-stroked-button (click)="clearFilters()">
+            <mat-icon>clear</mat-icon>
+            پاک کردن فیلترها
+          </button>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  }
+</div> 

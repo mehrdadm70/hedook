@@ -9,10 +9,14 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatDialog } from '@angular/material/dialog';
 import { FormsModule } from '@angular/forms';
+import { Observable, of, throwError } from 'rxjs';
+import { timeout, catchError } from 'rxjs/operators';
 
 import { Order, OrderStatus } from '../../models/order.model';
 import { AdminService } from '../../services/admin.service';
+import { OrderDetailDialogComponent } from '../../components/order-detail-dialog/order-detail-dialog.component';
 
 interface OrdersState {
   readonly orders: ReadonlyArray<Order>;
@@ -41,6 +45,7 @@ interface OrdersState {
 export class AdminOrdersComponent implements OnInit {
   private readonly adminService = inject(AdminService);
   private readonly snackBar = inject(MatSnackBar);
+  private readonly dialog = inject(MatDialog);
 
   private readonly state = signal<OrdersState>({
     orders: [],
@@ -61,7 +66,9 @@ export class AdminOrdersComponent implements OnInit {
   readonly displayedColumns = [
     'orderId',
     'userId', 
+    'itemsCount',
     'totalAmount',
+    'paymentMethod',
     'status',
     'createdAt',
     'actions'
@@ -69,6 +76,9 @@ export class AdminOrdersComponent implements OnInit {
 
   // Filter options
   readonly selectedStatus = signal('');
+  readonly searchTerm = signal('');
+  readonly selectedDateRange = signal('');
+  
   readonly statusOptions = [
     { value: '', label: 'همه سفارشات' },
     { value: OrderStatus.PENDING, label: 'در انتظار' },
@@ -78,61 +88,18 @@ export class AdminOrdersComponent implements OnInit {
     { value: OrderStatus.CANCELLED, label: 'لغو شده' }
   ];
 
-  // Mock orders data
-  private readonly mockOrders: Order[] = [
-    {
-      id: 'ORD-001',
-      userId: 'user-1',
-      items: [
-        {
-          productId: '1',
-          productName: 'لگو آموزشی ریاضی',
-          productImage: 'assets/images/lego-math.jpg',
-          quantity: 2,
-          price: 250000,
-          totalPrice: 500000
-        }
-      ],
-      totalAmount: 500000,
-      status: OrderStatus.PENDING,
-      shippingAddress: {
-        street: 'خیابان آزادی، پلاک 123',
-        city: 'تهران',
-        state: 'تهران',
-        zipCode: '1234567890',
-        country: 'ایران'
-      },
-      paymentMethod: 'online' as any,
-      createdAt: new Date(),
-      updatedAt: new Date()
-    },
-    {
-      id: 'ORD-002',
-      userId: 'user-2',
-      items: [
-        {
-          productId: '2',
-          productName: 'عروسک باربی',
-          productImage: 'assets/images/barbie.jpg',
-          quantity: 1,
-          price: 180000,
-          totalPrice: 180000
-        }
-      ],
-      totalAmount: 180000,
-      status: OrderStatus.CONFIRMED,
-      shippingAddress: {
-        street: 'خیابان ولیعصر، پلاک 456',
-        city: 'تهران',
-        state: 'تهران',
-        zipCode: '0987654321',
-        country: 'ایران'
-      },
-      paymentMethod: 'cash_on_delivery' as any,
-      createdAt: new Date(Date.now() - 86400000),
-      updatedAt: new Date(Date.now() - 86400000)
-    }
+  readonly dateRangeOptions = [
+    { value: '', label: 'همه تاریخ‌ها' },
+    { value: 'today', label: 'امروز' },
+    { value: 'yesterday', label: 'دیروز' },
+    { value: 'week', label: 'هفته گذشته' },
+    { value: 'month', label: 'ماه گذشته' }
   ];
+
+  // Expose OrderStatus for template
+  readonly OrderStatus = OrderStatus;
+
+
 
   ngOnInit(): void {
     this.loadOrders();
@@ -141,24 +108,82 @@ export class AdminOrdersComponent implements OnInit {
   private loadOrders(): void {
     this.updateState({ loading: true, error: null });
 
-    // Mock loading - in real app, call service
-    setTimeout(() => {
-      this.updateState({
-        orders: this.mockOrders,
-        filteredOrders: this.mockOrders,
-        loading: false,
-        error: null
-      });
-    }, 1000);
+    this.adminService.getAllOrders().pipe(
+      timeout(10000), // 10 second timeout
+      catchError((error) => {
+        console.error('Error loading orders:', error);
+        return throwError(() => new Error('خطا در بارگذاری سفارشات. لطفاً دوباره تلاش کنید.'));
+      })
+    ).subscribe({
+      next: (orders) => {
+        this.updateState({
+          orders,
+          filteredOrders: orders,
+          loading: false,
+          error: null
+        });
+      },
+      error: (error) => {
+        console.error('Error loading orders:', error);
+        // Fallback to empty orders if service fails
+        this.updateState({
+          orders: [],
+          filteredOrders: [],
+          loading: false,
+          error: error?.message || 'خطا در بارگذاری سفارشات. لطفاً دوباره تلاش کنید.'
+        });
+      }
+    });
   }
 
-  applyStatusFilter(): void {
+  applyFilters(): void {
     const selectedStatus = this.selectedStatus();
+    const searchTerm = this.searchTerm().toLowerCase();
+    const selectedDateRange = this.selectedDateRange();
     
     let filtered = [...this.orders()];
     
+    // Status filter
     if (selectedStatus) {
       filtered = filtered.filter(order => order.status === selectedStatus);
+    }
+    
+    // Search filter
+    if (searchTerm) {
+      filtered = filtered.filter(order => 
+        order.id.toLowerCase().includes(searchTerm) ||
+        order.userId.toLowerCase().includes(searchTerm) ||
+        order.items.some(item => 
+          item.productName.toLowerCase().includes(searchTerm)
+        )
+      );
+    }
+    
+    // Date range filter
+    if (selectedDateRange) {
+      const now = new Date();
+      const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      
+      filtered = filtered.filter(order => {
+        const orderDate = new Date(order.createdAt);
+        const orderDateOnly = new Date(orderDate.getFullYear(), orderDate.getMonth(), orderDate.getDate());
+        
+        switch (selectedDateRange) {
+          case 'today':
+            return orderDateOnly.getTime() === today.getTime();
+          case 'yesterday':
+            const yesterday = new Date(today.getTime() - 86400000);
+            return orderDateOnly.getTime() === yesterday.getTime();
+          case 'week':
+            const weekAgo = new Date(today.getTime() - 7 * 86400000);
+            return orderDateOnly >= weekAgo;
+          case 'month':
+            const monthAgo = new Date(today.getTime() - 30 * 86400000);
+            return orderDateOnly >= monthAgo;
+          default:
+            return true;
+        }
+      });
     }
     
     this.updateState({ filteredOrders: filtered });
@@ -166,26 +191,36 @@ export class AdminOrdersComponent implements OnInit {
 
   clearFilters(): void {
     this.selectedStatus.set('');
+    this.searchTerm.set('');
+    this.selectedDateRange.set('');
     this.updateState({ filteredOrders: this.orders() });
   }
 
-  updateOrderStatus(order: Order, newStatus: any): void {
-    // Mock update - in real app, call service
-    const updatedOrders = this.orders().map(o =>
-      o.id === order.id 
-        ? { ...o, status: newStatus, updatedAt: new Date() }
-        : o
-    );
+  updateOrderStatus(order: Order, newStatus: OrderStatus): void {
+    this.adminService.updateOrderStatus(order.id, newStatus).subscribe({
+      next: (updatedOrder) => {
+        const updatedOrders = this.orders().map(o =>
+          o.id === order.id ? updatedOrder : o
+        );
 
-    this.updateState({ 
-      orders: updatedOrders,
-      filteredOrders: updatedOrders
-    });
+        this.updateState({ 
+          orders: updatedOrders,
+          filteredOrders: updatedOrders
+        });
 
-    this.snackBar.open(`وضعیت سفارش به "${this.getStatusLabel(newStatus)}" تغییر یافت`, 'بستن', {
-      duration: 3000,
-      horizontalPosition: 'center',
-      verticalPosition: 'top'
+        this.snackBar.open(`وضعیت سفارش به "${this.getStatusLabel(newStatus)}" تغییر یافت`, 'بستن', {
+          duration: 3000,
+          horizontalPosition: 'center',
+          verticalPosition: 'top'
+        });
+      },
+      error: (error) => {
+        this.snackBar.open(error.message || 'خطا در به‌روزرسانی وضعیت سفارش', 'بستن', {
+          duration: 5000,
+          horizontalPosition: 'center',
+          verticalPosition: 'top'
+        });
+      }
     });
   }
 
@@ -221,6 +256,33 @@ export class AdminOrdersComponent implements OnInit {
 
   retryLoad(): void {
     this.loadOrders();
+  }
+
+  viewOrderDetails(order: Order): void {
+    this.dialog.open(OrderDetailDialogComponent, {
+      data: { order },
+      width: '700px',
+      maxWidth: '90vw',
+      maxHeight: '90vh'
+    });
+  }
+
+  getPaymentMethodLabel(method: string): string {
+    switch (method) {
+      case 'online': return 'آنلاین';
+      case 'cash_on_delivery': return 'پرداخت در محل';
+      default: return method;
+    }
+  }
+
+  formatDate(date: Date): string {
+    return new Intl.DateTimeFormat('fa-IR', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    }).format(new Date(date));
   }
 
   private updateState(partial: Partial<OrdersState>): void {

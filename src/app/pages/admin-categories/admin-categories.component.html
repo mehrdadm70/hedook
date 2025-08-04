@@ -1,0 +1,208 @@
+<div class="categories-container">
+  <!-- Header -->
+  <div class="categories-header">
+    <div class="header-content">
+      <h1 class="page-title">مدیریت دسته‌بندی‌ها</h1>
+      <div class="header-stats">
+        <span class="total-categories">{{ filteredCategories().length }} دسته‌بندی</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <mat-card class="filters-card">
+    <mat-card-content>
+      <div class="filters-row">
+        <!-- Search Filter -->
+        <mat-form-field appearance="outline" class="filter-field">
+          <mat-label>جستجو</mat-label>
+          <input matInput 
+                 [value]="searchTerm()" 
+                 (input)="searchTerm.set($any($event.target).value); applyFilters()"
+                 placeholder="جستجو بر اساس نام، توضیحات یا slug">
+          <mat-icon matSuffix>search</mat-icon>
+        </mat-form-field>
+
+        <!-- Status Filter -->
+        <mat-form-field appearance="outline" class="filter-field">
+          <mat-label>وضعیت</mat-label>
+          <mat-select 
+            [value]="selectedStatus()" 
+            (selectionChange)="selectedStatus.set($event.value); applyFilters()">
+            @for (status of statusOptions; track status.value) {
+              <mat-option [value]="status.value">{{ status.label }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <!-- Level Filter -->
+        <mat-form-field appearance="outline" class="filter-field">
+          <mat-label>سطح</mat-label>
+          <mat-select 
+            [value]="selectedLevel()" 
+            (selectionChange)="selectedLevel.set($event.value); applyFilters()">
+            @for (level of levelOptions; track level.value) {
+              <mat-option [value]="level.value">{{ level.label }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <!-- Clear Filters -->
+        <button mat-stroked-button (click)="clearFilters()" class="clear-filters-btn">
+          <mat-icon>clear</mat-icon>
+          پاک کردن فیلترها
+        </button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Add Category Button -->
+  <div class="add-category-section">
+    <button mat-raised-button color="primary" (click)="createCategory()" class="add-category-btn">
+      <mat-icon>add</mat-icon>
+      افزودن دسته‌بندی جدید
+    </button>
+  </div>
+
+  <!-- Loading State -->
+  @if (loading()) {
+    <div class="loading-container">
+      <mat-spinner></mat-spinner>
+      <p>در حال بارگذاری دسته‌بندی‌ها...</p>
+    </div>
+  }
+
+  <!-- Error State -->
+  @else if (error()) {
+    <mat-card class="error-card">
+      <mat-card-content>
+        <div class="error-content">
+          <mat-icon class="error-icon">error</mat-icon>
+          <h3>خطا در بارگذاری دسته‌بندی‌ها</h3>
+          <p>{{ error() }}</p>
+          <button mat-raised-button color="primary" (click)="retryLoad()">
+            تلاش مجدد
+          </button>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  }
+
+  <!-- Categories Table -->
+  @else if (hasFilteredCategories()) {
+    <mat-card class="table-card">
+      <mat-card-content>
+        <div class="table-header">
+          <h3>لیست دسته‌بندی‌ها</h3>
+        </div>
+
+        <div class="table-container">
+          <mat-table [dataSource]="filteredCategories()" class="categories-table">
+            <!-- Name Column -->
+            <ng-container matColumnDef="name">
+              <mat-header-cell *matHeaderCellDef>نام دسته‌بندی</mat-header-cell>
+              <mat-cell *matCellDef="let category">
+                <div class="category-name">
+                  <strong>{{ category.name }}</strong>
+                  @if (category.parentId) {
+                    <span class="parent-indicator">← {{ getParentName(category.parentId) }}</span>
+                  }
+                </div>
+              </mat-cell>
+            </ng-container>
+
+            <!-- Description Column -->
+            <ng-container matColumnDef="description">
+              <mat-header-cell *matHeaderCellDef>توضیحات</mat-header-cell>
+              <mat-cell *matCellDef="let category">
+                <span class="description">{{ category.description || '-' }}</span>
+              </mat-cell>
+            </ng-container>
+
+            <!-- Level Column -->
+            <ng-container matColumnDef="level">
+              <mat-header-cell *matHeaderCellDef>سطح</mat-header-cell>
+              <mat-cell *matCellDef="let category">
+                <mat-chip [color]="category.level === 0 ? 'primary' : 'accent'">
+                  {{ getLevelLabel(category.level) }}
+                </mat-chip>
+              </mat-cell>
+            </ng-container>
+
+            <!-- Product Count Column -->
+            <ng-container matColumnDef="productCount">
+              <mat-header-cell *matHeaderCellDef>تعداد محصولات</mat-header-cell>
+              <mat-cell *matCellDef="let category">
+                <span class="product-count">{{ category.productCount }} محصول</span>
+              </mat-cell>
+            </ng-container>
+
+            <!-- Status Column -->
+            <ng-container matColumnDef="status">
+              <mat-header-cell *matHeaderCellDef>وضعیت</mat-header-cell>
+              <mat-cell *matCellDef="let category">
+                <mat-chip [color]="getStatusColor(category.isActive)">
+                  {{ getStatusLabel(category.isActive) }}
+                </mat-chip>
+              </mat-cell>
+            </ng-container>
+
+            <!-- Created At Column -->
+            <ng-container matColumnDef="createdAt">
+              <mat-header-cell *matHeaderCellDef>تاریخ ایجاد</mat-header-cell>
+              <mat-cell *matCellDef="let category">
+                {{ formatDate(category.createdAt) }}
+              </mat-cell>
+            </ng-container>
+
+            <!-- Actions Column -->
+            <ng-container matColumnDef="actions">
+              <mat-header-cell *matHeaderCellDef>عملیات</mat-header-cell>
+              <mat-cell *matCellDef="let category">
+                <div class="actions-buttons">
+                  <!-- Edit Button -->
+                  <button 
+                    mat-icon-button 
+                    (click)="editCategory(category)"
+                    matTooltip="ویرایش دسته‌بندی"
+                    color="primary">
+                    <mat-icon>edit</mat-icon>
+                  </button>
+                  
+                  <!-- Delete Button -->
+                  <button 
+                    mat-icon-button 
+                    (click)="deleteCategory(category)"
+                    matTooltip="حذف دسته‌بندی"
+                    color="warn">
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                </div>
+              </mat-cell>
+            </ng-container>
+
+            <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+            <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+          </mat-table>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  }
+
+  <!-- No Results -->
+  @else {
+    <mat-card class="no-results-card">
+      <mat-card-content>
+        <div class="no-results-content">
+          <mat-icon class="no-results-icon">category</mat-icon>
+          <h3>دسته‌بندی‌ای یافت نشد</h3>
+          <p>با فیلترهای انتخابی هیچ دسته‌بندی‌ای یافت نشد.</p>
+          <button mat-stroked-button (click)="clearFilters()">
+            <mat-icon>clear</mat-icon>
+            پاک کردن فیلترها
+          </button>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  }
+</div> 

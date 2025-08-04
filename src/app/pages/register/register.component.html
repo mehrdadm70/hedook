@@ -1,0 +1,196 @@
+<div class="register-container">
+  <div class="register-background"></div>
+  
+  <div class="register-content">
+    <!-- Header -->
+    <div class="register-header">
+      <button mat-icon-button (click)="goToHome()" class="back-button" aria-label="بازگشت به خانه">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      <h1 class="register-title">ثبت نام در هدوک</h1>
+    </div>
+
+    <!-- Register Card -->
+    <mat-card class="register-card">
+      <mat-card-header class="card-header">
+        <div class="logo-section">
+          <mat-icon class="logo-icon">person_add</mat-icon>
+          <h2>ثبت نام کاربر</h2>
+        </div>
+      </mat-card-header>
+
+      <mat-card-content>
+        <!-- Error Display -->
+        @if (error()) {
+          <div class="error-message">
+            <mat-icon class="error-icon">error</mat-icon>
+            <span>{{ error() }}</span>
+            <button mat-icon-button (click)="clearError()" aria-label="بستن خطا">
+              <mat-icon>close</mat-icon>
+            </button>
+          </div>
+        }
+
+        <!-- Register Form -->
+        <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="register-form">
+          <!-- Name Fields -->
+          <div class="name-fields">
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>نام</mat-label>
+              <input 
+                matInput 
+                formControlName="firstName" 
+                placeholder="نام خود را وارد کنید"
+                autocomplete="given-name">
+              <mat-icon matSuffix>person</mat-icon>
+              @if (isFieldInvalid('firstName')) {
+                <mat-error>{{ getFieldError('firstName') }}</mat-error>
+              }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>نام خانوادگی</mat-label>
+              <input 
+                matInput 
+                formControlName="lastName" 
+                placeholder="نام خانوادگی خود را وارد کنید"
+                autocomplete="family-name">
+              <mat-icon matSuffix>person</mat-icon>
+              @if (isFieldInvalid('lastName')) {
+                <mat-error>{{ getFieldError('lastName') }}</mat-error>
+              }
+            </mat-form-field>
+          </div>
+
+          <!-- Email Field -->
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>ایمیل</mat-label>
+            <input 
+              matInput 
+              type="email" 
+              formControlName="email" 
+              placeholder="example@email.com"
+              autocomplete="email">
+            <mat-icon matSuffix>email</mat-icon>
+            @if (isFieldInvalid('email')) {
+              <mat-error>{{ getFieldError('email') }}</mat-error>
+            }
+          </mat-form-field>
+
+          <!-- Phone Field -->
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>شماره تلفن (اختیاری)</mat-label>
+            <input 
+              matInput 
+              type="tel" 
+              formControlName="phone" 
+              placeholder="09123456789"
+              autocomplete="tel">
+            <mat-icon matSuffix>phone</mat-icon>
+            @if (isFieldInvalid('phone')) {
+              <mat-error>{{ getFieldError('phone') }}</mat-error>
+            }
+          </mat-form-field>
+
+          <!-- Password Fields -->
+          <div class="password-fields">
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>رمز عبور</mat-label>
+              <input 
+                matInput 
+                [type]="hidePassword() ? 'password' : 'text'"
+                formControlName="password" 
+                placeholder="رمز عبور خود را وارد کنید"
+                autocomplete="new-password">
+              <mat-icon matSuffix>lock</mat-icon>
+              <button 
+                mat-icon-button 
+                matSuffix 
+                type="button"
+                (click)="togglePasswordVisibility()" 
+                [attr.aria-label]="hidePassword() ? 'نمایش رمز عبور' : 'مخفی کردن رمز عبور'">
+                <mat-icon>{{ hidePassword() ? 'visibility' : 'visibility_off' }}</mat-icon>
+              </button>
+              @if (isFieldInvalid('password')) {
+                <mat-error>{{ getPasswordError() }}</mat-error>
+              }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>تکرار رمز عبور</mat-label>
+              <input 
+                matInput 
+                [type]="hideConfirmPassword() ? 'password' : 'text'"
+                formControlName="confirmPassword" 
+                placeholder="رمز عبور را تکرار کنید"
+                autocomplete="new-password">
+              <mat-icon matSuffix>lock</mat-icon>
+              <button 
+                mat-icon-button 
+                matSuffix 
+                type="button"
+                (click)="toggleConfirmPasswordVisibility()" 
+                [attr.aria-label]="hideConfirmPassword() ? 'نمایش رمز عبور' : 'مخفی کردن رمز عبور'">
+                <mat-icon>{{ hideConfirmPassword() ? 'visibility' : 'visibility_off' }}</mat-icon>
+              </button>
+              @if (isFieldInvalid('confirmPassword')) {
+                <mat-error>{{ getConfirmPasswordError() }}</mat-error>
+              }
+            </mat-form-field>
+          </div>
+
+          <!-- Terms and Conditions -->
+          <div class="terms-section">
+            <mat-checkbox 
+              [checked]="acceptTerms()"
+              (change)="toggleAcceptTerms()"
+              color="primary"
+              class="terms-checkbox">
+              <span class="terms-text">
+                با <a href="#" class="terms-link">قوانین و شرایط</a> و <a href="#" class="terms-link">حریم خصوصی</a> موافقم
+              </span>
+            </mat-checkbox>
+          </div>
+
+          <!-- Submit Button -->
+          <button 
+            mat-raised-button 
+            color="primary" 
+            type="submit"
+            [disabled]="!isFormValid || loading()"
+            class="submit-button">
+            @if (loading()) {
+              <mat-spinner diameter="20" class="spinner"></mat-spinner>
+              <span>در حال ثبت نام...</span>
+            } @else {
+                <ng-container >
+
+                    <mat-icon>person_add</mat-icon>
+                    <span>ثبت نام</span>
+                </ng-container>
+      
+            }
+          </button>
+        </form>
+
+        <!-- Divider -->
+        <mat-divider class="divider">
+          <span class="divider-text">یا</span>
+        </mat-divider>
+
+        <!-- Login Link -->
+        <div class="login-section">
+          <p class="login-text">قبلاً ثبت نام کرده‌اید؟</p>
+          <button 
+            mat-button 
+            color="primary" 
+            (click)="goToLogin()"
+            class="login-button">
+            <mat-icon>login</mat-icon>
+            <span>ورود کنید</span>
+          </button>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div> 
