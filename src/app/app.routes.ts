@@ -2,20 +2,20 @@ import { Routes } from '@angular/router';
 import { HomeComponent } from './pages/home/home.component';
 import { ProductsComponent } from './pages/products/products.component';
 import { CartComponent } from './pages/cart/cart.component';
-import { AdminLayoutComponent } from './components/admin-layout/admin-layout.component';
-import { AdminLoginComponent } from './pages/admin-login/admin-login.component';
-import { AdminDashboardComponent } from './pages/admin-dashboard/admin-dashboard.component';
-import { AdminProductsComponent } from './pages/admin-products/admin-products.component';
-import { AdminProductCreateComponent } from './pages/admin-product-create/admin-product-create.component';
-import { AdminProductEditComponent } from './pages/admin-product-edit/admin-product-edit.component';
-import { AdminCategoriesComponent } from './pages/admin-categories/admin-categories.component';
-import { AdminUsersComponent } from './pages/admin-users/admin-users.component';
-import { AdminOrdersComponent } from './pages/admin-orders/admin-orders.component';
-import { AdminAuthGuard } from './shared/guards/admin-auth.guard';
-import { AdminPermission } from './models/admin.model';
+import { AdminLayoutComponent } from './admin/components/admin-layout/admin-layout.component';
+import { AdminLoginComponent } from './admin/pages/admin-login/admin-login.component';
+import { AdminDashboardComponent } from './admin/pages/admin-dashboard/admin-dashboard.component';
+import { AdminProductsComponent } from './admin/pages/admin-products/admin-products.component';
+import { AdminProductCreateComponent } from './admin/pages/admin-product-create/admin-product-create.component';
+import { AdminProductEditComponent } from './admin/pages/admin-product-edit/admin-product-edit.component';
+import { AdminCategoriesComponent } from './admin/pages/admin-categories/admin-categories.component';
+import { AdminUsersComponent } from './admin/pages/admin-users/admin-users.component';
+import { AdminOrdersComponent } from './admin/pages/admin-orders/admin-orders.component';
+import { AdminAuthGuard } from './admin/guards/admin-auth.guard';
+import { AdminPermission } from './admin/models/admin.model';
 import { LoginComponent } from './pages/login/login.component';
 import { RegisterComponent } from './pages/register/register.component';
-import { AdminAnalyticsComponent } from './pages/admin-analytics/admin-analytics.component';
+import { AdminAnalyticsComponent } from './admin/pages/admin-analytics/admin-analytics.component';
 
 export const routes: Routes = [
   // Public routes

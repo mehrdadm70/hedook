@@ -184,6 +184,37 @@ body {
   }
 }
 
+// Fix mat-select appearance - remove horizontal line
+.mat-mdc-form-field.mat-mdc-form-field.mat-mdc-form-field.mat-mdc-form-field.mat-mdc-form-field.mat-mdc-form-field .mdc-notched-outline__notch {
+  border-right: 1px solid rgba(0, 0, 0, 0);
+}
+
+.mat-mdc-form-field.mat-mdc-form-field-appearance-outline {
+  // Remove the horizontal line in the middle gap
+  .mat-mdc-form-field-outline-gap {
+    border-top: none !important;
+    border-bottom: none !important;
+  }
+  
+  // Ensure clean appearance
+  .mat-mdc-form-field-outline {
+    .mat-mdc-form-field-outline-start,
+    .mat-mdc-form-field-outline-end {
+      border-color: #e0e0e0 !important;
+    }
+  }
+  
+  // Focus state
+  &.mat-focused {
+    .mat-mdc-form-field-outline {
+      .mat-mdc-form-field-outline-start,
+      .mat-mdc-form-field-outline-end {
+        border-color: var(--color-primary) !important;
+      }
+    }
+  }
+}
+
 .mat-mdc-card {
   border-radius: var(--radius-lg) !important;
   box-shadow: var(--shadow-md) !important;

@@ -82,8 +82,11 @@
               <mat-spinner diameter="20" class="spinner"></mat-spinner>
               <span>در حال ورود...</span>
             } @else {
-              <mat-icon>login</mat-icon>
-              <span>ورود</span>
+              <ng-container >
+                <mat-icon>login</mat-icon>
+                <span>ورود</span>
+              </ng-container>
+
             }
           </button>
         </form>
