@@ -1,18 +1,9 @@
 import { Component, inject, signal, computed } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { Router, RouterModule, RouterOutlet } from '@angular/router';
-import { MatSidenavModule } from '@angular/material/sidenav';
-import { MatToolbarModule } from '@angular/material/toolbar';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatListModule } from '@angular/material/list';
-import { MatMenuModule } from '@angular/material/menu';
-import { MatDividerModule } from '@angular/material/divider';
+import { Router } from '@angular/router';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 
-import { AdminService } from '../../services/admin.service';
-import { AdminPermission } from '../../models/admin.model';
-import { CategoryFormDialogComponent } from '../category-form-dialog/category-form-dialog.component';
+import { AdminService } from './services/admin.service';
+import { AdminPermission } from './models/admin.model';
 
 interface NavigationItem {
   readonly label: string;
@@ -23,23 +14,12 @@ interface NavigationItem {
 }
 
 @Component({
-  selector: 'app-admin-layout',
-  imports: [
-    CommonModule,
-    RouterModule,
-    RouterOutlet,
-    MatSidenavModule,
-    MatToolbarModule,
-    MatButtonModule,
-    MatIconModule,
-    MatListModule,
-    MatMenuModule,
-    MatDividerModule,
-  ],
-  templateUrl: './admin-layout.component.html',
-  styleUrl: './admin-layout.component.scss'
+  selector: 'app-admin',
+  standalone: false,
+  templateUrl: './admin.component.html',
+  styleUrl: './admin.component.scss'
 })
-export class AdminLayoutComponent {
+export class AdminComponent {
   private readonly adminService = inject(AdminService);
   private readonly router = inject(Router);
   private readonly breakpointObserver = inject(BreakpointObserver);
