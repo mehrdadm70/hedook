@@ -177,3 +177,56 @@
     margin-right: 0;
   }
 } 
+
+// Admin Dialog Styles
+::ng-deep .admin-dialog-panel {
+  z-index: 9999 !important;
+}
+
+::ng-deep .cdk-overlay-pane.admin-dialog-panel {
+  z-index: 9999 !important;
+}
+
+::ng-deep .cdk-overlay-container {
+  z-index: 9999 !important;
+}
+
+::ng-deep .cdk-global-overlay-wrapper {
+  z-index: 9999 !important;
+}
+
+// Ensure admin dialogs appear above sidenav
+::ng-deep .mat-dialog-container {
+  z-index: 9999 !important;
+  position: relative;
+}
+
+// Override any existing z-index issues
+::ng-deep .admin-container .cdk-overlay-pane {
+  z-index: 9999 !important;
+}
+
+::ng-deep .admin-container .cdk-overlay-backdrop {
+  z-index: 9998 !important;
+}
+
+::ng-deep .admin-dialog-backdrop {
+  z-index: 9998 !important;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+// Force high z-index for all admin dialogs
+::ng-deep .admin-dialog-panel {
+  z-index: 9999 !important;
+  position: relative;
+}
+
+// Override Material's default z-index
+::ng-deep .mat-dialog-container {
+  z-index: 9999 !important;
+}
+
+// Ensure overlay container has high z-index
+::ng-deep .cdk-overlay-container {
+  z-index: 9999 !important;
+} 

@@ -1,4 +1,4 @@
-import { Component, inject, signal, computed } from '@angular/core';
+import { Component, inject, signal, computed, ViewContainerRef } from '@angular/core';
 import { Router } from '@angular/router';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 
@@ -23,6 +23,7 @@ export class AdminComponent {
   private readonly adminService = inject(AdminService);
   private readonly router = inject(Router);
   private readonly breakpointObserver = inject(BreakpointObserver);
+  private readonly viewContainerRef = inject(ViewContainerRef);
 
   readonly isHandset = signal(false);
   readonly sidenavOpened = signal(true);
@@ -105,6 +106,29 @@ export class AdminComponent {
     
     // Initialize sidenav as open
     this.sidenavOpened.set(true);
+    
+    // Ensure overlay container has proper z-index
+    this.setupOverlayContainer();
+  }
+
+  private setupOverlayContainer(): void {
+    // Find or create overlay container with high z-index
+    let overlayContainer = document.querySelector('.cdk-overlay-container') as HTMLElement;
+    if (overlayContainer) {
+      overlayContainer.style.zIndex = '9999';
+    } else {
+      // Create overlay container if it doesn't exist
+      overlayContainer = document.createElement('div');
+      overlayContainer.className = 'cdk-overlay-container';
+      overlayContainer.style.zIndex = '9999';
+      overlayContainer.style.position = 'fixed';
+      overlayContainer.style.top = '0';
+      overlayContainer.style.left = '0';
+      overlayContainer.style.width = '100%';
+      overlayContainer.style.height = '100%';
+      overlayContainer.style.pointerEvents = 'none';
+      document.body.appendChild(overlayContainer);
+    }
   }
 
   toggleSidenav(): void {

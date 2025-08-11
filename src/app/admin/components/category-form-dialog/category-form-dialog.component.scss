@@ -1,45 +1,77 @@
 .category-form-dialog {
   direction: rtl;
-  max-width: 600px;
+  max-width: 700px;
   width: 100%;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+  overflow: hidden;
 
   .dialog-title {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-    padding-bottom: 10px;
-    border-bottom: 1px solid #e0e0e0;
+    margin: 0;
+    padding: 24px 24px 16px 24px;
+    border-bottom: 1px solid #e9ecef;
+    height: 70px;
 
     h2 {
       margin: 0;
-      color: #333;
-      font-size: 1.5rem;
+      font-size: 1.2rem;
       font-weight: 600;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+      line-height: 0.5;
+
     }
 
     .close-button {
       margin-right: auto;
+      color: white;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 50%;
+      transition: all 0.2s ease;
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.2);
+        transform: scale(1.05);
+      }
     }
   }
 
   .dialog-content {
     max-height: 70vh;
     overflow-y: auto;
+    padding: 24px;
 
     .form-sections {
       display: flex;
       flex-direction: column;
-      gap: 30px;
+      gap: 32px;
 
       .form-section {
+        background: #f8f9fa;
+        border-radius: 12px;
+        padding: 24px;
+        border: 1px solid #e9ecef;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+
         h3 {
           margin: 0 0 20px 0;
-          color: #333;
+          color: #2c3e50;
           font-size: 1.2rem;
           font-weight: 600;
-          padding-bottom: 8px;
-          border-bottom: 2px solid #1976d2;
+          padding-bottom: 12px;
+          border-bottom: 3px solid #667eea;
+          position: relative;
+
+          &::after {
+            content: '';
+            position: absolute;
+            bottom: -3px;
+            right: 0;
+            width: 60px;
+            height: 3px;
+            background: #764ba2;
+          }
         }
 
         .form-row {
@@ -47,10 +79,28 @@
 
           .form-field {
             width: 100%;
+
+            ::ng-deep .mat-mdc-form-field {
+              .mat-mdc-form-field-flex {
+                background: white;
+                border-radius: 8px;
+                transition: all 0.2s ease;
+              }
+
+              &.mat-focused .mat-mdc-form-field-flex {
+                box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.2);
+              }
+            }
           }
 
           mat-checkbox {
-            margin-top: 10px;
+            margin-top: 12px;
+            
+            ::ng-deep .mdc-checkbox {
+              .mdc-checkbox__background {
+                border-radius: 4px;
+              }
+            }
           }
         }
       }
@@ -60,16 +110,52 @@
   .dialog-actions {
     display: flex;
     justify-content: flex-end;
-    gap: 10px;
-    margin-top: 20px;
-    padding-top: 15px;
-    border-top: 1px solid #e0e0e0;
+    gap: 12px;
+    margin: 0;
+    padding: 20px 24px;
+    background: #f8f9fa;
+    border-top: 1px solid #e9ecef;
 
     button {
       border-radius: 8px;
       font-weight: 500;
-      padding: 8px 16px;
-      min-width: 100px;
+      padding: 10px 20px;
+      min-width: 120px;
+      transition: all 0.2s ease;
+      text-transform: none;
+      font-size: 14px;
+
+      &[mat-stroked-button] {
+        border: 2px solid #6c757d;
+        color: #6c757d;
+
+        &:hover {
+          background: #6c757d;
+          color: white;
+          transform: translateY(-1px);
+          box-shadow: 0 4px 12px rgba(108, 117, 125, 0.3);
+        }
+      }
+
+      &[mat-raised-button] {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+
+        &:hover:not(:disabled) {
+          transform: translateY(-1px);
+          box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        &:disabled {
+          background: #e9ecef;
+          color: #6c757d;
+        }
+      }
+
+      mat-icon {
+        margin-left: 8px;
+      }
     }
   }
 }
@@ -77,17 +163,26 @@
 // Responsive design
 @media (max-width: 768px) {
   .category-form-dialog {
+    max-width: 95vw;
+    margin: 10px;
+
     .dialog-title {
+      padding: 20px 20px 12px 20px;
+
       h2 {
         font-size: 1.3rem;
       }
     }
 
     .dialog-content {
+      padding: 20px;
+
       .form-sections {
-        gap: 20px;
+        gap: 24px;
 
         .form-section {
+          padding: 20px;
+
           h3 {
             font-size: 1.1rem;
           }
@@ -98,10 +193,40 @@
     .dialog-actions {
       flex-direction: column;
       gap: 8px;
+      padding: 16px 20px;
 
       button {
         width: 100%;
+        min-width: auto;
       }
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .category-form-dialog {
+    .dialog-title {
+      padding: 16px 16px 8px 16px;
+
+      h2 {
+        font-size: 1.2rem;
+      }
+    }
+
+    .dialog-content {
+      padding: 16px;
+
+      .form-sections {
+        gap: 20px;
+
+        .form-section {
+          padding: 16px;
+        }
+      }
+    }
+
+    .dialog-actions {
+      padding: 12px 16px;
     }
   }
 } 

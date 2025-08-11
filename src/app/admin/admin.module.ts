@@ -24,9 +24,9 @@ import { AdminOrdersComponent } from './pages/admin-orders/admin-orders.componen
 import { AdminAnalyticsComponent } from './pages/admin-analytics/admin-analytics.component';
 
 // Dialog Components
-import { CategoryFormDialogComponent } from './components/category-form-dialog/category-form-dialog.component';
 import { OrderDetailDialogComponent } from './components/order-detail-dialog/order-detail-dialog.component';
 import { UserFormDialogComponent } from './components/user-form-dialog/user-form-dialog.component';
+import { CategoryFormDialogComponent } from './components/category-form-dialog/category-form-dialog.component';
 
 // Guards
 import { AdminAuthGuard } from './guards/admin-auth.guard';
@@ -37,6 +37,18 @@ import { AdminService } from './services/admin.service';
 // Routing
 import { AdminRoutes } from './admin.routing';
 import { AdminComponent } from './admin.component';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatCardModule } from '@angular/material/card';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatChipsModule } from '@angular/material/chips';
+import { MatTableModule } from '@angular/material/table';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { OverlayModule } from '@angular/cdk/overlay';
 
 @NgModule({
   declarations: [
@@ -56,6 +68,19 @@ import { AdminComponent } from './admin.component';
     MatMenuModule,
     MatDividerModule,
     AdminRoutes,
+    // Angular Material Modules for dialogs
+    MatDialogModule,
+    MatCardModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    MatCheckboxModule,
+    MatChipsModule,
+    MatTableModule,
+    MatProgressSpinnerModule,
+    MatTooltipModule,
+    MatSnackBarModule,
+    OverlayModule,
     // Import all components as standalone
     AdminLoginComponent,
     AdminDashboardComponent,
@@ -66,9 +91,9 @@ import { AdminComponent } from './admin.component';
     AdminUsersComponent,
     AdminOrdersComponent,
     AdminAnalyticsComponent,
-    CategoryFormDialogComponent,
     OrderDetailDialogComponent,
-    UserFormDialogComponent
+    UserFormDialogComponent,
+    CategoryFormDialogComponent
   ],
   providers: [
     AdminAuthGuard,

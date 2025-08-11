@@ -1,9 +1,6 @@
 <div class="category-form-dialog">
   <div mat-dialog-title class="dialog-title">
     <h2>{{ isEditMode ? 'ویرایش دسته‌بندی' : 'افزودن دسته‌بندی جدید' }}</h2>
-    <button mat-icon-button (click)="onCancel()" class="close-button">
-      <mat-icon>close</mat-icon>
-    </button>
   </div>
 
   <form [formGroup]="categoryForm" (ngSubmit)="onSubmit()" class="dialog-content">

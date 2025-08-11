@@ -11,7 +11,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { FormsModule } from '@angular/forms';
 
 import { Category, CategoryStatus } from '../../../models/category.model';
@@ -40,7 +40,8 @@ interface CategoriesState {
     MatFormFieldModule,
     MatInputModule,
     MatTooltipModule,
-    MatSnackBarModule
+    MatSnackBarModule,
+    MatDialogModule
   ],
   templateUrl: './admin-categories.component.html',
   styleUrl: './admin-categories.component.scss'
@@ -163,17 +164,20 @@ export class AdminCategoriesComponent implements OnInit {
   }
 
   createCategory(): void {
-
-    
+    console.log('createCategory method called');
     const dialogRef = this.dialog.open(CategoryFormDialogComponent, {
       width: '600px',
       maxWidth: '90vw',
-      data: { categories: this.categories() }
+      data: { categories: this.categories() },
+      hasBackdrop: true,
+      disableClose: false,
+      autoFocus: true,
+      panelClass: 'admin-dialog-panel'
     });
 
     console.log('dialog opened');
 
-    dialogRef.afterClosed().subscribe(result => {
+    dialogRef.afterClosed().subscribe((result: any) => {
       console.log('dialog closed with result:', result);
       if (result) {
         console.log('creating category with data:', result);
@@ -214,10 +218,12 @@ export class AdminCategoriesComponent implements OnInit {
       data: { 
         category,
         categories: this.categories().filter(c => c.id !== category.id)
-      }
+      },
+      hasBackdrop: true,
+      panelClass: 'admin-dialog-panel'
     });
 
-    dialogRef.afterClosed().subscribe(result => {
+    dialogRef.afterClosed().subscribe((result: any) => {
       if (result) {
         this.adminService.updateCategory({ id: category.id, ...result }).subscribe({
           next: (updatedCategory) => {
