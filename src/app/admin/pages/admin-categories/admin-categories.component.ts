@@ -14,8 +14,10 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { FormsModule } from '@angular/forms';
 
-import { Category, CategoryStatus } from '../../../models/category.model';
+import { Category as AdminCategory, CategoryStatus } from '../../../models/category.model';
+import { Category } from '../../models/categories.model';
 import { AdminService } from '../../services/admin.service';
+import { CategoriesPresenter } from '../../presenters/categories.presenter';
 import { CategoryFormDialogComponent } from '../../components/category-form-dialog/category-form-dialog.component';
 
 interface CategoriesState {
@@ -48,23 +50,19 @@ interface CategoriesState {
 })
 export class AdminCategoriesComponent implements OnInit {
   private readonly adminService = inject(AdminService);
+  private readonly categoriesPresenter = inject(CategoriesPresenter);
   private readonly snackBar = inject(MatSnackBar);
   private readonly dialog = inject(MatDialog);
 
-  private readonly state = signal<CategoriesState>({
-    categories: [],
-    filteredCategories: [],
-    loading: true,
-    error: null
-  });
+  // استفاده از presenter برای state management
+  readonly categories = this.categoriesPresenter.categories;
+  readonly filteredCategories = this.categoriesPresenter.filteredCategories;
+  readonly loading = this.categoriesPresenter.loading;
+  readonly error = this.categoriesPresenter.error;
+  readonly stats = this.categoriesPresenter.stats;
 
-  readonly categories = computed(() => this.state().categories);
-  readonly filteredCategories = computed(() => this.state().filteredCategories);
-  readonly loading = computed(() => this.state().loading);
-  readonly error = computed(() => this.state().error);
-
-  readonly hasCategories = computed(() => this.categories().length > 0);
-  readonly hasFilteredCategories = computed(() => this.filteredCategories().length > 0);
+  readonly hasCategories = this.categoriesPresenter.hasCategories;
+  readonly hasFilteredCategories = this.categoriesPresenter.hasFilteredCategories;
 
   // Table configuration
   readonly displayedColumns = [

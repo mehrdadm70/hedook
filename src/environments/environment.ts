@@ -1,4 +1,4 @@
 export const environment = {
-    production: true,
-    apiUrl: 'https://api.example.com' // این مقدار را با مقدار واقعی جایگزین کن
+    production: false,
+    apiUrl: 'https://api.example.com', // این مقدار را با مقدار واقعی جایگزین کن
   };
