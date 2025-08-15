@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { catchError, Observable, throwError, retry, timeout } from 'rxjs';
 
 export interface ApiResponse {
-  data?: T;
+  data?:any;
   message?: string;
   success: boolean;
   error?: string;

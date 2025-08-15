@@ -1,20 +1,10 @@
 import { Injectable, inject, signal, computed } from '@angular/core';
 import { Observable, tap, catchError, of, map } from 'rxjs';
 import { CategoriesService } from '../services/categories.service';
-import { Category, CategoryCreateRequest, CategoryUpdateRequest, CategoryFilters } from '../models/categories.model';
+import { Category, CategoryCreateRequest, CategoryUpdateRequest, CategoryFilters, CategoriesState } from '../models/categories.model';
 import { ApiResponse } from '../services/http.service';
 
-export interface CategoriesState {
-  readonly categories: Category[];
-  readonly filteredCategories: Category[];
-  readonly loading: boolean;
-  readonly error: string | null;
-  readonly stats: {
-    total: number;
-    active: number;
-    inactive: number;
-  };
-}
+
 
 @Injectable({
   providedIn: 'root'
@@ -48,7 +38,9 @@ export class CategoriesPresenter {
     this.updateState({ loading: true, error: null });
 
     return this.categoriesService.getAllCategories(filters).pipe(
+
       map(response => {
+        console.log(response)
         if (response.success && response.data) {
           const categories = response.data as Category[];
           this.updateState({

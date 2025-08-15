@@ -1,4 +1,3 @@
-
 export interface Category {
     id?: number;
     name: string;
@@ -37,4 +36,16 @@ export interface Category {
     limit?: number;
     sort_by?: 'name' | 'created_at' | 'products_count';
     sort_order?: 'asc' | 'desc';
+  }
+
+  export interface CategoriesState {
+    readonly categories: Category[];
+    readonly filteredCategories: Category[];
+    readonly loading: boolean;
+    readonly error: string | null;
+    readonly stats: {
+      total: number;
+      active: number;
+      inactive: number;
+    };
   }
