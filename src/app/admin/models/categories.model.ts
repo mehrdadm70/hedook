@@ -1,31 +1,32 @@
 export interface Category {
     id?: number;
     name: string;
-    description?: string;
     slug?: string;
-    parent_id?: number | null;
-    image_url?: string;
-    is_active?: boolean;
-    created_at?: string;
-    updated_at?: string;
+    parentId?: number | null;
+    parentName: string;
+    isActive?: boolean;
+    sortOrder?: number;
     children?: Category[];
-    products_count?: number;
+    productsCount?: number;
+    createdAt?: string;
+    updatedAt?: string;
   }
-  
   export interface CategoryCreateRequest {
     name: string;
-    description?: string;
-    parent_id?: number | null;
-    image_url?: string;
-    is_active?: boolean;
+    slug: string;
+    parentId?: number | null;
+    level?: number;
+    sortOrder?: number;
+    isActive?: boolean |number;
   }
   
   export interface CategoryUpdateRequest {
     name?: string;
-    description?: string;
-    parent_id?: number | null;
-    image_url?: string;
-    is_active?: boolean;
+    slug?: string;
+    parentId?: number | null;
+    level?: number;
+    sortOrder?: number;
+    isActive?: boolean;
   }
   
   export interface CategoryFilters {

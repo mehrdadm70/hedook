@@ -3,9 +3,9 @@
   <div class="categories-header">
     <div class="header-content">
       <h1 class="page-title">مدیریت دسته‌بندی‌ها</h1>
-      <div class="header-stats">
-        <span class="total-categories">{{ filteredCategories().length }} دسته‌بندی</span>
-      </div>
+             <div class="header-stats">
+         <span class="total-categories">{{ computedFilteredCategories().length }} دسته‌بندی</span>
+       </div>
     </div>
   </div>
 
@@ -14,21 +14,21 @@
     <mat-card-content>
       <div class="filters-row">
         <!-- Search Filter -->
-        <mat-form-field appearance="outline" class="filter-field">
-          <mat-label>جستجو</mat-label>
-          <input matInput 
-                 [value]="searchTerm()" 
-                 (input)="searchTerm.set($any($event.target).value); applyFilters()"
-                 placeholder="جستجو بر اساس نام، توضیحات یا slug">
-          <mat-icon matSuffix>search</mat-icon>
-        </mat-form-field>
+                 <mat-form-field appearance="outline" class="filter-field">
+           <mat-label>جستجو</mat-label>
+           <input matInput 
+                  [value]="searchTerm()" 
+                  (input)="searchTerm.set($any($event.target).value)"
+                  placeholder="جستجو بر اساس نام، توضیحات یا slug">
+           <mat-icon matSuffix>search</mat-icon>
+         </mat-form-field>
 
         <!-- Status Filter -->
         <mat-form-field appearance="outline" class="filter-field">
           <mat-label>وضعیت</mat-label>
           <mat-select 
             [value]="selectedStatus()" 
-            (selectionChange)="selectedStatus.set($event.value); applyFilters()">
+            (selectionChange)="onStatusChange($event)">
             @for (status of statusOptions; track status.value) {
               <mat-option [value]="status.value">{{ status.label }}</mat-option>
             }
@@ -40,7 +40,7 @@
           <mat-label>سطح</mat-label>
           <mat-select 
             [value]="selectedLevel()" 
-            (selectionChange)="selectedLevel.set($event.value); applyFilters()">
+            (selectionChange)="onLevelChange($event)">
             @for (level of levelOptions; track level.value) {
               <mat-option [value]="level.value">{{ level.label }}</mat-option>
             }
@@ -48,7 +48,7 @@
         </mat-form-field>
 
         <!-- Clear Filters -->
-        <button mat-stroked-button  class="clear-filters-btn">
+        <button mat-stroked-button (click)="clearFilters()" class="clear-filters-btn">
           <mat-icon>clear</mat-icon>
           پاک کردن فیلترها
         </button>
@@ -58,12 +58,11 @@
 
   <!-- Add Category Button -->
   <div class="add-category-section">
-    <button mat-raised-button color="primary"  class="add-category-btn">
+    <button mat-raised-button color="primary" (click)="createCategory()" class="add-category-btn">
       <mat-icon>add</mat-icon>
       افزودن دسته‌بندی جدید
     </button>
   </div>
-  {{ categories() | json }}
 
   <!-- Loading State -->
   @if (loading()) {
@@ -81,7 +80,7 @@
           <mat-icon class="error-icon">error</mat-icon>
           <h3>خطا در بارگذاری دسته‌بندی‌ها</h3>
           <p>{{ error() }}</p>
-          <button mat-raised-button color="primary" >
+          <button mat-raised-button color="primary" (click)="loadCategories()">
             تلاش مجدد
           </button>
         </div>
@@ -89,9 +88,8 @@
     </mat-card>
   }
 
-
   <!-- Categories Table -->
-  @else if (categories()) {
+  @else if (computedFilteredCategories() && computedFilteredCategories().length > 0) {
     <mat-card class="table-card">
       <mat-card-content>
         <div class="table-header">
@@ -99,7 +97,7 @@
         </div>
 
         <div class="table-container">
-          <mat-table [dataSource]="categories()" class="categories-table">
+          <mat-table [dataSource]="computedFilteredCategories()" class="categories-table">
             <!-- Name Column -->
             <ng-container matColumnDef="name">
               <mat-header-cell *matHeaderCellDef>نام دسته‌بندی</mat-header-cell>
@@ -107,7 +105,7 @@
                 <div class="category-name">
                   <strong>{{ category.name }}</strong>
                   @if (category.parentId) {
-                    <span class="parent-indicator">← </span>
+                    <span class="parent-indicator">← {{ category.parentName }}</span>
                   }
                 </div>
               </mat-cell>
@@ -115,9 +113,9 @@
 
             <!-- Description Column -->
             <ng-container matColumnDef="description">
-              <mat-header-cell *matHeaderCellDef>توضیحات</mat-header-cell>
+              <mat-header-cell *matHeaderCellDef>Slug</mat-header-cell>
               <mat-cell *matCellDef="let category">
-                <span class="description">{{ category.description || '-' }}</span>
+                <span class="category-slug">{{ category.slug || '-' }}</span>
               </mat-cell>
             </ng-container>
 
@@ -125,8 +123,8 @@
             <ng-container matColumnDef="level">
               <mat-header-cell *matHeaderCellDef>سطح</mat-header-cell>
               <mat-cell *matCellDef="let category">
-                <mat-chip [color]="category.level === 0 ? 'primary' : 'accent'">
-               
+                <mat-chip [color]="category.parentId ? 'accent' : 'primary'">
+                  {{ category.parentId ? 'زیرمجموعه' : 'سطح اصلی' }}
                 </mat-chip>
               </mat-cell>
             </ng-container>
@@ -135,7 +133,7 @@
             <ng-container matColumnDef="productCount">
               <mat-header-cell *matHeaderCellDef>تعداد محصولات</mat-header-cell>
               <mat-cell *matCellDef="let category">
-                <span class="product-count">{{ category.productCount }} محصول</span>
+                <span class="product-count">{{ category.productsCount || 0 }} محصول</span>
               </mat-cell>
             </ng-container>
 
@@ -143,8 +141,8 @@
             <ng-container matColumnDef="status">
               <mat-header-cell *matHeaderCellDef>وضعیت</mat-header-cell>
               <mat-cell *matCellDef="let category">
-                <mat-chip >
-                  
+                <mat-chip [color]="category.isActive ? 'primary' : 'warn'">
+                  {{ category.isActive ? 'فعال' : 'غیرفعال' }}
                 </mat-chip>
               </mat-cell>
             </ng-container>
@@ -153,6 +151,7 @@
             <ng-container matColumnDef="createdAt">
               <mat-header-cell *matHeaderCellDef>تاریخ ایجاد</mat-header-cell>
               <mat-cell *matCellDef="let category">
+                <span class="created-date">{{ formatDate(category.createdAt) }}</span>
               </mat-cell>
             </ng-container>
 
@@ -163,6 +162,7 @@
                 <div class="actions-buttons">
                   <!-- Edit Button -->
                   <button 
+                    (click)="updateCategory(category.id!, category)"
                     mat-icon-button 
                     matTooltip="ویرایش دسته‌بندی"
                     color="primary">
@@ -171,6 +171,7 @@
                   
                   <!-- Delete Button -->
                   <button 
+                    (click)="deleteCategory(category.id!)"
                     mat-icon-button 
                     matTooltip="حذف دسته‌بندی"
                     color="warn">
@@ -196,7 +197,7 @@
           <mat-icon class="no-results-icon">category</mat-icon>
           <h3>دسته‌بندی‌ای یافت نشد</h3>
           <p>با فیلترهای انتخابی هیچ دسته‌بندی‌ای یافت نشد.</p>
-          <button mat-stroked-button>
+          <button mat-stroked-button (click)="clearFilters()">
             <mat-icon>clear</mat-icon>
             پاک کردن فیلترها
           </button>

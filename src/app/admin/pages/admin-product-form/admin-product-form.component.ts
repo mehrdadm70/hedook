@@ -7,18 +7,19 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
-import { Product } from '../../../models/product.model';
-import { ProductService } from '../../../services/product.service';
-import { ProductFormComponent } from '../../../components/product-form/product-form.component';
+import { Products } from '../../models/products.model';
+import { ProductsPresenter } from '../../presenters/products.presenter';
+import { ProductFormComponent } from '../../components/product-form/product-form.component';
 
-interface EditProductState {
-  readonly product: Product | null;
+interface ProductFormState {
+  readonly product: Products | null;
   readonly loading: boolean;
   readonly error: string | null;
+  readonly isEditMode: boolean;
 }
 
 @Component({
-  selector: 'app-admin-product-edit',
+  selector: 'app-admin-product-form',
   imports: [
     CommonModule,
     MatCardModule,
@@ -27,41 +28,49 @@ interface EditProductState {
     MatProgressSpinnerModule,
     ProductFormComponent
   ],
-  templateUrl: './admin-product-edit.component.html',
-  styleUrl: './admin-product-edit.component.scss'
+  templateUrl: './admin-product-form.component.html',
+  styleUrl: './admin-product-form.component.scss'
 })
-export class AdminProductEditComponent implements OnInit {
+export class AdminProductFormComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
-  private readonly productService = inject(ProductService);
+  private readonly productsPresenter = inject(ProductsPresenter);
   private readonly snackBar = inject(MatSnackBar);
 
-  private readonly state = signal<EditProductState>({
+  private readonly state = signal<ProductFormState>({
     product: null,
-    loading: true,
-    error: null
+    loading: false,
+    error: null,
+    isEditMode: false
   });
 
   readonly product = computed(() => this.state().product);
   readonly loading = computed(() => this.state().loading);
   readonly error = computed(() => this.state().error);
+  readonly isEditMode = computed(() => this.state().isEditMode);
+  readonly pageTitle = computed(() => 
+    this.isEditMode() ? 'ویرایش محصول' : 'ایجاد محصول جدید'
+  );
 
   ngOnInit(): void {
-    this.loadProduct();
+    this.initializeComponent();
   }
 
-  private loadProduct(): void {
+  private initializeComponent(): void {
     const productId = this.route.snapshot.paramMap.get('id');
-    
-    if (!productId) {
-      this.updateState({ 
-        loading: false, 
-        error: 'شناسه محصول یافت نشد' 
-      });
-      return;
-    }
+    const isEditMode = !!productId;
 
-    this.productService.getProductById(productId).subscribe({
+    this.updateState({ isEditMode });
+
+    if (isEditMode) {
+      this.loadProduct(productId!);
+    }
+  }
+
+  private loadProduct(productId: string): void {
+    this.updateState({ loading: true, error: null });
+
+    this.productsPresenter.getProductById(productId).subscribe({
       next: (product) => {
         if (product) {
           this.updateState({ 
@@ -76,7 +85,7 @@ export class AdminProductEditComponent implements OnInit {
           });
         }
       },
-      error: (error) => {
+      error: (error: any) => {
         this.updateState({ 
           loading: false, 
           error: error.message || 'خطا در بارگذاری محصول' 
@@ -85,8 +94,12 @@ export class AdminProductEditComponent implements OnInit {
     });
   }
 
-  onProductSaved(product: Product): void {
-    this.snackBar.open('محصول با موفقیت ویرایش شد', 'بستن', {
+  onProductSaved(product: Products): void {
+    const message = this.isEditMode() 
+      ? 'محصول با موفقیت ویرایش شد' 
+      : 'محصول با موفقیت ایجاد شد';
+    
+    this.snackBar.open(message, 'بستن', {
       duration: 3000,
       horizontalPosition: 'center',
       verticalPosition: 'top'
@@ -101,11 +114,13 @@ export class AdminProductEditComponent implements OnInit {
   }
 
   retryLoad(): void {
-    this.updateState({ loading: true, error: null });
-    this.loadProduct();
+    const productId = this.route.snapshot.paramMap.get('id');
+    if (productId) {
+      this.loadProduct(productId);
+    }
   }
 
-  private updateState(partial: Partial<EditProductState>): void {
+  private updateState(partial: Partial<ProductFormState>): void {
     this.state.update(current => ({ ...current, ...partial }));
   }
-} 
+}

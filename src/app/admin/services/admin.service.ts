@@ -15,7 +15,6 @@ import {
 } from '../models/admin.model';
 import { Product, CreateProductDto, UpdateProductDto } from '../../models/product.model';
 import { Order, OrderStatus } from '../../models/order.model';
-import { Category, CreateCategoryDto, UpdateCategoryDto, CategoryStatus } from '../../models/category.model';
 import { User, CreateUserDto, UpdateUserDto, UserRole, UserStats } from '../../models/user-management.model';
 
 interface AdminServiceState {
@@ -185,90 +184,84 @@ export class AdminService {
   }
 
   // Mock categories data
-  private readonly mockCategories: Category[] = [
-    {
-      id: 'cat-1',
-      name: 'اسباب بازی',
-      description: 'انواع اسباب بازی برای کودکان',
-      slug: 'toys',
-      image: 'assets/images/categories/toys.jpg',
-      level: 0,
-      sortOrder: 1,
-      isActive: true,
-      productCount: 45,
-      createdAt: new Date('2024-01-01'),
-      updatedAt: new Date()
-    },
-    {
-      id: 'cat-2',
-      name: 'کتاب و آموزش',
-      description: 'کتاب‌های آموزشی و داستانی',
-      slug: 'books-education',
-      image: 'assets/images/categories/books.jpg',
-      level: 0,
-      sortOrder: 2,
-      isActive: true,
-      productCount: 32,
-      createdAt: new Date('2024-01-01'),
-      updatedAt: new Date()
-    },
-    {
-      id: 'cat-3',
-      name: 'لگو و ساختنی',
-      description: 'لگو و اسباب بازی‌های ساختنی',
-      slug: 'lego-construction',
-      image: 'assets/images/categories/lego.jpg',
-      parentId: 'cat-1',
-      level: 1,
-      sortOrder: 1,
-      isActive: true,
-      productCount: 18,
-      createdAt: new Date('2024-01-01'),
-      updatedAt: new Date()
-    },
-    {
-      id: 'cat-4',
-      name: 'عروسک و شخصیت‌ها',
-      description: 'عروسک‌ها و شخصیت‌های کارتونی',
-      slug: 'dolls-characters',
-      image: 'assets/images/categories/dolls.jpg',
-      parentId: 'cat-1',
-      level: 1,
-      sortOrder: 2,
-      isActive: true,
-      productCount: 22,
-      createdAt: new Date('2024-01-01'),
-      updatedAt: new Date()
-    },
-    {
-      id: 'cat-5',
-      name: 'کتاب داستان',
-      description: 'کتاب‌های داستانی برای کودکان',
-      slug: 'story-books',
-      image: 'assets/images/categories/story-books.jpg',
-      parentId: 'cat-2',
-      level: 1,
-      sortOrder: 1,
-      isActive: true,
-      productCount: 15,
-      createdAt: new Date('2024-01-01'),
-      updatedAt: new Date()
-    },
-    {
-      id: 'cat-6',
-      name: 'کتاب آموزشی',
-      description: 'کتاب‌های آموزشی و درسی',
-      slug: 'educational-books',
-      image: 'assets/images/categories/educational-books.jpg',
-      parentId: 'cat-2',
-      level: 1,
-      sortOrder: 2,
-      isActive: true,
-      productCount: 17,
-      createdAt: new Date('2024-01-01'),
-      updatedAt: new Date()
-    }
-  ];
+  // private readonly mockCategories: Category[] = [
+  //   {
+  //     id: 'cat-1',
+  //     name: 'اسباب بازی',
+  //     description: 'انواع اسباب بازی برای کودکان',
+  //     slug: 'toys',
+  //     level: 0,
+  //     sortOrder: 1,
+  //     isActive: true,
+  //     productCount: 45,
+  //     createdAt: new Date('2024-01-01'),
+  //     updatedAt: new Date()
+  //   },
+  //   {
+  //     id: 'cat-2',
+  //     name: 'کتاب و آموزش',
+  //     description: 'کتاب‌های آموزشی و داستانی',
+  //     slug: 'books-education',
+  //     level: 0,
+  //     sortOrder: 2,
+  //     isActive: true,
+  //     productCount: 32,
+  //     createdAt: new Date('2024-01-01'),
+  //     updatedAt: new Date()
+  //   },
+  //   {
+  //     id: 'cat-3',
+  //     name: 'لگو و ساختنی',
+  //     description: 'لگو و اسباب بازی‌های ساختنی',
+  //     slug: 'lego-construction',
+  //     parentId: 'cat-1',
+  //     level: 1,
+  //     sortOrder: 1,
+  //     isActive: true,
+  //     productCount: 18,
+  //     createdAt: new Date('2024-01-01'),
+  //     updatedAt: new Date()
+  //   },
+  //   {
+  //     id: 'cat-4',
+  //     name: 'عروسک و شخصیت‌ها',
+  //     description: 'عروسک‌ها و شخصیت‌های کارتونی',
+  //     slug: 'dolls-characters',
+  //     parentId: 'cat-1',
+  //     level: 1,
+  //     sortOrder: 2,
+  //     isActive: true,
+  //     productCount: 22,
+  //     createdAt: new Date('2024-01-01'),
+  //     updatedAt: new Date()
+  //   },
+  //   {
+  //     id: 'cat-5',
+  //     name: 'کتاب داستان',
+  //     description: 'کتاب‌های داستانی برای کودکان',
+  //     slug: 'story-books',
+  //     parentId: 'cat-2',
+  //     level: 1,
+  //     sortOrder: 1,
+  //     isActive: true,
+  //     productCount: 15,
+  //     createdAt: new Date('2024-01-01'),
+  //     updatedAt: new Date()
+  //   },
+  //   {
+  //     id: 'cat-6',
+  //     name: 'کتاب آموزشی',
+  //     description: 'کتاب‌های آموزشی و درسی',
+  //     slug: 'educational-books',
+  //     parentId: 'cat-2',
+  //     level: 1,
+  //     sortOrder: 2,
+  //     isActive: true,
+  //     productCount: 17,
+  //     createdAt: new Date('2024-01-01'),
+  //     updatedAt: new Date()
+  //   }
+  // ];
 
   // Mock users data
   private readonly mockUsers: User[] = [
@@ -518,84 +511,6 @@ export class AdminService {
     );
   }
 
-  // Category Management
-  getAllCategories(): Observable<Category[]> {
-    return of([...this.mockCategories]).pipe(
-      delay(500),
-      catchError(this.handleError<Category[]>('getAllCategories', []))
-    );
-  }
-
-  getCategoryById(id: string): Observable<Category | null> {
-    const category = this.mockCategories.find(cat => cat.id === id);
-    return of(category || null).pipe(
-      catchError(this.handleError<Category | null>('getCategoryById', null))
-    );
-  }
-
-  createCategory(categoryDto: CreateCategoryDto): Observable<Category> {
-    const newCategory: Category = {
-      id: 'cat-' + Date.now(),
-      name: categoryDto.name,
-      ...(categoryDto.description && { description: categoryDto.description }),
-      slug: categoryDto.slug || this.generateSlug(categoryDto.name),
-      ...(categoryDto.image && { image: categoryDto.image }),
-      ...(categoryDto.parentId && { parentId: categoryDto.parentId }),
-      level: categoryDto.parentId ? 1 : 0,
-      sortOrder: categoryDto.sortOrder || 1,
-      isActive: categoryDto.isActive ?? true,
-      productCount: 0,
-      createdAt: new Date(),
-      updatedAt: new Date()
-    };
-
-    this.mockCategories.push(newCategory);
-
-    return of(newCategory).pipe(
-      delay(500),
-      catchError(this.handleError<Category>('createCategory'))
-    );
-  }
-
-  updateCategory(categoryDto: UpdateCategoryDto): Observable<Category> {
-    const categoryIndex = this.mockCategories.findIndex(cat => cat.id === categoryDto.id);
-    if (categoryIndex === -1) {
-      return throwError(() => new Error('دسته‌بندی یافت نشد'));
-    }
-
-    const updatedCategory = {
-      ...this.mockCategories[categoryIndex],
-      ...categoryDto,
-      updatedAt: new Date()
-    };
-
-    this.mockCategories[categoryIndex] = updatedCategory;
-
-    return of(updatedCategory).pipe(
-      delay(500),
-      catchError(this.handleError<Category>('updateCategory'))
-    );
-  }
-
-  deleteCategory(id: string): Observable<void> {
-    const categoryIndex = this.mockCategories.findIndex(cat => cat.id === id);
-    if (categoryIndex === -1) {
-      return throwError(() => new Error('دسته‌بندی یافت نشد'));
-    }
-
-    // Check if category has children
-    const hasChildren = this.mockCategories.some(cat => cat.parentId === id);
-    if (hasChildren) {
-      return throwError(() => new Error('نمی‌توان دسته‌بندی دارای زیرمجموعه را حذف کرد'));
-    }
-
-    this.mockCategories.splice(categoryIndex, 1);
-
-    return of(void 0).pipe(
-      delay(500),
-      catchError(this.handleError<void>('deleteCategory'))
-    );
-  }
 
   private generateSlug(name: string): string {
     return name

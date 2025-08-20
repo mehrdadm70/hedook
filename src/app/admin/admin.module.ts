@@ -16,8 +16,7 @@ import { MatDividerModule } from '@angular/material/divider';
 import { AdminLoginComponent } from './pages/admin-login/admin-login.component';
 import { AdminDashboardComponent } from './pages/admin-dashboard/admin-dashboard.component';
 import { AdminProductsComponent } from './pages/admin-products/admin-products.component';
-import { AdminProductCreateComponent } from './pages/admin-product-create/admin-product-create.component';
-import { AdminProductEditComponent } from './pages/admin-product-edit/admin-product-edit.component';
+import { AdminProductFormComponent } from './pages/admin-product-form/admin-product-form.component';
 import { AdminCategoriesComponent } from './pages/admin-categories/admin-categories.component';
 import { AdminUsersComponent } from './pages/admin-users/admin-users.component';
 import { AdminOrdersComponent } from './pages/admin-orders/admin-orders.component';
@@ -85,8 +84,7 @@ import { OverlayModule } from '@angular/cdk/overlay';
     AdminLoginComponent,
     AdminDashboardComponent,
     AdminProductsComponent,
-    AdminProductCreateComponent,
-    AdminProductEditComponent,
+    AdminProductFormComponent,
     AdminCategoriesComponent,
     AdminUsersComponent,
     AdminOrdersComponent,

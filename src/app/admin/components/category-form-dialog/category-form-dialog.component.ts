@@ -10,13 +10,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatSnackBar } from '@angular/material/snack-bar';
-
-import { Category, CreateCategoryDto } from '../../../models/category.model';
-
-export interface CategoryFormDialogData {
-  category?: Category;
-  categories: Category[];
-}
+import { CategoryCreateRequest } from '@app/admin/models/categories.model';
 
 @Component({
   selector: 'app-category-form-dialog',
@@ -49,28 +43,14 @@ export class CategoryFormDialogComponent {
   categoryForm: FormGroup;
 
   constructor() {
-    console.log('CategoryFormDialogComponent constructor called');
-    console.log('data:', this.data);
-    console.log('category:', this.category);
-    console.log('categories:', this.categories);
-    
     this.categoryForm = this.fb.group({
       name: [this.category?.name || '', [Validators.required, Validators.minLength(2)]],
-      description: [this.category?.description || ''],
-      slug: [this.category?.slug || ''],
-      image: [this.category?.image || ''],
-      parentId: [this.category?.parentId || ''],
+      slug: [this.category?.slug || '', [Validators.required]],
+      parentId: [this.category?.parentId || null],
       sortOrder: [this.category?.sortOrder || 1, [Validators.required, Validators.min(1)]],
-      isActive: [this.category?.isActive ?? true]
+      isActive: [this.category?.isActive ?? 1]
     });
 
-    // Auto-generate slug when name changes
-    this.categoryForm.get('name')?.valueChanges.subscribe(name => {
-      if (name && !this.categoryForm.get('slug')?.value) {
-        const slug = this.generateSlug(name);
-        this.categoryForm.patchValue({ slug });
-      }
-    });
   }
 
   get isFormValid(): boolean {
@@ -81,33 +61,26 @@ export class CategoryFormDialogComponent {
     return this.isEditMode ? 'به‌روزرسانی' : 'ایجاد';
   }
 
-  get parentCategories(): Category[] {
-    return this.categories.filter((cat: Category) => cat.level === 0);
+  get parentCategories() {
+    return this.categories.filter((cat:any) => cat.level === 0);
   }
 
   onSubmit(): void {
-    console.log('onSubmit called');
-    console.log('form valid:', this.categoryForm.valid);
-    console.log('form value:', this.categoryForm.value);
     
     if (this.categoryForm.valid) {
       const formValue = this.categoryForm.value;
       
       // Remove empty values
-      const categoryData: CreateCategoryDto = {
-        name: formValue.name,
-        ...(formValue.description && { description: formValue.description }),
-        ...(formValue.slug && { slug: formValue.slug }),
-        ...(formValue.image && { image: formValue.image }),
-        ...(formValue.parentId && { parentId: formValue.parentId }),
-        sortOrder: formValue.sortOrder,
-        isActive: formValue.isActive
+      const categoryData: CategoryCreateRequest = {
+          name: formValue.name,
+          slug: formValue.slug,
+          parentId: formValue.parentId,
+          sortOrder: formValue.sortOrder,
+          isActive: formValue.isActive == 'true' ? 1 : 0 
       };
 
-      console.log('closing dialog with data:', categoryData);
       this.dialogRef.close(categoryData);
     } else {
-      console.log('form is invalid');
       this.snackBar.open('لطفاً تمام فیلدهای اجباری را پر کنید', 'بستن', {
         duration: 3000,
         horizontalPosition: 'center',
@@ -120,12 +93,4 @@ export class CategoryFormDialogComponent {
     this.dialogRef.close();
   }
 
-  private generateSlug(name: string): string {
-    return name
-      .toLowerCase()
-      .replace(/[^\u0600-\u06FF\w\s-]/g, '')
-      .replace(/\s+/g, '-')
-      .replace(/-+/g, '-')
-      .trim();
-  }
 } 

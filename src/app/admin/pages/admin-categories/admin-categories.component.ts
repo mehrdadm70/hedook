@@ -14,8 +14,7 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { FormsModule } from '@angular/forms';
 
-import { Category as AdminCategory, CategoryStatus } from '../../../models/category.model';
-import { Category } from '../../models/categories.model';
+import { Category, CategoryUpdateRequest } from '../../models/categories.model';
 import { AdminService } from '../../services/admin.service';
 import { CategoriesPresenter } from '../../presenters/categories.presenter';
 import { CategoryFormDialogComponent } from '../../components/category-form-dialog/category-form-dialog.component';
@@ -63,6 +62,43 @@ export class AdminCategoriesComponent implements OnInit {
   readonly hasCategories = this.categoriesPresenter.hasCategories;
   readonly hasFilteredCategories = this.categoriesPresenter.hasFilteredCategories;
 
+  // Computed filtered categories
+  readonly computedFilteredCategories = computed(() => {
+    const categories = this.categories();
+    const searchTerm = this.searchTerm().toLowerCase();
+    const selectedStatus = this.selectedStatus();
+    const selectedLevel = this.selectedLevel();
+    
+    let filtered = [...categories];
+    
+    // Search filter
+    if (searchTerm) {
+      filtered = filtered.filter(category =>
+        category.name.toLowerCase().includes(searchTerm) ||
+        (category.slug && category.slug.toLowerCase().includes(searchTerm))
+      );
+    }
+    
+    // Status filter
+    if (selectedStatus) {
+      const isActive = selectedStatus === '1';
+      filtered = filtered.filter(category => category.isActive === isActive);
+    }
+    
+    // Level filter
+    if (selectedLevel) {
+      if (selectedLevel === '0') {
+        // سطح اصلی - دسته‌بندی‌هایی که parentId ندارند
+        filtered = filtered.filter(category => !category.parentId);
+      } else if (selectedLevel === '1') {
+        // زیرمجموعه - دسته‌بندی‌هایی که parentId دارند
+        filtered = filtered.filter(category => category.parentId !== null && category.parentId !== undefined);
+      }
+    }
+    
+    return filtered;
+  });
+
   // Table configuration
   readonly displayedColumns = [
     'name',
@@ -80,242 +116,133 @@ export class AdminCategoriesComponent implements OnInit {
   readonly selectedLevel = signal('');
 
   readonly statusOptions = [
-    { value: '', label: 'همه وضعیت‌ها' },
-    { value: 'true', label: 'فعال' },
-    { value: 'false', label: 'غیرفعال' }
+    { value: '1', label: 'فعال' },
+    { value: '0', label: 'غیرفعال' }
   ];
 
   readonly levelOptions = [
-    { value: '', label: 'همه سطوح' },
     { value: '0', label: 'سطح اصلی' },
     { value: '1', label: 'زیرمجموعه' }
   ];
 
-  readonly CategoryStatus = CategoryStatus;
 
   ngOnInit(): void {
     this.loadCategories();
   }
 
-  private loadCategories(): void {
-
-    this.categoriesPresenter.loadCategories().subscribe(      console.log
-    //   {
-    //   next: (categories) => {
-    //     console.log('دسته‌بندی‌ها با موفقیت بارگذاری شدند:', categories.length, 'دسته‌بندی');
-        
-    //     if (categories.length > 0) {
-    //       this.snackBar.open(
-    //         `${categories.length} دسته‌بندی بارگذاری شد`, 
-    //         'بستن', 
-    //         {
-    //           duration: 2000,
-    //           horizontalPosition: 'center',
-    //           verticalPosition: 'top'
-    //         }
-    //       );
-    //     }
-    //   },
-    //   error: (error) => {
-    //     console.error('خطا در بارگذاری دسته‌بندی‌ها:', error);
-        
-    //     this.snackBar.open(
-    //       'خطا در بارگذاری دسته‌بندی‌ها. لطفاً دوباره تلاش کنید.', 
-    //       'بستن', 
-    //       {
-    //         duration: 5000,
-    //         horizontalPosition: 'center',
-    //         verticalPosition: 'top'
-    //       }
-    //     );
-    //   }
-    // }
-  );
+  loadCategories(): void {
+    this.categoriesPresenter.loadCategories().subscribe();
   }
 
-  applyFilters(): void {
-    const searchTerm = this.searchTerm().toLowerCase();
-    const selectedStatus = this.selectedStatus();
-    const selectedLevel = this.selectedLevel();
+
+  createCategory(): void {
+    const dialogRef = this.dialog.open(CategoryFormDialogComponent, {
+      width: '600px',
+      maxWidth: '90vw',
+      data: { categories: this.categories() },
+      hasBackdrop: true,
+      disableClose: false,
+      autoFocus: true,
+      panelClass: 'admin-dialog-panel'
+    });
+
+    dialogRef.afterClosed().subscribe((result: any) => {
+      if (result) {
+        this.categoriesPresenter.createCategory(result).subscribe({
+          next: (newCategory) => {
+            const updatedCategories = [...this.categories(), newCategory];
+      
+            this.snackBar.open('دسته‌بندی با موفقیت ایجاد شد', 'بستن', {
+              duration: 3000,
+              horizontalPosition: 'center',
+              verticalPosition: 'top'
+            });
+          },
+          error: (error) => {
+            this.snackBar.open(error.message || 'خطا در ایجاد دسته‌بندی', 'بستن', {
+              duration: 5000,
+              horizontalPosition: 'center',
+              verticalPosition: 'top'
+            });
+          }
+        });
+      }
+    });
+  }
+
+
+  deleteCategory(id:number){
+    this.categoriesPresenter.deleteCategory(id).subscribe()
+  }
+
+  updateCategory(id: number, categoryData: CategoryUpdateRequest){
+    this.categoriesPresenter.findCategory(id).subscribe(
+      (category :any ) => {
+        const dialogRef = this.dialog.open(CategoryFormDialogComponent, {
+          width: '600px',
+          maxWidth: '90vw',
+          data: { category: category },
+          hasBackdrop: true,
+          disableClose: false,
+          autoFocus: true,
+          panelClass: 'admin-dialog-panel'
+        });
     
-    let filtered = [...this.categories()];
+        dialogRef.afterClosed().subscribe((result: any) => {
+          if (result) {
+            this.categoriesPresenter.updateCategory(id , result).subscribe({
+              next: (newCategory) => {
+                const updatedCategories = [...this.categories(), newCategory];
+          
+                this.snackBar.open('دسته‌بندی با موفقیت ویرایش شد', 'بستن', {
+                  duration: 3000,
+                  horizontalPosition: 'center',
+                  verticalPosition: 'top'
+                });
+              },
+              error: (error) => {
+                this.snackBar.open(error.message || 'خطا در ویرایش دسته‌بندی', 'بستن', {
+                  duration: 5000,
+                  horizontalPosition: 'center',
+                  verticalPosition: 'top'
+                });
+              }
+            });
+          }
+        });
+      }
+     )
+  
+
+  }
+
+  
+  findCategory(id: number){
     
-    // Search filter
-    if (searchTerm) {
-      filtered = filtered.filter((category:Category) => 
-        category.name.toLowerCase().includes(searchTerm) ||
-        (category.description && category.description.toLowerCase().includes(searchTerm)) ||
-        category.slug?.toLowerCase().includes(searchTerm)
-      );
-    }
-    
-  //   // Status filter
-  //   if (selectedStatus) {
-  //     const isActive = selectedStatus === 'true';
-  //     filtered = filtered.filter((category:Category) => category.is_active === isActive);
-  //   }
-    
-  //   // Level filter
-  //   // if (selectedLevel) {
-  //   //   const level = parseInt(selectedLevel);
-  //   //   filtered = filtered.filter(category => category.level === level);
-  //   // }
-    
-  // }
+  }
 
 
-  // clearFilters(): void {
-  //   this.searchTerm.set('');
-  //   this.selectedStatus.set('');
-  //   this.selectedLevel.set('');
-  //   this.updateState({ filteredCategories: this.categories() });
-  // }
 
-  // createCategory(): void {
-  //   console.log('createCategory method called');
-  //   const dialogRef = this.dialog.open(CategoryFormDialogComponent, {
-  //     width: '600px',
-  //     maxWidth: '90vw',
-  //     data: { categories: this.categories() },
-  //     hasBackdrop: true,
-  //     disableClose: false,
-  //     autoFocus: true,
-  //     panelClass: 'admin-dialog-panel'
-  //   });
+  clearFilters(): void {
+    this.searchTerm.set('');
+    this.selectedStatus.set('');
+    this.selectedLevel.set('');
+  }
 
-  //   console.log('dialog opened');
+  onStatusChange(event: any): void {
+    this.selectedStatus.set(event.value);
+  }
 
-  //   dialogRef.afterClosed().subscribe((result: any) => {
-  //     console.log('dialog closed with result:', result);
-  //     if (result) {
-  //       console.log('creating category with data:', result);
-  //       this.adminService.createCategory(result).subscribe({
-  //         next: (newCategory) => {
-  //           console.log('category created:', newCategory);
-  //           const updatedCategories = [...this.categories(), newCategory];
-  //           this.updateState({
-  //             categories: updatedCategories,
-  //             filteredCategories: updatedCategories
-  //           });
+  onLevelChange(event: any): void {
+    this.selectedLevel.set(event.value);
+  }
 
-  //           this.snackBar.open('دسته‌بندی با موفقیت ایجاد شد', 'بستن', {
-  //             duration: 3000,
-  //             horizontalPosition: 'center',
-  //             verticalPosition: 'top'
-  //           });
-  //         },
-  //         error: (error) => {
-  //           console.error('error creating category:', error);
-  //           this.snackBar.open(error.message || 'خطا در ایجاد دسته‌بندی', 'بستن', {
-  //             duration: 5000,
-  //             horizontalPosition: 'center',
-  //             verticalPosition: 'top'
-  //           });
-  //         }
-  //       });
-  //     }
-  //   });
-  // }
-
-  // editCategory(category: Category): void {
-  //   const dialogRef = this.dialog.open(CategoryFormDialogComponent, {
-  //     width: '600px',
-  //     maxWidth: '90vw',
-  //     disableClose: false,
-  //     autoFocus: true,
-  //     data: { 
-  //       category,
-  //       categories: this.categories().filter(c => c.id !== category.id)
-  //     },
-  //     hasBackdrop: true,
-  //     panelClass: 'admin-dialog-panel'
-  //   });
-
-  //   dialogRef.afterClosed().subscribe((result: any) => {
-  //     if (result) {
-  //       this.adminService.updateCategory({ id: category.id, ...result }).subscribe({
-  //         next: (updatedCategory) => {
-  //           const updatedCategories = this.categories().map(c =>
-  //             c.id === category.id ? updatedCategory : c
-  //           );
-
-  //           this.updateState({
-  //             categories: updatedCategories,
-  //             filteredCategories: updatedCategories
-  //           });
-
-  //           this.snackBar.open('دسته‌بندی با موفقیت به‌روزرسانی شد', 'بستن', {
-  //             duration: 3000,
-  //             horizontalPosition: 'center',
-  //             verticalPosition: 'top'
-  //           });
-  //         },
-  //         error: (error) => {
-  //           this.snackBar.open(error.message || 'خطا در به‌روزرسانی دسته‌بندی', 'بستن', {
-  //             duration: 5000,
-  //             horizontalPosition: 'center',
-  //             verticalPosition: 'top'
-  //           });
-  //         }
-  //       });
-  //     }
-  //   });
-  // }
-
-  // deleteCategory(category: Category): void {
-  //   if (confirm(`آیا از حذف دسته‌بندی "${category.name}" اطمینان دارید؟`)) {
-  //     this.adminService.deleteCategory(category.id).subscribe({
-  //       next: () => {
-  //         const updatedCategories = this.categories().filter(c => c.id !== category.id);
-  //         this.updateState({
-  //           categories: updatedCategories,
-  //           filteredCategories: updatedCategories
-  //         });
-
-  //         this.snackBar.open('دسته‌بندی با موفقیت حذف شد', 'بستن', {
-  //           duration: 3000,
-  //           horizontalPosition: 'center',
-  //           verticalPosition: 'top'
-  //         });
-  //       },
-  //       error: (error) => {
-  //         this.snackBar.open(error.message || 'خطا در حذف دسته‌بندی', 'بستن', {
-  //           duration: 5000,
-  //           horizontalPosition: 'center',
-  //           verticalPosition: 'top'
-  //         });
-  //       }
-  //     });
-  //   }
-  // }
-
-  // getStatusLabel(isActive: boolean): string {
-  //   return isActive ? 'فعال' : 'غیرفعال';
-  // }
-
-  // getStatusColor(isActive: boolean): string {
-  //   return isActive ? 'primary' : 'warn';
-  // }
-
-  // getLevelLabel(level: number): string {
-  //   return level === 0 ? 'سطح اصلی' : 'زیرمجموعه';
-  // }
-
-  // getParentName(parentId?: string): string {
-  //   if (!parentId) return '-';
-  //   const parent = this.categories().find(c => c.id === parentId);
-  //   return parent ? parent.name : '-';
-  // }
-
-  // formatDate(date: Date): string {
-  //   return new Intl.DateTimeFormat('fa-IR', {
-  //     year: 'numeric',
-  //     month: 'long',
-  //     day: 'numeric'
-  //   }).format(new Date(date));
-  // }
-
-  // retryLoad(): void {
-  //   this.loadCategories();
+  formatDate(dateString?: string): string {
+    if (!dateString) return '-';
+    return new Intl.DateTimeFormat('fa-IR', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    }).format(new Date(dateString));
   }
 } 

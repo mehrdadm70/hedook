@@ -181,45 +181,6 @@
           }
         </div>
 
-        <!-- Skills Section -->
-        <div class="form-section">
-          <h3 class="section-title">مهارت‌های تقویت شده</h3>
-          
-          <div class="skills-container">
-            <div class="available-skills">
-              <h4>مهارت‌های موجود:</h4>
-              <div class="skills-grid">
-                @for (skill of skills(); track skill) {
-                  <mat-chip 
-                    [class.selected]="(productForm.get('skills')?.value || []).includes(skill)"
-                    (click)="addSkill(skill)"
-                    class="skill-chip">
-                    {{ skill }}
-                  </mat-chip>
-                }
-              </div>
-            </div>
-
-            @if ((productForm.get('skills')?.value || []).length > 0) {
-              <div class="selected-skills">
-                <h4>مهارت‌های انتخاب شده:</h4>
-                <div class="selected-skills-grid">
-                  @for (skill of productForm.get('skills')?.value || []; track skill) {
-                    <mat-chip 
-                      color="primary" 
-                      (removed)="removeSkill(skill)"
-                      class="selected-skill-chip">
-                      {{ skill }}
-                      <mat-icon matChipRemove>cancel</mat-icon>
-                    </mat-chip>
-                  }
-                </div>
-              </div>
-            }
-          </div>
-        </div>
-
-
 
         <!-- Smart Search Fields Section -->
         <div class="form-section">

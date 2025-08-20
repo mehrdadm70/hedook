@@ -3,8 +3,8 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { catchError, Observable, throwError, retry, timeout } from 'rxjs';
 
-export interface ApiResponse {
-  data?:any;
+export interface ApiResponse<T = any> {
+  data?: T;
   message?: string;
   success: boolean;
   error?: string;
@@ -39,66 +39,97 @@ export class HttpService {
   /**
    * GET request
    */
-  get(endpoint: string): Observable<ApiResponse> {
+  get<T = any>(endpoint: string, options?: any): Observable<ApiResponse<T>> {
     const url = this.buildUrl(endpoint);
-    return this.http.get<ApiResponse>(url, { headers: this.createHeaders() })
+    const { observe, ...otherOptions } = options || {};
+    const requestOptions = {
+      ...otherOptions,
+      headers: this.createHeaders()
+    };
+    return (this.http.get<ApiResponse<T>>(url, requestOptions)
       .pipe(
         timeout(this.timeoutMs),
         retry(this.retryAttempts),
         catchError(this.handleError.bind(this))
-      );
+      ) as unknown) as Observable<ApiResponse<T>>;
   }
 
   /**
    * POST request
    */
-  post(endpoint: string, data: any): Observable<ApiResponse> {
+  post<T = any>(endpoint: string, data: any, options?: any): Observable<ApiResponse<T>> {
     const url = this.buildUrl(endpoint);
-    return this.http.post<ApiResponse>(url, data, { headers: this.createHeaders() })
+    const { observe, ...otherOptions } = options || {};
+    const requestOptions = {
+      ...otherOptions,
+      headers: this.createHeaders(),
+      observe: 'body' as const
+    };
+    return (this.http.post<ApiResponse<T>>(url, data, requestOptions)
       .pipe(
         timeout(this.timeoutMs),
         retry(this.retryAttempts),
         catchError(this.handleError.bind(this))
-      );
+      ) as unknown) as Observable<ApiResponse<T>>;
   }
 
   /**
    * PUT request
    */
-  put(endpoint: string, data: any): Observable<ApiResponse> {
+  put<T = any>(endpoint: string, data: any, options?: any): Observable<ApiResponse<T>> {
     const url = this.buildUrl(endpoint);
-    return this.http.put<ApiResponse>(url, data, { headers: this.createHeaders() })
+    const { observe, ...otherOptions } = options || {};
+    const requestOptions = {
+      ...otherOptions,
+      headers: this.createHeaders(),
+      observe: 'body' as const
+    };
+    return (this.http.put<ApiResponse<T>>(url, data, requestOptions)
       .pipe(
         timeout(this.timeoutMs),
         retry(this.retryAttempts),
         catchError(this.handleError.bind(this))
-      );
+      ) as unknown) as Observable<ApiResponse<T>>;
   }
 
   /**
    * PATCH request
    */
-  patch(endpoint: string, data: any): Observable<ApiResponse> {
+  patch<T = any>(endpoint: string, data: any, options?: any): Observable<ApiResponse<T>> {
     const url = this.buildUrl(endpoint);
-    return this.http.patch<ApiResponse>(url, data, { headers: this.createHeaders() })
+    const { observe, ...otherOptions } = options || {};
+    const requestOptions = {
+      ...otherOptions,
+      headers: this.createHeaders(),
+      observe: 'body' as const
+    };
+    return (this.http.patch<ApiResponse<T>>(url, data, requestOptions)
       .pipe(
         timeout(this.timeoutMs),
         retry(this.retryAttempts),
         catchError(this.handleError.bind(this))
-      );
+      ) as unknown) as Observable<ApiResponse<T>>;
   }
 
   /**
    * DELETE request
    */
-  delete(endpoint: string): Observable<ApiResponse> {
+  delete<T = any>(endpoint: string, options?: any): Observable<ApiResponse<T>> {
     const url = this.buildUrl(endpoint);
-    return this.http.delete<ApiResponse>(url, { headers: this.createHeaders() })
+    const { observe, body, ...otherOptions } = options || {};
+    const requestOptions = {
+      ...otherOptions,
+      headers: this.createHeaders(),
+      body,
+      observe: 'body' as const
+    };
+    
+    return (this.http.delete<ApiResponse<T>>(url, requestOptions)
       .pipe(
         timeout(this.timeoutMs),
         retry(this.retryAttempts),
         catchError(this.handleError.bind(this))
-      );
+      ) as unknown) as Observable<ApiResponse<T>>;
   }
 
   /**
@@ -176,7 +207,10 @@ export class HttpService {
       // Content-Type را برای FormData تنظیم نمی‌کنیم
     });
 
-    return this.http.post<ApiResponse>(url, formData, { headers })
+    return this.http.post<ApiResponse>(url, formData, { 
+      headers,
+      observe: 'body' as const
+    })
       .pipe(
         timeout(this.timeoutMs),
         catchError(this.handleError.bind(this))
@@ -190,7 +224,8 @@ export class HttpService {
     const url = this.buildUrl(endpoint);
     return this.http.get<ApiResponse>(url, { 
       headers: this.createHeaders(),
-      params: params
+      params: params,
+      observe: 'body' as const
     })
       .pipe(
         timeout(this.timeoutMs),

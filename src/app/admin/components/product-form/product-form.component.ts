@@ -13,18 +13,18 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
-import { Products } from '../../admin/models/products.model';
-import { ProductService } from '../../services/product.service';
+import { Products, ProductCreateRequest, ProductUpdateRequest } from '../../models/products.model';
+import { ProductsService } from '../../services/products.service';
 import { 
   ParentingStyle, 
   ChildInterest, 
   GrowthGoal 
-} from '../../models/parenting-style.model';
+} from '../../../models/parenting-style.model';
 import { 
   PARENTING_STYLE_LABELS, 
   CHILD_INTEREST_LABELS, 
   GROWTH_GOAL_LABELS 
-} from '../../models/labels.constants';
+} from '../../../models/labels.constants';
 
 interface ProductFormState {
   readonly loading: boolean;
@@ -57,7 +57,7 @@ export class ProductFormComponent implements OnInit {
   @Output() cancelled = new EventEmitter<void>();
 
   private readonly fb = inject(FormBuilder);
-  private readonly productService = inject(ProductService);
+  private readonly productsService = inject(ProductsService);
   private readonly snackBar = inject(MatSnackBar);
 
   private readonly state = signal<ProductFormState>({
@@ -72,10 +72,10 @@ export class ProductFormComponent implements OnInit {
 
   productForm!: FormGroup;
 
-  // Options for form fields
-  readonly categories = computed(() => this.productService.categories());
-  readonly brands = computed(() => this.productService.brands());
-  readonly skills = computed(() => this.productService.skills());
+  // Options for form fields - these would need to be implemented in admin services
+  readonly categories = signal<any[]>([]);
+  readonly brands = signal<string[]>([]);
+  readonly skills = signal<string[]>([]);
   
   readonly genderOptions = [
     { value: 'male', label: 'پسرانه' },
@@ -182,7 +182,6 @@ export class ProductFormComponent implements OnInit {
         gender: this.product.gender || 'unisex',
         ageRangeMin: this.product.ageRangeMin || 3,
         ageRangeMax: this.product.ageRangeMax || 6,
-        skills: this.product.skills || '',
         isActive: this.product.isActive || true,
         // فیلدهای جدید
         interests: this.product.interests || '',
@@ -272,7 +271,6 @@ export class ProductFormComponent implements OnInit {
         ageRangeMin: formValue.ageRangeMin,
         ageRangeMax: formValue.ageRangeMax,
         gender: formValue.gender,
-        skills: formValue.skills || '',
         brand: formValue.brand,
         // فیلدهای جدید
         interests: formValue.interests || '',
@@ -282,18 +280,20 @@ export class ProductFormComponent implements OnInit {
       };
 
       const operation = this.isEdit() 
-        ? this.productService.updateProduct({ ...productData, id: this.product!.id })
-        : this.productService.createProduct(productData);
+        ? this.productsService.updateProduct(this.product!.id, productData as ProductUpdateRequest)
+        : this.productsService.createProduct(productData as ProductCreateRequest);
 
       operation.subscribe({
-        next: (product) => {
+        next: (response) => {
           this.updateState({ loading: false });
           this.snackBar.open(
             this.isEdit() ? 'محصول با موفقیت ویرایش شد' : 'محصول با موفقیت ایجاد شد',
             'بستن',
             { duration: 3000 }
           );
-          this.saved.emit(product);
+          if (response.success && response.data) {
+            this.saved.emit(response.data as Products);
+          }
         },
         error: (error) => {
           this.updateState({ 

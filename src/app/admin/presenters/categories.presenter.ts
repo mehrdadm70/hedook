@@ -152,6 +152,19 @@ export class CategoriesPresenter {
     );
   }
 
+  findCategory(id: number){
+    return this.categoriesService.findCategory(id).pipe(
+      map(response => {
+        if(response.success && response.data){
+          const category = response.data as Category;
+          return category;
+        }
+        return null;
+      }),
+     
+    )
+  }
+
   /**
    * فعال/غیرفعال کردن دسته‌بندی
    */
@@ -219,19 +232,18 @@ export class CategoriesPresenter {
       const searchTerm = filters.search.toLowerCase();
       filtered = filtered.filter(category =>
         category.name.toLowerCase().includes(searchTerm) ||
-        (category.description && category.description.toLowerCase().includes(searchTerm)) ||
         (category.slug && category.slug.toLowerCase().includes(searchTerm))
       );
     }
 
     // Parent filter
     if (filters.parentId !== undefined) {
-      filtered = filtered.filter(category => category.parent_id === filters.parentId);
+      filtered = filtered.filter(category => category.parentId === filters.parentId);
     }
 
     // Status filter
     if (filters.isActive !== undefined) {
-      filtered = filtered.filter(category => category.is_active === filters.isActive);
+      filtered = filtered.filter(category => category.isActive === filters.isActive);
     }
 
     this.updateState({ filteredCategories: filtered });
@@ -281,11 +293,18 @@ export class CategoriesPresenter {
   }
 
   /**
+   * به‌روزرسانی مستقیم فیلترهای دسته‌بندی
+   */
+  updateFilteredCategories(categories: Category[]): void {
+    this.updateState({ filteredCategories: categories });
+  }
+
+  /**
    * محاسبه آمار
    */
   private calculateStats(categories: Category[]): { total: number; active: number; inactive: number } {
     const total = categories.length;
-    const active = categories.filter(cat => cat.is_active).length;
+    const active = categories.filter(cat => cat.isActive).length;
     const inactive = total - active;
 
     return { total, active, inactive };

@@ -63,6 +63,10 @@ export class CategoriesService {
     return this.httpService.delete(`${this.baseEndpoint}/${id}`);
   }
 
+  findCategory(id: number):Observable<ApiResponse> {
+    return this.httpService.get(`${this.baseEndpoint}/${id}`)
+  }
+
   /**
    * فعال/غیرفعال کردن دسته‌بندی
    */

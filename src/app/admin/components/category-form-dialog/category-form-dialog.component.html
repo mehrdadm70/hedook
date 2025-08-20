@@ -24,18 +24,8 @@
 
         <div class="form-row">
           <mat-form-field appearance="outline" class="form-field">
-            <mat-label>توضیحات</mat-label>
-            <textarea matInput formControlName="description" 
-                      placeholder="توضیحات دسته‌بندی را وارد کنید"
-                      rows="3"></textarea>
-          </mat-form-field>
-        </div>
-
-        <div class="form-row">
-          <mat-form-field appearance="outline" class="form-field">
             <mat-label>Slug</mat-label>
             <input matInput formControlName="slug" placeholder="slug دسته‌بندی">
-            <mat-hint>به صورت خودکار از نام تولید می‌شود</mat-hint>
           </mat-form-field>
         </div>
       </div>
@@ -66,14 +56,6 @@
             <mat-error *ngIf="categoryForm.get('sortOrder')?.hasError('min')">
               ترتیب نمایش باید حداقل 1 باشد
             </mat-error>
-          </mat-form-field>
-        </div>
-
-        <div class="form-row">
-          <mat-form-field appearance="outline" class="form-field">
-            <mat-label>تصویر</mat-label>
-            <input matInput formControlName="image" placeholder="آدرس تصویر دسته‌بندی">
-            <mat-hint>آدرس تصویر دسته‌بندی (اختیاری)</mat-hint>
           </mat-form-field>
         </div>
 
