@@ -25,6 +25,7 @@ import {
   CHILD_INTEREST_LABELS, 
   GROWTH_GOAL_LABELS 
 } from '../../../models/labels.constants';
+import { CategoriesPresenter } from '@app/admin/presenters/categories.presenter';
 
 interface ProductFormState {
   readonly loading: boolean;
@@ -59,6 +60,10 @@ export class ProductFormComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly productsService = inject(ProductsService);
   private readonly snackBar = inject(MatSnackBar);
+  private readonly categoriesPresenter = inject(CategoriesPresenter);
+
+  readonly availableCategories = this.categoriesPresenter.filteredCategories;
+
 
   private readonly state = signal<ProductFormState>({
     loading: false,
@@ -140,7 +145,6 @@ export class ProductFormComponent implements OnInit {
       ageRangeMax: [6, [Validators.required, Validators.min(0), Validators.max(18)]],
       skills: [''],
       isActive: [true],
-      // فیلدهای جدید برای جستجوی هوشمند
       interests: [''],
       growthGoals: [''],
       parentingStyle: ['']
@@ -183,7 +187,6 @@ export class ProductFormComponent implements OnInit {
         ageRangeMin: this.product.ageRangeMin || 3,
         ageRangeMax: this.product.ageRangeMax || 6,
         isActive: this.product.isActive || true,
-        // فیلدهای جدید
         interests: this.product.interests || '',
         growthGoals: this.product.growthGoals || '',
         parentingStyle: this.product.parentingStyle || ''
@@ -330,7 +333,7 @@ export class ProductFormComponent implements OnInit {
 
   // Computed properties for form validation
   readonly isFormValid = computed(() => 
-    this.productForm?.valid && this.images().length > 0
+    this.productForm?.valid 
   );
 
   readonly submitButtonText = computed(() => 

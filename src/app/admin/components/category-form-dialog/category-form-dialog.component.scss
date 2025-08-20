@@ -229,4 +229,19 @@
       padding: 12px 16px;
     }
   }
+}
+
+// CDK Overlay z-index styling
+::ng-deep .cdk-overlay-connected-position-bounding-box {
+  z-index: 9999 !important;
+}
+
+// Alternative: If you want to target specific overlay containers
+::ng-deep .cdk-overlay-container {
+  z-index: 9999 !important;
+}
+
+// For mat-select dropdown specifically
+::ng-deep .mat-mdc-select-panel {
+  z-index: 10000 !important;
 } 

@@ -38,10 +38,8 @@
           <mat-form-field appearance="outline" class="form-field">
             <mat-label>دسته‌بندی والد</mat-label>
             <mat-select formControlName="parentId">
-              <mat-option value="">بدون والد (سطح اصلی)</mat-option>
-              @for (parent of parentCategories; track parent.id) {
-                <mat-option [value]="parent.id">{{ parent.name }}</mat-option>
-              }
+              <mat-option [value]="null">اصلی</mat-option>
+              <mat-option *ngFor="let category of availableCategories()" [value]="category.id">{{ category.name }}</mat-option>
             </mat-select>
           </mat-form-field>
         </div>

@@ -9,33 +9,42 @@
   </div>
 
   <!-- Loading State -->
-  <div *ngIf="loading()" class="loading-container">
-    <mat-spinner diameter="50"></mat-spinner>
-    <p class="loading-text">در حال بارگذاری...</p>
-  </div>
+  @if (loading()) {
+    <div class="loading-container">
+      <mat-spinner diameter="50"></mat-spinner>
+      <p class="loading-text">در حال بارگذاری...</p>
+    </div>
+  }     
+ 
 
   <!-- Error State -->
-  <div *ngIf="error() && !loading()" class="error-container">
-    <div class="error-content">
-      <mat-icon class="error-icon">error</mat-icon>
-      <h3 class="error-title">خطا</h3>
-      <p class="error-message">{{ error() }}</p>
-      <button 
-        *ngIf="isEditMode()" 
-        mat-raised-button 
-        color="primary" 
-        (click)="retryLoad()"
-        class="retry-button">
-        تلاش مجدد
-      </button>
+  @if (error() && !loading()) {
+    <div class="error-container">
+      <div class="error-content">
+        <mat-icon class="error-icon">error</mat-icon>
+        <h3 class="error-title">خطا</h3>
+        <p class="error-message">{{ error() }}</p>
+        @if (isEditMode()) {
+          <button     
+            mat-raised-button 
+            color="primary" 
+            (click)="retryLoad()"
+            class="retry-button">
+              تلاش مجدد
+            </button>
+        }
+      </div>
     </div>
-  </div>
+  }
+ 
 
   <!-- Product Form -->
-  <app-product-form 
-    *ngIf="!loading() && !error()"
-    [product]="product()!"
-    (saved)="onProductSaved($event)"
-    (cancelled)="onCancelled()">
-  </app-product-form>
+  @if (!loading() && !error()) {
+    <app-product-form 
+      [product]="product()!"
+      (saved)="onProductSaved($event)"
+      (cancelled)="onCancelled()">
+    </app-product-form>
+  }
+
 </div>

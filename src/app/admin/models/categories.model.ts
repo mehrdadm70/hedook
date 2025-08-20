@@ -31,8 +31,8 @@ export interface Category {
   
   export interface CategoryFilters {
     search?: string;
-    parent_id?: number | null;
-    is_active?: boolean;
+    parentId?: number | null;
+    isActive?: boolean;
     page?: number;
     limit?: number;
     sort_by?: 'name' | 'created_at' | 'products_count';

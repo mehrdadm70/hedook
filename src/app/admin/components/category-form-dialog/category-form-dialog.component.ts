@@ -1,4 +1,4 @@
-import { Component, Inject, inject } from '@angular/core';
+import { Component, Inject, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
@@ -11,6 +11,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { CategoryCreateRequest } from '@app/admin/models/categories.model';
+import { CategoriesPresenter } from '@app/admin/presenters/categories.presenter';
 
 @Component({
   selector: 'app-category-form-dialog',
@@ -30,15 +31,17 @@ import { CategoryCreateRequest } from '@app/admin/models/categories.model';
   templateUrl: './category-form-dialog.component.html',
   styleUrl: './category-form-dialog.component.scss'
 })
-export class CategoryFormDialogComponent {
+export class CategoryFormDialogComponent implements OnInit {
   private readonly dialogRef = inject(MatDialogRef<CategoryFormDialogComponent>);
   private readonly data = inject(MAT_DIALOG_DATA);
   private readonly fb = inject(FormBuilder);
   private readonly snackBar = inject(MatSnackBar);
+  private readonly categoriesPresenter = inject(CategoriesPresenter);
 
   readonly category = this.data?.category;
   readonly categories = this.data?.categories || [];
   readonly isEditMode = !!this.category;
+  readonly availableCategories = this.categoriesPresenter.filteredCategories;
 
   categoryForm: FormGroup;
 
@@ -50,6 +53,9 @@ export class CategoryFormDialogComponent {
       sortOrder: [this.category?.sortOrder || 1, [Validators.required, Validators.min(1)]],
       isActive: [this.category?.isActive ?? 1]
     });
+  }
+
+  ngOnInit(): void {
 
   }
 
@@ -66,7 +72,6 @@ export class CategoryFormDialogComponent {
   }
 
   onSubmit(): void {
-    
     if (this.categoryForm.valid) {
       const formValue = this.categoryForm.value;
       
@@ -92,5 +97,4 @@ export class CategoryFormDialogComponent {
   onCancel(): void {
     this.dialogRef.close();
   }
-
 } 

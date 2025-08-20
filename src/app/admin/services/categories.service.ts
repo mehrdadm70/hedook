@@ -20,8 +20,8 @@ export class CategoriesService {
     
     if (filters) {
       if (filters.search) params.search = filters.search;
-      if (filters.parent_id !== undefined) params.parent_id = filters.parent_id;
-      if (filters.is_active !== undefined) params.is_active = filters.is_active;
+      if (filters.parentId !== undefined) params.parent_id = filters.parentId;
+      if (filters.isActive !== undefined) params.is_active = filters.isActive;
       if (filters.page) params.page = filters.page;
       if (filters.limit) params.limit = filters.limit;
       if (filters.sort_by) params.sort_by = filters.sort_by;

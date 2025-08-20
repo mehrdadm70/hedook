@@ -58,9 +58,8 @@
             <mat-form-field appearance="outline" class="form-field">
               <mat-label>دسته‌بندی</mat-label>
               <mat-select formControlName="categoryId">
-                <mat-option value="">دسته‌بندی را انتخاب کنید</mat-option>
-                @for (category of categories(); track category) {
-                  <mat-option [value]="category">{{ category }}</mat-option>
+                @for (category of availableCategories(); track category.id) {
+                    <mat-option [value]="category.id">{{ category.name }}</mat-option>
                 }
               </mat-select>
               <mat-error *ngIf="productForm.get('category')?.hasError('required')">
@@ -301,7 +300,7 @@
           </button>
           
           <button type="submit" mat-raised-button color="primary" 
-                  [disabled]="!isFormValid() || loading()">
+                >
             @if (loading()) {
               <mat-spinner diameter="20" class="button-spinner"></mat-spinner>
             } @else {
