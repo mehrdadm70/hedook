@@ -44,10 +44,12 @@ export class ProductsPresenter {
 
     return this.productsService.getAllProducts(filters).pipe(
       map(response => {
-        if (response.success && response.data) {
+        if (response.data) {
+          console.log(response.data);
           const productData = response.data as ProductData;
-          const products = productData.data || [];
-          
+          const products = productData.items || [];
+          console.log(products);
+
           this.updateState({
             products,
             filteredProducts: products,
@@ -55,10 +57,10 @@ export class ProductsPresenter {
             error: null,
             stats: this.calculateStats(products),
             pagination: {
-              currentPage: productData.currentPage || 1,
+              currentPage: productData.page || 1,
               totalPages: productData.totalPages || 1,
-              nextPage: productData.nextPage || null,
-              previousPage: productData.previousPage || null
+              nextPage: productData.hasNextPage ? 1 : null,
+              previousPage: productData.hasPreviousPage ? 1 : null
             }
           });
           return products;
@@ -223,7 +225,7 @@ export class ProductsPresenter {
       map(response => {
         if (response.success && response.data) {
           const productData = response.data as ProductData;
-          const products = productData.data || [];
+          const products = productData.items || [];
           this.updateState({ filteredProducts: products });
           return products;
         }
@@ -233,7 +235,7 @@ export class ProductsPresenter {
         console.error('Error searching products:', error);
         return of([]);
       })
-    );
+    ) as Observable<Products[]>;
   }
 
   /**
@@ -324,7 +326,7 @@ export class ProductsPresenter {
       map(response => {
         if (response.success && response.data) {
           const productData = response.data as ProductData;
-          return productData.data || [];
+          return productData.items || [];
         }
         return [];
       }),
@@ -332,7 +334,7 @@ export class ProductsPresenter {
         console.error('Error getting products by category:', error);
         return of([]);
       })
-    );
+    ) as Observable<Products[]>;
   }
 
   /**
@@ -343,7 +345,7 @@ export class ProductsPresenter {
       map(response => {
         if (response.success && response.data) {
           const productData = response.data as ProductData;
-          return productData.data || [];
+          return productData.items || [];
         }
         return [];
       }),
@@ -351,7 +353,7 @@ export class ProductsPresenter {
         console.error('Error getting active products:', error);
         return of([]);
       })
-    );
+    ) as Observable<Products[]>;
   }
 
   /**

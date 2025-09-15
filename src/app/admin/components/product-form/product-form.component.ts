@@ -130,6 +130,10 @@ export class ProductFormComponent implements OnInit {
   ngOnInit(): void {
     this.initializeForm();
     this.loadProductData();
+
+    if (this.availableCategories().length === 0) {
+    this.categoriesPresenter.loadCategories().subscribe();
+    }
   }
 
   private initializeForm(): void {

@@ -1,9 +1,11 @@
 export interface ProductData {
-    data: Products[];
+    items: Products[];
+    totalCount: number;
+    page: number;
+    pageSize: number;
     totalPages: number;
-    currentPage: number;
-    nextPage: number;
-    previousPage: number;
+    hasNextPage: boolean;
+    hasPreviousPage: boolean;
 }
 
 export interface Products {
@@ -20,13 +22,14 @@ export interface Products {
     gender?: string;
     brand?: string;
     rating?: number;
-    interests?: string;
-    growthGoals?: string;
+    interests?: string | string[];   // برای پوشش هر دو حالت
+    growthGoals?: string | string[]; // برای پوشش هر دو حالت
     parentingStyle?: string;
     isActive?: boolean;
     createdAt?: string;
     updatedAt?: string;
 }
+
 
 export interface ProductCreateRequest {
     name: string;

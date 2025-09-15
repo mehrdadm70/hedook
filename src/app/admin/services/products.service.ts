@@ -9,7 +9,7 @@ import { ApiResponse } from './http.service';
 })
 export class ProductsService {
   private readonly httpService = inject(HttpService);
-  private readonly baseUrl = '/admin/products';
+  private readonly baseUrl = '/Products';
 
   /**
    * دریافت همه محصولات

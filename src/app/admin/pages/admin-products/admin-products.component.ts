@@ -17,6 +17,7 @@ import { FormsModule } from '@angular/forms';
 
 import { Product, ProductFilter } from '../../../models/product.model';
 import { ProductService } from '../../../services/product.service';
+import { ProductsPresenter } from '@app/admin/presenters/products.presenter';
 
 interface ProductsState {
   readonly products: ReadonlyArray<Product>;
@@ -47,27 +48,21 @@ interface ProductsState {
   styleUrl: './admin-products.component.scss'
 })
 export class AdminProductsComponent implements OnInit {
-  private readonly productService = inject(ProductService);
   private readonly router = inject(Router);
   private readonly dialog = inject(MatDialog);
   private readonly snackBar = inject(MatSnackBar);
+  private readonly productsPresenter = inject(ProductsPresenter);
 
-  private readonly state = signal<ProductsState>({
-    products: [],
-    filteredProducts: [],
-    loading: true,
-    error: null,
-    filter: {}
-  });
+  readonly filteredProducts = this.productsPresenter.filteredProducts;
 
-  readonly products = computed(() => this.state().products);
-  readonly filteredProducts = computed(() => this.state().filteredProducts);
-  readonly loading = computed(() => this.state().loading);
-  readonly error = computed(() => this.state().error);
-  readonly filter = computed(() => this.state().filter);
+  readonly products = this.productsPresenter.products;
+  readonly loading = this.productsPresenter.loading;
+  readonly error = this.productsPresenter.error;
 
-  readonly hasProducts = computed(() => this.products().length > 0);
-  readonly hasFilteredProducts = computed(() => this.filteredProducts().length > 0);
+  readonly hasProducts = this.productsPresenter.hasProducts;
+  readonly hasFilteredProducts = this.productsPresenter.hasFilteredProducts;
+
+
 
   // Table configuration
   readonly displayedColumns = [
@@ -86,9 +81,6 @@ export class AdminProductsComponent implements OnInit {
   readonly selectedCategory = signal('');
   readonly selectedStatus = signal('');
 
-  readonly categories = computed(() => 
-    [...new Set(this.products().map(p => p.category))]
-  );
 
   readonly statusOptions = [
     { value: '', label: 'همه' },
@@ -101,30 +93,8 @@ export class AdminProductsComponent implements OnInit {
   }
 
   private loadProducts(): void {
-    this.updateState({ loading: true, error: null });
-
-    // Using the existing product service data
-    const products = this.productService.products();
-    
-    if (products.length > 0) {
-      this.updateState({
-        products,
-        filteredProducts: products,
-        loading: false,
-        error: null
-      });
-    } else {
-      // Wait for products to load
-      setTimeout(() => {
-        const loadedProducts = this.productService.products();
-        this.updateState({
-          products: loadedProducts,
-          filteredProducts: loadedProducts,
-          loading: false,
-          error: loadedProducts.length === 0 ? 'هیچ محصولی یافت نشد' : null
-        });
-      }, 1000);
-    }
+   this.productsPresenter.loadProducts().subscribe();
+    console.log(this.filteredProducts);
   }
 
   applyFilters(): void {
@@ -138,14 +108,14 @@ export class AdminProductsComponent implements OnInit {
     if (searchQuery) {
       filtered = filtered.filter(product =>
         product.name.toLowerCase().includes(searchQuery) ||
-        product.description.toLowerCase().includes(searchQuery) ||
-        product.brand.toLowerCase().includes(searchQuery)
+        product.description.toLowerCase().includes(searchQuery)
+        // product.brand.toLowerCase().includes(searchQuery)
       );
     }
 
     // Apply category filter
     if (selectedCategory) {
-      filtered = filtered.filter(product => product.category === selectedCategory);
+      // filtered = filtered.filter(product => product.category === selectedCategory);
     }
 
     // Apply status filter
@@ -154,14 +124,14 @@ export class AdminProductsComponent implements OnInit {
       filtered = filtered.filter(product => product.isActive === isActive);
     }
 
-    this.updateState({ filteredProducts: filtered });
+    // this.updateState({ filteredProducts: filtered });
   }
 
   clearFilters(): void {
     this.searchQuery.set('');
     this.selectedCategory.set('');
     this.selectedStatus.set('');
-    this.updateState({ filteredProducts: this.products() });
+    // this.updateState({ filteredProducts: this.products() });
   }
 
   createProduct(): void {
@@ -189,26 +159,26 @@ export class AdminProductsComponent implements OnInit {
       });
       
       // Remove from local state
-      const updatedProducts = this.products().filter(p => p.id !== product.id);
-      this.updateState({ 
-        products: updatedProducts,
-        filteredProducts: updatedProducts
-      });
+      // const updatedProducts = this.products().filter(p => p.id !== product.id);
+      // this.updateState({ 
+      //   products: updatedProducts,
+      //   filteredProducts: updatedProducts
+      // });
     }
   }
 
   toggleProductStatus(product: Product): void {
     // Mock toggle - in real app, call service
-    const updatedProducts = this.products().map(p =>
-      p.id === product.id 
-        ? { ...p, isActive: !p.isActive }
-        : p
-    );
+    // const updatedProducts = this.products().map(p =>
+    //   p.id === product.id 
+    //     ? { ...p, isActive: !p.isActive }
+    //     : p
+    // );
 
-    this.updateState({ 
-      products: updatedProducts,
-      filteredProducts: updatedProducts
-    });
+    // this.updateState({ 
+    //   products: updatedProducts,
+    //   filteredProducts: updatedProducts
+    // });
 
     const status = !product.isActive ? 'فعال' : 'غیرفعال';
     this.snackBar.open(`محصول ${status} شد`, 'بستن', {
@@ -244,7 +214,4 @@ export class AdminProductsComponent implements OnInit {
     this.loadProducts();
   }
 
-  private updateState(partial: Partial<ProductsState>): void {
-    this.state.update(current => ({ ...current, ...partial }));
-  }
 }
