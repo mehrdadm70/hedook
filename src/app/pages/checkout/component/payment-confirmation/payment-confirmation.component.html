@@ -1,0 +1,164 @@
+<div class="payment-confirmation-container">
+  
+  <!-- Success State -->
+  @if (isSuccess()) {
+    <div class="success-state">
+      
+      <!-- Success Icon -->
+      <div class="icon-container success-icon">
+        <mat-icon class="large-icon">check_circle</mat-icon>
+      </div>
+
+      <!-- Success Message -->
+      <div class="message-container">
+        <h1 class="main-title success-text">پرداخت شما با موفقیت انجام شد 🎉</h1>
+        <p class="subtitle">رسید پرداخت برای شما پیامک شد</p>
+      </div>
+
+      <!-- Order Details Card -->
+      @if (orderDetails()) {
+        <mat-card class="order-details-card">
+          <mat-card-content>
+            
+            <!-- Order ID -->
+            <div class="detail-row">
+              <div class="detail-label">شماره سفارش:</div>
+              <div class="detail-value order-id">{{ formatOrderId(orderDetails()!.orderId) }}</div>
+            </div>
+
+            <mat-divider class="detail-divider"></mat-divider>
+
+            <!-- Recipient Name -->
+            <div class="detail-row">
+              <div class="detail-label">گیرنده:</div>
+              <div class="detail-value">{{ orderDetails()!.recipientName }}</div>
+            </div>
+
+            <!-- Delivery Address -->
+            <div class="detail-row">
+              <div class="detail-label">آدرس تحویل:</div>
+              <div class="detail-value address">{{ orderDetails()!.deliveryAddress }}</div>
+            </div>
+
+            <!-- Delivery Method -->
+            <div class="detail-row">
+              <div class="detail-label">روش ارسال:</div>
+              <div class="detail-value">{{ orderDetails()!.deliveryMethod }}</div>
+            </div>
+
+            <!-- Estimated Delivery -->
+            <div class="detail-row">
+              <div class="detail-label">تخمین تحویل:</div>
+              <div class="detail-value delivery-date">{{ orderDetails()!.estimatedDelivery }}</div>
+            </div>
+
+            <mat-divider class="detail-divider"></mat-divider>
+
+            <!-- Total Amount -->
+            <div class="detail-row total-row">
+              <div class="detail-label">مبلغ کل:</div>
+              <div class="detail-value total-amount">{{ formatPrice(orderDetails()!.totalAmount) }}</div>
+            </div>
+
+          </mat-card-content>
+        </mat-card>
+      }
+
+      <!-- Action Buttons -->
+      <div class="action-buttons">
+        <button mat-raised-button 
+                color="primary" 
+                class="primary-button"
+                (click)="onTrackOrder()">
+          <mat-icon class="button-icon">track_changes</mat-icon>
+          پیگیری سفارش
+        </button>
+        
+        <button mat-stroked-button 
+                class="secondary-button"
+                (click)="onBackToShop()">
+          <mat-icon class="button-icon">store</mat-icon>
+          بازگشت به فروشگاه
+        </button>
+      </div>
+
+    </div>
+  }
+
+  <!-- Failure State -->
+  @if (isFailure()) {
+    <div class="failure-state">
+      
+      <!-- Failure Icon -->
+      <div class="icon-container failure-icon">
+        <mat-icon class="large-icon">cancel</mat-icon>
+      </div>
+
+      <!-- Failure Message -->
+      <div class="message-container">
+        <h1 class="main-title failure-text">پرداخت ناموفق بود 😔</h1>
+        <p class="subtitle error-message">
+          {{ errorMessage() || 'ممکن است تراکنش لغو شده یا موجودی کافی نباشد.' }}
+        </p>
+      </div>
+
+      <!-- Transaction Details Card -->
+      @if (transactionId()) {
+        <mat-card class="transaction-card">
+          <mat-card-content>
+            <div class="detail-row">
+              <div class="detail-label">شناسه تراکنش:</div>
+              <div class="detail-value transaction-id">{{ transactionId() }}</div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      }
+
+      <!-- Action Buttons -->
+      <div class="action-buttons">
+        <button mat-raised-button 
+                color="warn" 
+                class="primary-button retry-button"
+                (click)="onRetryPayment()">
+          <mat-icon class="button-icon">refresh</mat-icon>
+          پرداخت مجدد
+        </button>
+        
+        <button mat-stroked-button 
+                class="secondary-button"
+                (click)="onBackToShop()">
+          <mat-icon class="button-icon">store</mat-icon>
+          بازگشت به فروشگاه
+        </button>
+      </div>
+
+      <!-- Support Note -->
+      <div class="support-note">
+        <mat-icon class="support-icon">support_agent</mat-icon>
+        <span>در صورت مشکل می‌توانید با پشتیبانی تماس بگیرید</span>
+      </div>
+
+    </div>
+  }
+
+  <!-- Trust Elements -->
+  <div class="trust-elements">
+    <div class="trust-seals">
+      <div class="trust-seal">
+        <mat-icon class="seal-icon">security</mat-icon>
+        <span class="seal-text">SSL امن</span>
+      </div>
+      
+      <div class="trust-seal">
+        <mat-icon class="seal-icon">verified</mat-icon>
+        <span class="seal-text">E-namad</span>
+      </div>
+      
+      <div class="trust-seal">
+        <mat-icon class="seal-icon">account_balance</mat-icon>
+        <span class="seal-text">بانک ملت</span>
+      </div>
+    </div>
+  </div>
+
+</div>

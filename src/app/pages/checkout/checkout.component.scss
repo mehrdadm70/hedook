@@ -1,0 +1,197 @@
+// Checkout Component Styles
+
+.mat-stepper {
+  background: transparent;
+  box-shadow: none;
+}
+
+.mat-step-header {
+  padding: 16px 0;
+}
+
+.mat-step-label {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.mat-step-icon {
+  background-color: #e5e7eb;
+  color: #6b7280;
+}
+
+.mat-step-icon.mat-step-icon-selected {
+  background-color: #3b82f6;
+  color: white;
+}
+
+.mat-step-icon.mat-step-icon-state-done {
+  background-color: #10b981;
+  color: white;
+}
+
+// Form field customizations
+.mat-form-field {
+  width: 100%;
+}
+
+.mat-form-field-appearance-outline .mat-form-field-outline {
+  color: #d1d5db;
+}
+
+.mat-form-field-appearance-outline.mat-focused .mat-form-field-outline-thick {
+  color: #3b82f6;
+}
+
+// Radio button customizations
+.mat-radio-button {
+  display: block;
+  margin-bottom: 8px;
+}
+
+.mat-radio-button .mat-radio-label {
+  width: 100%;
+  align-items: flex-start;
+}
+
+.mat-radio-button .mat-radio-label-content {
+  width: 100%;
+  padding: 0;
+}
+
+// Card customizations
+.mat-card {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  border-radius: 12px;
+}
+
+.mat-card-header {
+  padding-bottom: 16px;
+}
+
+.mat-card-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+// Button customizations
+.mat-raised-button {
+  border-radius: 8px;
+  font-weight: 500;
+  padding: 12px 24px;
+}
+
+.mat-stroked-button {
+  border-radius: 8px;
+  font-weight: 500;
+  padding: 12px 24px;
+}
+
+// Loading spinner
+.mat-spinner {
+  margin: 0 auto;
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .mat-stepper {
+    .mat-step-header {
+      padding: 12px 0;
+    }
+    
+    .mat-step-label {
+      font-size: 12px;
+    }
+  }
+  
+  .mat-card {
+    margin: 0 -16px;
+    border-radius: 0;
+  }
+}
+
+// Custom animations
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+// Gift option styling
+.mat-checkbox {
+  .mat-checkbox-label {
+    font-size: 14px;
+    color: #374151;
+  }
+}
+
+// Error states
+.mat-form-field.mat-form-field-invalid {
+  .mat-form-field-outline {
+    color: #ef4444;
+  }
+}
+
+.mat-error {
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+// Success states
+.mat-form-field.mat-form-field-valid {
+  .mat-form-field-outline {
+    color: #10b981;
+  }
+}
+
+// Hover effects
+.hover\:bg-gray-50:hover {
+  background-color: #f9fafb;
+}
+
+// Focus states
+.mat-form-field.mat-focused {
+  .mat-form-field-label {
+    color: #3b82f6;
+  }
+}
+
+// Custom scrollbar for long content
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+// Print styles
+@media print {
+  .mat-stepper {
+    display: none;
+  }
+  
+  .mat-card {
+    box-shadow: none;
+    border: 1px solid #e5e7eb;
+  }
+}

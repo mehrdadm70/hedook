@@ -1,0 +1,118 @@
+<div class="min-h-screen bg-gray-50 py-8">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+    
+    <!-- Header -->
+    <div class="mb-8">
+      <h1 class="text-3xl font-bold text-gray-900 text-center">تکمیل خرید</h1>
+      <p class="text-gray-600 text-center mt-2">لطفاً اطلاعات خود را تکمیل کنید</p>
+    </div>
+
+    <!-- Error Display -->
+    @if (error()) {
+      <div class="mb-6 bg-red-50 border border-red-200 rounded-lg p-4">
+        <div class="flex items-center">
+          <mat-icon class="text-red-500 mr-2">error</mat-icon>
+          <span class="text-red-700">{{ error() }}</span>
+        </div>
+      </div>
+    }
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      
+      <!-- Main Content -->
+      <div class="lg:col-span-2">
+        
+        <!-- Stepper -->
+        <mat-stepper #stepper [selectedIndex]="currentStep()" class="mb-8">
+          
+          <!-- Step 1: Recipient Information -->
+          <mat-step label="اطلاعات گیرنده">
+            <app-recipient-step
+              [userMode]="userMode()"
+              [isGift]="isGift()"
+              [showGiftForm]="showGiftForm()"
+              (switchToLogin)="switchToLogin()"
+              (switchToRegister)="switchToRegister()"
+              (loginSubmit)="onLogin()"
+              (giftToggle)="toggleGift()"
+              (formValid)="onStepValidChange(0, $event)">
+            </app-recipient-step>
+          </mat-step>
+
+          <!-- Step 2: Shipping and Packaging -->
+          <mat-step label="نحوه ارسال و بسته‌بندی">
+            <app-shipping-step
+              [shippingForm]="shippingForm"
+              [selectedShipping]="selectedShipping()"
+              [selectedPackaging]="selectedPackaging()"
+              [selectedGiftDesign]="selectedGiftDesign()"
+              (giftDesignSelect)="onGiftDesignSelect($event)"
+              (giftMessageChange)="onGiftMessageChange($event)">
+            </app-shipping-step>
+          </mat-step>
+
+          <!-- Step 3: Payment and Confirmation -->
+          <mat-step label="پرداخت و تایید">
+            <app-payment-step
+              [paymentForm]="paymentForm"
+              [loading]="loading()"
+              [isCreatingAccount]="isCreatingAccount()"
+              (submitOrder)="onSubmit()">
+            </app-payment-step>
+          </mat-step>
+
+        </mat-stepper>
+
+        <!-- Navigation Buttons -->
+        <div class="flex justify-between items-center mt-8">
+          <button mat-stroked-button 
+                  (click)="previousStep()" 
+                  [disabled]="currentStep() === 0"
+                  class="flex items-center">
+            <mat-icon class="ml-2">arrow_back</mat-icon>
+            مرحله قبل
+          </button>
+
+          @if (currentStep() < 2) {
+            <button mat-raised-button 
+                    color="primary" 
+                    (click)="nextStep()" 
+                    [disabled]="!isStepValid(currentStep())"
+                    class="flex items-center">
+              مرحله بعد
+              <mat-icon class="mr-2">arrow_forward</mat-icon>
+            </button>
+          } @else {
+            <button mat-raised-button 
+                    color="primary" 
+                    (click)="onSubmit()" 
+                    [disabled]="!isStepValid(2) || loading()"
+                    class="flex items-center">
+              @if (loading()) {
+                <mat-spinner diameter="20" class="mr-2"></mat-spinner>
+              } @else if (isCreatingAccount()) {
+                <span>در حال ایجاد حساب کاربری...</span>
+              } @else {
+                ثبت نهایی و پرداخت
+              }
+            </button>
+          }
+        </div>
+
+      </div>
+
+      <!-- Order Summary Sidebar -->
+      <app-order-summary
+        [selectedShipping]="selectedShipping()"
+        [selectedPackaging]="selectedPackaging()"
+        [selectedGiftDesign]="selectedGiftDesign()"
+        [isGift]="isGift()"
+        [giftMessage]="giftForm.get('giftMessage')?.value || ''"
+        (goToCartClick)="onGoToCart()">
+      </app-order-summary>
+
+    </div>
+
+  </div>
+</div>
+

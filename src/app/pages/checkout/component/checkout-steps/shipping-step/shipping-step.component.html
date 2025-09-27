@@ -1,0 +1,105 @@
+<form [formGroup]="shippingForm()" class="space-y-6">
+  
+  <!-- Shipping Methods -->
+  <div class="space-y-4">
+    <h3 class="text-lg font-semibold text-gray-900">روش ارسال</h3>
+    <mat-radio-group formControlName="shippingMethod" class="w-full">
+      @for (option of shippingOptions; track option.id) {
+        <mat-radio-button [value]="option.id" class="w-full mb-2">
+          <div class="flex items-center justify-between w-full p-4 border rounded-lg hover:bg-gray-50 cursor-pointer">
+            <div class="flex items-center space-x-3 space-x-reverse">
+              <div class="text-2xl">
+                @switch (option.id) {
+                  @case ('post_express') { 📮 }
+                  @case ('courier') { 🚚 }
+                  @case ('pickup') { 🏪 }
+                }
+              </div>
+              <div>
+                <div class="font-medium">{{ option.name }}</div>
+                <div class="text-sm text-gray-600">{{ option.description }}</div>
+                <div class="text-sm text-blue-600">تحویل: {{ option.estimatedDays === 0 ? 'همان روز' : option.estimatedDays + ' روز کاری' }}</div>
+              </div>
+            </div>
+            <div class="text-left">
+              <div class="font-bold text-lg">{{ formatPrice(option.price) }}</div>
+            </div>
+          </div>
+        </mat-radio-button>
+      }
+    </mat-radio-group>
+  </div>
+
+  <mat-divider></mat-divider>
+
+  <!-- Packaging Options -->
+  <div class="space-y-4">
+    <h3 class="text-lg font-semibold text-gray-900">نوع بسته‌بندی</h3>
+    <mat-radio-group formControlName="packagingType" class="w-full">
+      @for (option of packagingOptions; track option.id) {
+        <mat-radio-button [value]="option.id" class="w-full mb-2">
+          <div class="flex items-center justify-between w-full p-4 border rounded-lg hover:bg-gray-50 cursor-pointer">
+            <div class="flex items-center space-x-3 space-x-reverse">
+              <div class="text-2xl">{{ option.icon }}</div>
+              <div>
+                <div class="font-medium">{{ option.name }}</div>
+                <div class="text-sm text-gray-600">{{ option.description }}</div>
+              </div>
+            </div>
+            <div class="text-left">
+              <div class="font-bold text-lg">{{ formatPrice(option.price) }}</div>
+            </div>
+          </div>
+        </mat-radio-button>
+      }
+    </mat-radio-group>
+  </div>
+
+  <!-- Gift Design Selection -->
+  @if (selectedPackaging()?.id === 'gift') {
+    <div class="mt-6 p-4 bg-pink-50 border border-pink-200 rounded-lg">
+      <h4 class="text-lg font-semibold text-pink-900 mb-4 flex items-center">
+        <span class="text-2xl mr-2">🎨</span>
+        انتخاب طرح کادو
+      </h4>
+      
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+        @for (design of selectedPackaging()?.giftDesigns; track design.id) {
+          <div class="border rounded-lg p-3 cursor-pointer hover:bg-pink-100 transition-colors"
+               [class.bg-pink-200]="shippingForm().get('giftDesign')?.value === design.id"
+               (click)="onGiftDesignSelect(design.id)">
+            <img [src]="design.image" [alt]="design.name" class="w-full h-20 object-cover rounded mb-2">
+            <div class="text-center">
+              <div class="font-medium text-sm">{{ design.name }}</div>
+              <div class="text-xs text-gray-600">{{ formatPrice(design.price) }}</div>
+            </div>
+          </div>
+        }
+      </div>
+
+      <!-- Gift Message -->
+      <mat-form-field appearance="outline" class="w-full">
+        <mat-label>متن کارت هدیه</mat-label>
+        <textarea matInput formControlName="giftMessage" rows="3" 
+          placeholder="پیام تبریک خود را برای کارت هدیه بنویسید..."
+          (input)="onGiftMessageChange($any($event.target).value || '')">
+        </textarea>
+        <mat-hint>این متن روی کارت هدیه چاپ خواهد شد</mat-hint>
+      </mat-form-field>
+    </div>
+  }
+
+  <!-- Delivery Estimate -->
+  @if (selectedShipping()) {
+    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+      <div class="flex items-center">
+        <mat-icon class="text-blue-500 mr-2">schedule</mat-icon>
+        <div>
+          <div class="font-medium text-blue-900">تخمین زمان تحویل</div>
+          <div class="text-blue-700">{{ estimatedDelivery() }}</div>
+        </div>
+      </div>
+    </div>
+  }
+
+</form>

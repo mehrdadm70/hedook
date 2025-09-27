@@ -1,0 +1,412 @@
+// Payment Confirmation Component Styles
+// Mobile-first design for Persian e-commerce
+
+.payment-confirmation-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-family: 'Vazir', 'Iran Sans', sans-serif;
+  direction: rtl;
+}
+
+// Success State Styles
+.success-state {
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+  animation: fadeInUp 0.6s ease-out;
+}
+
+.failure-state {
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+  animation: fadeInUp 0.6s ease-out;
+}
+
+// Icon Container
+.icon-container {
+  margin-bottom: 24px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  margin: 0 auto 24px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+.success-icon {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+}
+
+.failure-icon {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  color: white;
+}
+
+.large-icon {
+  font-size: 64px !important;
+  width: 64px !important;
+  height: 64px !important;
+}
+
+// Message Container
+.message-container {
+  margin-bottom: 32px;
+}
+
+.main-title {
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  line-height: 1.4;
+}
+
+.success-text {
+  color: #059669;
+}
+
+.failure-text {
+  color: #dc2626;
+}
+
+.subtitle {
+  font-size: 16px;
+  color: #6b7280;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.error-message {
+  color: #ef4444;
+  font-size: 14px;
+}
+
+// Card Styles
+.order-details-card,
+.transaction-card {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  margin-bottom: 32px;
+  border: none;
+  overflow: hidden;
+}
+
+.order-details-card .mat-mdc-card-content,
+.transaction-card .mat-mdc-card-content {
+  padding: 24px;
+}
+
+// Detail Rows
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+  gap: 12px;
+}
+
+.detail-row:last-child {
+  margin-bottom: 0;
+}
+
+.detail-label {
+  font-size: 14px;
+  color: #6b7280;
+  font-weight: 500;
+  min-width: 80px;
+  text-align: right;
+}
+
+.detail-value {
+  font-size: 14px;
+  color: #1f2937;
+  font-weight: 600;
+  text-align: left;
+  flex: 1;
+}
+
+.order-id {
+  color: #059669;
+  font-weight: 700;
+  font-size: 16px;
+}
+
+.address {
+  line-height: 1.5;
+  text-align: right;
+}
+
+.delivery-date {
+  color: #059669;
+  font-weight: 600;
+}
+
+.total-row {
+  padding-top: 16px;
+  margin-top: 16px;
+  border-top: 2px solid #f3f4f6;
+}
+
+.total-amount {
+  color: #059669;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.transaction-id {
+  color: #ef4444;
+  font-weight: 700;
+  font-size: 16px;
+}
+
+.detail-divider {
+  margin: 16px 0;
+  border-color: #f3f4f6;
+}
+
+// Action Buttons
+.action-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 32px;
+  width: 100%;
+}
+
+.primary-button {
+  height: 56px;
+  border-radius: 16px;
+  font-size: 16px;
+  font-weight: 700;
+  text-transform: none;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.primary-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+.retry-button {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+}
+
+.secondary-button {
+  height: 56px;
+  border-radius: 16px;
+  font-size: 16px;
+  font-weight: 600;
+  text-transform: none;
+  border: 2px solid #d1d5db;
+  color: #6b7280;
+  transition: all 0.3s ease;
+}
+
+.secondary-button:hover {
+  border-color: #9ca3af;
+  color: #374151;
+  transform: translateY(-1px);
+}
+
+.button-icon {
+  margin-left: 8px;
+  font-size: 20px;
+}
+
+// Support Note
+.support-note {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 16px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 12px;
+  color: #991b1b;
+  font-size: 14px;
+  margin-bottom: 32px;
+}
+
+.support-icon {
+  font-size: 18px;
+  color: #ef4444;
+}
+
+// Trust Elements
+.trust-elements {
+  margin-top: auto;
+  width: 100%;
+  max-width: 400px;
+}
+
+.trust-seals {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 20px;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+}
+
+.trust-seal {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.seal-icon {
+  font-size: 24px;
+  color: #059669;
+}
+
+.seal-text {
+  font-size: 12px;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+// Animations
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Responsive Design
+@media (min-width: 768px) {
+  .payment-confirmation-container {
+    padding: 40px;
+    justify-content: center;
+  }
+
+  .success-state,
+  .failure-state {
+    max-width: 500px;
+  }
+
+  .main-title {
+    font-size: 28px;
+  }
+
+  .action-buttons {
+    flex-direction: row;
+    gap: 16px;
+  }
+
+  .primary-button,
+  .secondary-button {
+    flex: 1;
+  }
+
+  .trust-seals {
+    padding: 24px;
+  }
+
+  .seal-icon {
+    font-size: 28px;
+  }
+
+  .seal-text {
+    font-size: 14px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .payment-confirmation-container {
+    padding: 60px;
+  }
+
+  .success-state,
+  .failure-state {
+    max-width: 600px;
+  }
+
+  .main-title {
+    font-size: 32px;
+  }
+
+  .icon-container {
+    width: 140px;
+    height: 140px;
+  }
+
+  .large-icon {
+    font-size: 72px !important;
+    width: 72px !important;
+    height: 72px !important;
+  }
+}
+
+// Print Styles
+@media print {
+  .payment-confirmation-container {
+    background: white;
+    padding: 20px;
+  }
+
+  .action-buttons,
+  .trust-elements {
+    display: none;
+  }
+
+  .order-details-card,
+  .transaction-card {
+    box-shadow: none;
+    border: 1px solid #e5e7eb;
+  }
+}
+
+// Dark Mode Support (Optional)
+@media (prefers-color-scheme: dark) {
+  .payment-confirmation-container {
+    background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+  }
+
+  .order-details-card,
+  .transaction-card {
+    background: #374151;
+    color: #f9fafb;
+  }
+
+  .detail-label {
+    color: #9ca3af;
+  }
+
+  .detail-value {
+    color: #f9fafb;
+  }
+
+  .subtitle {
+    color: #9ca3af;
+  }
+
+  .secondary-button {
+    border-color: #4b5563;
+    color: #9ca3af;
+  }
+
+  .trust-seals {
+    background: #374151;
+  }
+
+  .seal-text {
+    color: #9ca3af;
+  }
+}

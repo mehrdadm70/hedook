@@ -1,0 +1,106 @@
+// Order Summary Component Styles
+
+.mat-card {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  border-radius: 12px;
+}
+
+.mat-card-header {
+  padding-bottom: 16px;
+}
+
+.mat-card-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.mat-card-content {
+  padding: 16px;
+}
+
+// Cart items styling
+.space-y-3 > * + * {
+  margin-top: 12px;
+}
+
+// Price breakdown styling
+.space-y-2 > * + * {
+  margin-top: 8px;
+}
+
+// Button styling
+.mat-stroked-button {
+  border-radius: 8px;
+  font-weight: 500;
+  padding: 12px 24px;
+}
+
+// Responsive design
+@media (max-width: 1024px) {
+  .lg\:col-span-1 {
+    margin-top: 24px;
+  }
+  
+  .sticky {
+    position: static;
+  }
+}
+
+// Custom animations
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+// Hover effects
+.hover\:bg-gray-50:hover {
+  background-color: #f9fafb;
+}
+
+// Focus states
+.mat-stroked-button:focus {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+// Custom scrollbar for long content
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+// Print styles
+@media print {
+  .mat-card {
+    box-shadow: none;
+    border: 1px solid #e5e7eb;
+  }
+  
+  .mat-stroked-button {
+    display: none;
+  }
+}

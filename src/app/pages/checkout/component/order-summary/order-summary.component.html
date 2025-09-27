@@ -1,0 +1,103 @@
+<!-- Order Summary Sidebar -->
+<div class="lg:col-span-1">
+  <mat-card class="sticky top-8">
+    <mat-card-header>
+      <mat-card-title>خلاصه سفارش</mat-card-title>
+    </mat-card-header>
+    
+    <mat-card-content class="space-y-4">
+      
+      <!-- Cart Items -->
+      <div class="space-y-3">
+        @for (item of cartItems(); track item.product.id) {
+          <div class="flex items-center space-x-3 space-x-reverse">
+            <img [src]="item.product.images[0]" 
+                 [alt]="item.product.name" 
+                 class="w-16 h-16 object-cover rounded-lg">
+            <div class="flex-1">
+              <div class="font-medium text-sm">{{ item.product.name }}</div>
+              <div class="text-gray-600 text-sm">تعداد: {{ item.quantity }}</div>
+              <div class="font-bold text-sm">{{ formatPrice(item.product.price * item.quantity) }}</div>
+            </div>
+          </div>
+        }
+      </div>
+
+      <mat-divider></mat-divider>
+
+      <!-- Price Breakdown -->
+      <div class="space-y-2">
+        <div class="flex justify-between">
+          <span>جمع کل محصولات:</span>
+          <span>{{ formatPrice(totalPrice()) }}</span>
+        </div>
+        
+        @if (selectedShipping()) {
+          <div class="flex justify-between">
+            <span>هزینه ارسال:</span>
+            <span>{{ formatPrice(selectedShipping()!.price) }}</span>
+          </div>
+        }
+        
+        @if (selectedPackaging() && selectedPackaging()!.price > 0) {
+          <div class="flex justify-between">
+            <span>بسته‌بندی:</span>
+            <span>{{ formatPrice(selectedPackaging()!.price) }}</span>
+          </div>
+        }
+        
+        @if (selectedGiftDesign() && selectedGiftDesign()!.price > 0) {
+          <div class="flex justify-between">
+            <span>طرح کادو:</span>
+            <span>{{ formatPrice(selectedGiftDesign()!.price) }}</span>
+          </div>
+        }
+        
+        <mat-divider></mat-divider>
+        
+        <div class="flex justify-between font-bold text-lg">
+          <span>مبلغ نهایی:</span>
+          <span class="text-green-600">{{ formatPrice(finalTotal()) }}</span>
+        </div>
+      </div>
+
+      <!-- Gift Notice -->
+      @if (isGift()) {
+        <div class="bg-pink-50 border border-pink-200 rounded-lg p-3">
+          <div class="flex items-center">
+            <span class="text-2xl mr-2">🎁</span>
+            <span class="text-pink-800 text-sm">این سفارش به صورت هدیه ارسال خواهد شد</span>
+          </div>
+          @if (giftMessage()) {
+            <div class="mt-2 text-xs text-pink-700">
+              پیام هدیه: "{{ giftMessage() }}"
+            </div>
+          }
+        </div>
+      }
+
+      <!-- Delivery Info -->
+      @if (selectedShipping() && estimatedDelivery()) {
+        <div class="bg-blue-50 border border-blue-200 rounded-lg p-3">
+          <div class="flex items-center">
+            <mat-icon class="text-blue-500 mr-2">schedule</mat-icon>
+            <div>
+              <div class="text-blue-900 text-sm font-medium">تخمین تحویل</div>
+              <div class="text-blue-700 text-sm">{{ estimatedDelivery() }}</div>
+            </div>
+          </div>
+        </div>
+      }
+
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Back to Cart -->
+  <div class="mt-4">
+    <button mat-stroked-button (click)="onGoToCart()" class="w-full">
+      <mat-icon class="mr-2">shopping_cart</mat-icon>
+      بازگشت به سبد خرید
+    </button>
+  </div>
+
+</div>

@@ -1,0 +1,346 @@
+<!-- Logged-in User: Address Selection -->
+@if (userMode() === 'logged-in') {
+  <div class="space-y-6">
+    <!-- User Info Card -->
+    <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+      <div class="flex items-center">
+        <mat-icon class="text-green-500 mr-2">person</mat-icon>
+        <div>
+          <div class="font-semibold text-green-900">خوش آمدید!</div>
+          <div class="text-green-700 text-sm">{{ authService.currentUser()?.firstName }} {{ authService.currentUser()?.lastName }}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Address Selection -->
+    <form [formGroup]="addressSelectionForm" class="space-y-4">
+      <h3 class="text-lg font-semibold text-gray-900">انتخاب آدرس</h3>
+      
+      <div class="space-y-3">
+        @for (address of savedAddresses; track address.id) {
+          <div class="border rounded-lg p-4 cursor-pointer hover:bg-gray-50 transition-colors"
+               [class.bg-blue-50]="addressSelectionForm.get('selectedAddress')?.value === address.id"
+               [class.border-blue-300]="addressSelectionForm.get('selectedAddress')?.value === address.id"
+               (click)="onAddressSelect(address.id)">
+            <div class="flex items-start justify-between">
+              <div class="flex items-center space-x-3 space-x-reverse">
+                <mat-radio-button [value]="address.id" formControlName="selectedAddress"></mat-radio-button>
+                <div>
+                  <div class="font-medium">{{ address.title }}</div>
+                  <div class="text-sm text-gray-600">{{ address.address }}</div>
+                  <div class="text-sm text-gray-500">{{ address.city }}، {{ address.state }}</div>
+                  @if (address.zipCode) {
+                    <div class="text-sm text-gray-500">کد پستی: {{ address.zipCode }}</div>
+                  }
+                </div>
+              </div>
+              @if (address.isDefault) {
+                <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">پیش‌فرض</span>
+              }
+            </div>
+          </div>
+        }
+      </div>
+
+      @if (isFieldInvalid(addressSelectionForm, 'selectedAddress')) {
+        <div class="text-red-600 text-sm">لطفاً یک آدرس انتخاب کنید</div>
+      }
+    </form>
+
+    <!-- Gift Option -->
+    <div class="flex items-center space-x-2 space-x-reverse">
+      <mat-checkbox [checked]="isGift()" (change)="onGiftToggle()">
+        این سفارش هدیه است 🎁
+      </mat-checkbox>
+    </div>
+
+    <!-- Gift Form -->
+    @if (showGiftForm()) {
+      <div class="mt-6 p-4 bg-pink-50 border border-pink-200 rounded-lg">
+        <h4 class="text-lg font-semibold text-pink-900 mb-4 flex items-center">
+          <span class="text-2xl mr-2">🎁</span>
+          اطلاعات گیرنده هدیه
+        </h4>
+        
+        <form [formGroup]="giftForm" class="space-y-4">
+          <!-- Gift Province and City -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <mat-form-field appearance="outline" class="w-full">
+              <mat-label>استان گیرنده</mat-label>
+              <mat-select formControlName="giftState" (selectionChange)="onGiftProvinceChange($event.value)">
+                @for (province of provinces; track province.id) {
+                  <mat-option [value]="province.id">{{ province.name }}</mat-option>
+                }
+              </mat-select>
+              @if (isFieldInvalid(giftForm, 'giftState')) {
+                <mat-error>{{ getFieldError(giftForm, 'giftState') }}</mat-error>
+              }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="w-full">
+              <mat-label>شهر گیرنده</mat-label>
+              <mat-select formControlName="giftCity" [disabled]="!selectedGiftProvince()">
+                @for (city of availableGiftCities(); track city) {
+                  <mat-option [value]="city">{{ city }}</mat-option>
+                }
+              </mat-select>
+              @if (isFieldInvalid(giftForm, 'giftCity')) {
+                <mat-error>{{ getFieldError(giftForm, 'giftCity') }}</mat-error>
+              }
+            </mat-form-field>
+          </div>
+
+          <!-- Gift Address -->
+          <mat-form-field appearance="outline" class="w-full">
+            <mat-label>آدرس گیرنده هدیه</mat-label>
+            <textarea matInput formControlName="giftAddress" rows="3" 
+              placeholder="آدرس کامل گیرنده هدیه را وارد کنید"></textarea>
+            @if (isFieldInvalid(giftForm, 'giftAddress')) {
+              <mat-error>{{ getFieldError(giftForm, 'giftAddress') }}</mat-error>
+            }
+          </mat-form-field>
+
+          <!-- Gift Zip Code -->
+          <mat-form-field appearance="outline" class="w-full">
+            <mat-label>کد پستی گیرنده (اختیاری)</mat-label>
+            <input matInput formControlName="giftZipCode" placeholder="1234567890" type="text" maxlength="10">
+            @if (isFieldInvalid(giftForm, 'giftZipCode')) {
+              <mat-error>{{ getFieldError(giftForm, 'giftZipCode') }}</mat-error>
+            }
+          </mat-form-field>
+
+          <!-- Gift Message -->
+          <mat-form-field appearance="outline" class="w-full">
+            <mat-label>پیام هدیه (اختیاری)</mat-label>
+            <textarea matInput formControlName="giftMessage" rows="2" 
+              placeholder="پیام تبریک خود را بنویسید..."></textarea>
+            <mat-hint>حداکثر ۲۰۰ کاراکتر</mat-hint>
+            @if (isFieldInvalid(giftForm, 'giftMessage')) {
+              <mat-error>{{ getFieldError(giftForm, 'giftMessage') }}</mat-error>
+            }
+          </mat-form-field>
+        </form>
+      </div>
+    }
+  </div>
+}
+
+<!-- Login Form -->
+@if (userMode() === 'login') {
+  <form [formGroup]="loginForm" class="space-y-6">
+    <div class="text-center mb-6">
+      <h3 class="text-xl font-semibold text-gray-900">ورود به حساب کاربری</h3>
+      <p class="text-gray-600 mt-2">برای ادامه خرید وارد حساب کاربری خود شوید</p>
+    </div>
+
+    <!-- Email -->
+    <mat-form-field appearance="outline" class="w-full">
+      <mat-label>ایمیل</mat-label>
+      <input matInput formControlName="email" placeholder="example@email.com" type="email">
+      @if (isFieldInvalid(loginForm, 'email')) {
+        <mat-error>{{ getFieldError(loginForm, 'email') }}</mat-error>
+      }
+    </mat-form-field>
+
+    <!-- Password -->
+    <mat-form-field appearance="outline" class="w-full">
+      <mat-label>رمز عبور</mat-label>
+      <input matInput formControlName="password" placeholder="رمز عبور خود را وارد کنید" type="password">
+      @if (isFieldInvalid(loginForm, 'password')) {
+        <mat-error>{{ getFieldError(loginForm, 'password') }}</mat-error>
+      }
+    </mat-form-field>
+
+    <!-- Login Button -->
+    <button mat-raised-button 
+            color="primary" 
+            (click)="onLoginSubmit()" 
+            [disabled]="loginForm.invalid"
+            class="w-full">
+      ورود
+    </button>
+
+    <!-- Switch to Register -->
+    <div class="text-center">
+      <button mat-button (click)="onSwitchToRegister()" class="text-blue-600">
+        حساب کاربری ندارید؟ ثبت نام کنید
+      </button>
+    </div>
+  </form>
+}
+
+<!-- Register Form -->
+@if (userMode() === 'register') {
+  <!-- Switch to Login -->
+  <div class="text-center">
+    <button mat-button (click)="onSwitchToLogin()" class="text-blue-600">
+      قبلاً عضو شده‌اید؟ وارد شوید
+    </button>
+  </div>
+
+  <form [formGroup]="recipientForm" class="space-y-6">
+    
+    <!-- Name Fields -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <mat-form-field appearance="outline" class="w-full">
+        <mat-label>نام</mat-label>
+        <input matInput formControlName="firstName" placeholder="نام خود را وارد کنید">
+        @if (isFieldInvalid(recipientForm, 'firstName')) {
+          <mat-error>{{ getFieldError(recipientForm, 'firstName') }}</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-full">
+        <mat-label>نام خانوادگی</mat-label>
+        <input matInput formControlName="lastName" placeholder="نام خانوادگی خود را وارد کنید">
+        @if (isFieldInvalid(recipientForm, 'lastName')) {
+          <mat-error>{{ getFieldError(recipientForm, 'lastName') }}</mat-error>
+        }
+      </mat-form-field>
+    </div>
+
+    <!-- Phone -->
+    <mat-form-field appearance="outline" class="w-full">
+      <mat-label>شماره موبایل</mat-label>
+      <input matInput formControlName="phone" placeholder="09123456789" type="tel">
+      <mat-hint>شماره موبایل برای ارسال کد تایید</mat-hint>
+      @if (isFieldInvalid(recipientForm, 'phone')) {
+        <mat-error>{{ getFieldError(recipientForm, 'phone') }}</mat-error>
+      }
+    </mat-form-field>
+
+    <!-- Email (Optional) -->
+    <mat-form-field appearance="outline" class="w-full">
+      <mat-label>ایمیل (اختیاری)</mat-label>
+      <input matInput formControlName="email" placeholder="example@email.com" type="email">
+      <mat-hint>در صورت عدم ورود، حساب کاربری خودکار ایجاد می‌شود</mat-hint>
+      @if (isFieldInvalid(recipientForm, 'email')) {
+        <mat-error>{{ getFieldError(recipientForm, 'email') }}</mat-error>
+      }
+    </mat-form-field>
+
+    <!-- Province and City -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <mat-form-field appearance="outline" class="w-full">
+        <mat-label>استان</mat-label>
+        <mat-select formControlName="state" (selectionChange)="onProvinceChange($event.value)">
+          @for (province of provinces; track province.id) {
+            <mat-option [value]="province.id">{{ province.name }}</mat-option>
+          }
+        </mat-select>
+        @if (isFieldInvalid(recipientForm, 'state')) {
+          <mat-error>{{ getFieldError(recipientForm, 'state') }}</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-full">
+        <mat-label>شهر</mat-label>
+        <mat-select formControlName="city" [disabled]="!selectedProvince()">
+          @for (city of availableCities(); track city) {
+            <mat-option [value]="city">{{ city }}</mat-option>
+          }
+        </mat-select>
+        @if (isFieldInvalid(recipientForm, 'city')) {
+          <mat-error>{{ getFieldError(recipientForm, 'city') }}</mat-error>
+        }
+      </mat-form-field>
+    </div>
+
+    <!-- Address -->
+    <mat-form-field appearance="outline" class="w-full">
+      <mat-label>آدرس دقیق</mat-label>
+      <textarea matInput formControlName="address" rows="3" 
+        placeholder="آدرس کامل خود را وارد کنید (مثال: خیابان فردوسی، کوچه ۱۵، پلاک ۲۳، طبقه ۳)"></textarea>
+      <mat-hint>آدرس کامل برای تحویل سفارش</mat-hint>
+      @if (isFieldInvalid(recipientForm, 'address')) {
+        <mat-error>{{ getFieldError(recipientForm, 'address') }}</mat-error>
+      }
+    </mat-form-field>
+
+    <!-- Zip Code -->
+    <mat-form-field appearance="outline" class="w-full">
+      <mat-label>کد پستی (اختیاری)</mat-label>
+      <input matInput formControlName="zipCode" placeholder="1234567890" type="text" maxlength="10">
+      <mat-hint>کد پستی ۱۰ رقمی</mat-hint>
+      @if (isFieldInvalid(recipientForm, 'zipCode')) {
+        <mat-error>{{ getFieldError(recipientForm, 'zipCode') }}</mat-error>
+      }
+    </mat-form-field>
+
+    <!-- Gift Option -->
+    <div class="flex items-center space-x-2 space-x-reverse">
+      <mat-checkbox [checked]="isGift()" (change)="onGiftToggle()">
+        این سفارش هدیه است 🎁
+      </mat-checkbox>
+    </div>
+
+    <!-- Gift Form -->
+    @if (showGiftForm()) {
+      <div class="mt-6 p-4 bg-pink-50 border border-pink-200 rounded-lg">
+        <h4 class="text-lg font-semibold text-pink-900 mb-4 flex items-center">
+          <span class="text-2xl mr-2">🎁</span>
+          اطلاعات گیرنده هدیه
+        </h4>
+        
+        <form [formGroup]="giftForm" class="space-y-4">
+          <!-- Gift Province and City -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <mat-form-field appearance="outline" class="w-full">
+              <mat-label>استان گیرنده</mat-label>
+              <mat-select formControlName="giftState" (selectionChange)="onGiftProvinceChange($event.value)">
+                @for (province of provinces; track province.id) {
+                  <mat-option [value]="province.id">{{ province.name }}</mat-option>
+                }
+              </mat-select>
+              @if (isFieldInvalid(giftForm, 'giftState')) {
+                <mat-error>{{ getFieldError(giftForm, 'giftState') }}</mat-error>
+              }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="w-full">
+              <mat-label>شهر گیرنده</mat-label>
+              <mat-select formControlName="giftCity" [disabled]="!selectedGiftProvince()">
+                @for (city of availableGiftCities(); track city) {
+                  <mat-option [value]="city">{{ city }}</mat-option>
+                }
+              </mat-select>
+              @if (isFieldInvalid(giftForm, 'giftCity')) {
+                <mat-error>{{ getFieldError(giftForm, 'giftCity') }}</mat-error>
+              }
+            </mat-form-field>
+          </div>
+
+          <!-- Gift Address -->
+          <mat-form-field appearance="outline" class="w-full">
+            <mat-label>آدرس گیرنده هدیه</mat-label>
+            <textarea matInput formControlName="giftAddress" rows="3" 
+              placeholder="آدرس کامل گیرنده هدیه را وارد کنید"></textarea>
+            @if (isFieldInvalid(giftForm, 'giftAddress')) {
+              <mat-error>{{ getFieldError(giftForm, 'giftAddress') }}</mat-error>
+            }
+          </mat-form-field>
+
+          <!-- Gift Zip Code -->
+          <mat-form-field appearance="outline" class="w-full">
+            <mat-label>کد پستی گیرنده (اختیاری)</mat-label>
+            <input matInput formControlName="giftZipCode" placeholder="1234567890" type="text" maxlength="10">
+            @if (isFieldInvalid(giftForm, 'giftZipCode')) {
+              <mat-error>{{ getFieldError(giftForm, 'giftZipCode') }}</mat-error>
+            }
+          </mat-form-field>
+
+          <!-- Gift Message -->
+          <mat-form-field appearance="outline" class="w-full">
+            <mat-label>پیام هدیه (اختیاری)</mat-label>
+            <textarea matInput formControlName="giftMessage" rows="2" 
+              placeholder="پیام تبریک خود را بنویسید..."></textarea>
+            <mat-hint>حداکثر ۲۰۰ کاراکتر</mat-hint>
+            @if (isFieldInvalid(giftForm, 'giftMessage')) {
+              <mat-error>{{ getFieldError(giftForm, 'giftMessage') }}</mat-error>
+            }
+          </mat-form-field>
+        </form>
+      </div>
+    }
+  </form>
+}
